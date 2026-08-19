@@ -9,6 +9,7 @@
    ========================================================= */
 
 const STORAGE_KEY = "quan_ly_thu_chi_data_v1";
+const DARK_MODE_KEY = "quan_ly_dark_mode";
 
 let data = {
     transactions: [],
@@ -19,10 +20,10 @@ let data = {
 
 let currentType = "thu";
 let currentSource = "ShopeeFood";
-
 let editingId = null;
 
 let statisticType = "all";
+
 let currentCODCategory = null;
 let currentCODDish = null;
 
@@ -31,32 +32,28 @@ let currentCODDish = null;
    2. KHỞI TẠO
    ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", function () {
 
+    console.log("APP.JS ĐÃ CHẠY");
+
+    loadDarkMode();
     loadData();
 
     setDefaultDate();
 
     renderCategorySelect();
-
     renderDishSelect();
-
     renderMenu();
-
     renderCODCategories();
 
-    renderTransactions();
-
-    renderSummary();
-
-    renderStatistics();
-
     renderMonthFilters();
+    renderTransactions();
+    renderSummary();
+    renderStatistics();
 
     updateForm();
 
     goHome(false);
-
 });
 
 
@@ -70,32 +67,32 @@ function loadData() {
 
         const saved = localStorage.getItem(STORAGE_KEY);
 
-        if (saved) {
+        if (!saved) return;
 
-            const parsed = JSON.parse(saved);
+        const parsed = JSON.parse(saved);
 
-            data = {
-                transactions: Array.isArray(parsed.transactions)
-                    ? parsed.transactions
-                    : [],
+        data = {
+            transactions: Array.isArray(parsed.transactions)
+                ? parsed.transactions
+                : [],
 
-                categories: Array.isArray(parsed.categories)
-                    ? parsed.categories
-                    : [],
+            categories: Array.isArray(parsed.categories)
+                ? parsed.categories
+                : [],
 
-                dishes: Array.isArray(parsed.dishes)
-                    ? parsed.dishes
-                    : [],
+            dishes: Array.isArray(parsed.dishes)
+                ? parsed.dishes
+                : [],
 
-                cod: parsed.cod && typeof parsed.cod === "object"
-                    ? parsed.cod
-                    : {}
-            };
-        }
+            cod: parsed.cod &&
+                typeof parsed.cod === "object"
+                ? parsed.cod
+                : {}
+        };
 
     } catch (error) {
 
-        console.error("Không thể đọc dữ liệu:", error);
+        console.error("Lỗi đọc dữ liệu:", error);
 
         data = {
             transactions: [],
@@ -118,7 +115,7 @@ function saveData() {
 
     } catch (error) {
 
-        console.error("Không thể lưu dữ liệu:", error);
+        console.error("Lỗi lưu dữ liệu:", error);
 
         showToast("Không thể lưu dữ liệu!");
     }
@@ -133,10 +130,11 @@ function toggleDark() {
 
     document.body.classList.toggle("dark");
 
-    const isDark = document.body.classList.contains("dark");
+    const isDark =
+        document.body.classList.contains("dark");
 
     localStorage.setItem(
-        "quan_ly_dark_mode",
+        DARK_MODE_KEY,
         isDark ? "1" : "0"
     );
 }
@@ -144,9 +142,8 @@ function toggleDark() {
 
 function loadDarkMode() {
 
-    const dark = localStorage.getItem(
-        "quan_ly_dark_mode"
-    );
+    const dark =
+        localStorage.getItem(DARK_MODE_KEY);
 
     if (dark === "1") {
 
@@ -167,9 +164,39 @@ function formatMoney(value) {
 }
 
 
+function formatShortMoney(value) {
+
+    value = Number(value) || 0;
+
+    if (value >= 1000000) {
+
+        return (
+            (value / 1000000)
+                .toFixed(1)
+                .replace(".0", "")
+            + "tr"
+        );
+    }
+
+    if (value >= 1000) {
+
+        return (
+            (value / 1000)
+                .toFixed(0)
+            + "k"
+        );
+    }
+
+    return String(value);
+}
+
+
 function escapeHTML(value) {
 
-    if (value === undefined || value === null) {
+    if (
+        value === undefined ||
+        value === null
+    ) {
         return "";
     }
 
@@ -184,16 +211,26 @@ function escapeHTML(value) {
 
 function generateId() {
 
-    return Date.now().toString() +
-        Math.random().toString(36).substring(2, 9);
+    return (
+        Date.now().toString() +
+        Math.random()
+            .toString(36)
+            .substring(2, 9)
+    );
 }
 
 
 function showToast(message) {
 
-    const toast = document.getElementById("toast");
+    const toast =
+        document.getElementById("toast");
 
-    if (!toast) return;
+    if (!toast) {
+
+        alert(message);
+
+        return;
+    }
 
     toast.textContent = message;
 
@@ -201,11 +238,14 @@ function showToast(message) {
 
     clearTimeout(window.toastTimer);
 
-    window.toastTimer = setTimeout(() => {
+    window.toastTimer = setTimeout(
+        function () {
 
-        toast.classList.remove("show");
+            toast.classList.remove("show");
 
-    }, 2500);
+        },
+        2500
+    );
 }
 
 
@@ -215,13 +255,18 @@ function showToast(message) {
 
 function getTodayString() {
 
-    const d = new Date();
+    const date = new Date();
 
-    const day = String(d.getDate()).padStart(2, "0");
+    const day =
+        String(date.getDate())
+            .padStart(2, "0");
 
-    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const month =
+        String(date.getMonth() + 1)
+            .padStart(2, "0");
 
-    const year = d.getFullYear();
+    const year =
+        date.getFullYear();
 
     return `${day}/${month}/${year}`;
 }
@@ -229,23 +274,28 @@ function getTodayString() {
 
 function setDefaultDate() {
 
-    const input = document.getElementById("date");
+    const input =
+        document.getElementById("date");
 
     if (!input) return;
 
     if (!input.value) {
 
-        input.value = getTodayString();
+        input.value =
+            getTodayString();
     }
 }
 
 
 function formatDateInput(input) {
 
-    let value = input.value.replace(/\D/g, "");
+    let value =
+        input.value.replace(/\D/g, "");
 
     if (value.length > 8) {
-        value = value.substring(0, 8);
+
+        value =
+            value.substring(0, 8);
     }
 
     if (value.length >= 5) {
@@ -273,27 +323,48 @@ function dateToKey(dateString) {
 
     if (!dateString) return "";
 
-    const parts = dateString.split("/");
+    const parts =
+        dateString.split("/");
 
-    if (parts.length !== 3) return "";
+    if (parts.length !== 3) {
 
-    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        return "";
+    }
+
+    return (
+        `${parts[2]}-${parts[1]}-${parts[0]}`
+    );
 }
 
 
 function isValidDate(dateString) {
 
-    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+    if (
+        !/^\d{2}\/\d{2}\/\d{4}$/
+            .test(dateString)
+    ) {
+
         return false;
     }
 
-    const parts = dateString.split("/");
+    const parts =
+        dateString.split("/");
 
-    const day = Number(parts[0]);
-    const month = Number(parts[1]);
-    const year = Number(parts[2]);
+    const day =
+        Number(parts[0]);
 
-    const date = new Date(year, month - 1, day);
+    const month =
+        Number(parts[1]);
+
+    const year =
+        Number(parts[2]);
+
+    const date =
+        new Date(
+            year,
+            month - 1,
+            day
+        );
 
     return (
         date.getFullYear() === year &&
@@ -311,8 +382,11 @@ function setType(type) {
 
     currentType = type;
 
-    const thuBtn = document.getElementById("thuBtn");
-    const chiBtn = document.getElementById("chiBtn");
+    const thuBtn =
+        document.getElementById("thuBtn");
+
+    const chiBtn =
+        document.getElementById("chiBtn");
 
     if (thuBtn) {
 
@@ -336,7 +410,9 @@ function setType(type) {
     if (sourceGroup) {
 
         sourceGroup.style.display =
-            type === "thu" ? "block" : "none";
+            type === "thu"
+                ? "block"
+                : "none";
     }
 
     updateForm();
@@ -353,33 +429,52 @@ function setSource(source) {
         ["sourceOut", "Ngoài sàn"]
     ];
 
-    buttons.forEach(([id, value]) => {
+    buttons.forEach(
+        function ([id, value]) {
 
-        const button = document.getElementById(id);
+            const button =
+                document.getElementById(id);
 
-        if (!button) return;
+            if (!button) return;
 
-        button.classList.toggle(
-            "active-shopee",
-            value === source && source === "ShopeeFood"
-        );
+            button.classList.remove(
+                "active-shopee",
+                "active-grab",
+                "active-out"
+            );
 
-        button.classList.toggle(
-            "active-grab",
-            value === source && source === "GrabFood"
-        );
+            if (value === source) {
 
-        button.classList.toggle(
-            "active-out",
-            value === source && source === "Ngoài sàn"
-        );
-    });
+                if (source === "ShopeeFood") {
+
+                    button.classList.add(
+                        "active-shopee"
+                    );
+
+                } else if (
+                    source === "GrabFood"
+                ) {
+
+                    button.classList.add(
+                        "active-grab"
+                    );
+
+                } else {
+
+                    button.classList.add(
+                        "active-out"
+                    );
+                }
+            }
+        }
+    );
 }
 
 
 function updateForm() {
 
-    const title = document.getElementById("formTitle");
+    const title =
+        document.getElementById("formTitle");
 
     if (title) {
 
@@ -397,53 +492,68 @@ function updateForm() {
 
 function renderCategorySelect() {
 
-    const category = document.getElementById("category");
+    const category =
+        document.getElementById("category");
 
     const menuCategory =
-        document.getElementById("menuDishCategory");
+        document.getElementById(
+            "menuDishCategory"
+        );
 
     if (category) {
 
-        const current = category.value;
+        const current =
+            category.value;
 
         category.innerHTML =
-            `<option value="">Chọn danh mục</option>`;
+            '<option value="">Chọn danh mục</option>';
 
-        data.categories.forEach(cat => {
+        data.categories.forEach(
+            function (cat) {
 
-            const option =
-                document.createElement("option");
+                const option =
+                    document.createElement("option");
 
-            option.value = cat;
-            option.textContent = cat;
+                option.value = cat;
+                option.textContent = cat;
 
-            category.appendChild(option);
-        });
+                category.appendChild(option);
+            }
+        );
 
-        if (data.categories.includes(current)) {
+        if (
+            data.categories.includes(current)
+        ) {
+
             category.value = current;
         }
     }
 
     if (menuCategory) {
 
-        const current = menuCategory.value;
+        const current =
+            menuCategory.value;
 
         menuCategory.innerHTML =
-            `<option value="">Chọn danh mục</option>`;
+            '<option value="">Chọn danh mục</option>';
 
-        data.categories.forEach(cat => {
+        data.categories.forEach(
+            function (cat) {
 
-            const option =
-                document.createElement("option");
+                const option =
+                    document.createElement("option");
 
-            option.value = cat;
-            option.textContent = cat;
+                option.value = cat;
+                option.textContent = cat;
 
-            menuCategory.appendChild(option);
-        });
+                menuCategory.appendChild(option);
+            }
+        );
 
-        if (data.categories.includes(current)) {
+        if (
+            data.categories.includes(current)
+        ) {
+
             menuCategory.value = current;
         }
     }
@@ -457,22 +567,34 @@ function addCategory() {
 
     if (!input) return;
 
-    const name = input.value.trim();
+    const name =
+        input.value.trim();
 
     if (!name) {
 
-        showToast("Vui lòng nhập tên danh mục!");
+        showToast(
+            "Vui lòng nhập tên danh mục!"
+        );
 
         return;
     }
 
-    const exists = data.categories.some(
-        cat => cat.toLowerCase() === name.toLowerCase()
-    );
+    const exists =
+        data.categories.some(
+            function (cat) {
+
+                return (
+                    cat.toLowerCase() ===
+                    name.toLowerCase()
+                );
+            }
+        );
 
     if (exists) {
 
-        showToast("Danh mục này đã tồn tại!");
+        showToast(
+            "Danh mục này đã tồn tại!"
+        );
 
         return;
     }
@@ -484,9 +606,7 @@ function addCategory() {
     input.value = "";
 
     renderCategorySelect();
-
     renderMenu();
-
     renderCODCategories();
 
     showToast("Đã thêm danh mục!");
@@ -500,40 +620,56 @@ function addCategory() {
 function addDish() {
 
     const category =
-        document.getElementById("menuDishCategory");
+        document.getElementById(
+            "menuDishCategory"
+        );
 
     const input =
         document.getElementById("newDish");
 
     if (!category || !input) return;
 
-    const categoryName = category.value;
+    const categoryName =
+        category.value;
 
-    const dishName = input.value.trim();
+    const dishName =
+        input.value.trim();
 
     if (!categoryName) {
 
-        showToast("Vui lòng chọn danh mục!");
+        showToast(
+            "Vui lòng chọn danh mục!"
+        );
 
         return;
     }
 
     if (!dishName) {
 
-        showToast("Vui lòng nhập tên món!");
+        showToast(
+            "Vui lòng nhập tên món!"
+        );
 
         return;
     }
 
-    const exists = data.dishes.some(
-        dish =>
-            dish.category === categoryName &&
-            dish.name.toLowerCase() === dishName.toLowerCase()
-    );
+    const exists =
+        data.dishes.some(
+            function (dish) {
+
+                return (
+                    dish.category === categoryName &&
+                    dish.name.toLowerCase() ===
+                    dishName.toLowerCase()
+                );
+            }
+        );
 
     if (exists) {
 
-        showToast("Món này đã tồn tại!");
+        showToast(
+            "Món này đã tồn tại!"
+        );
 
         return;
     }
@@ -552,9 +688,7 @@ function addDish() {
     input.value = "";
 
     renderDishSelect();
-
     renderMenu();
-
     renderCODCategories();
 
     showToast("Đã thêm món!");
@@ -564,25 +698,38 @@ function addDish() {
 function deleteDish(id) {
 
     const dish =
-        data.dishes.find(d => d.id === id);
+        data.dishes.find(
+            function (item) {
+
+                return item.id === id;
+            }
+        );
 
     if (!dish) return;
 
-    if (!confirm(`Xóa món "${dish.name}"?`)) {
+    if (
+        !confirm(
+            `Xóa món "${dish.name}"?`
+        )
+    ) {
+
         return;
     }
 
     data.dishes =
-        data.dishes.filter(d => d.id !== id);
+        data.dishes.filter(
+            function (item) {
+
+                return item.id !== id;
+            }
+        );
 
     delete data.cod[id];
 
     saveData();
 
     renderDishSelect();
-
     renderMenu();
-
     renderCODCategories();
 
     showToast("Đã xóa món!");
@@ -593,60 +740,83 @@ function deleteCategory(categoryName) {
 
     const hasDish =
         data.dishes.some(
-            dish => dish.category === categoryName
+            function (dish) {
+
+                return (
+                    dish.category ===
+                    categoryName
+                );
+            }
         );
+
+    let confirmed = false;
 
     if (hasDish) {
 
-        if (
-            !confirm(
+        confirmed =
+            confirm(
                 `Danh mục "${categoryName}" đang có món.\n\nXóa danh mục và toàn bộ món bên trong?`
-            )
-        ) {
-
-            return;
-        }
+            );
 
     } else {
 
-        if (
-            !confirm(
+        confirmed =
+            confirm(
                 `Xóa danh mục "${categoryName}"?`
-            )
-        ) {
-
-            return;
-        }
+            );
     }
+
+    if (!confirmed) return;
 
     const dishIds =
         data.dishes
-            .filter(d => d.category === categoryName)
-            .map(d => d.id);
+            .filter(
+                function (dish) {
+
+                    return (
+                        dish.category ===
+                        categoryName
+                    );
+                }
+            )
+            .map(
+                function (dish) {
+
+                    return dish.id;
+                }
+            );
 
     data.dishes =
         data.dishes.filter(
-            d => d.category !== categoryName
+            function (dish) {
+
+                return (
+                    dish.category !==
+                    categoryName
+                );
+            }
         );
 
-    dishIds.forEach(id => {
+    dishIds.forEach(
+        function (id) {
 
-        delete data.cod[id];
-    });
+            delete data.cod[id];
+        }
+    );
 
     data.categories =
         data.categories.filter(
-            cat => cat !== categoryName
+            function (cat) {
+
+                return cat !== categoryName;
+            }
         );
 
     saveData();
 
     renderCategorySelect();
-
     renderDishSelect();
-
     renderMenu();
-
     renderCODCategories();
 
     showToast("Đã xóa danh mục!");
@@ -668,46 +838,71 @@ function renderDishSelect() {
     if (!name) return;
 
     const selectedCategory =
-        category ? category.value : "";
+        category
+            ? category.value
+            : "";
 
-    const current = name.value;
+    const current =
+        name.value;
 
     name.innerHTML =
-        `<option value="">Chọn món</option>`;
+        '<option value="">Chọn món</option>';
 
-    let dishes = data.dishes;
+    let dishes =
+        [...data.dishes];
 
     if (selectedCategory) {
 
-        dishes = dishes.filter(
-            dish => dish.category === selectedCategory
-        );
+        dishes =
+            dishes.filter(
+                function (dish) {
+
+                    return (
+                        dish.category ===
+                        selectedCategory
+                    );
+                }
+            );
     }
 
-    dishes.forEach(dish => {
+    dishes.forEach(
+        function (dish) {
 
-        const option =
-            document.createElement("option");
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-        option.value = dish.id;
+            option.value =
+                dish.id;
 
-        option.textContent = dish.name;
+            option.textContent =
+                dish.name;
 
-        name.appendChild(option);
-    });
+            name.appendChild(option);
+        }
+    );
 
     const otherOption =
-        document.createElement("option");
+        document.createElement(
+            "option"
+        );
 
-    otherOption.value = "__custom__";
+    otherOption.value =
+        "__custom__";
 
-    otherOption.textContent = "✏️ Khác / nhập tên";
+    otherOption.textContent =
+        "✏️ Khác / nhập tên";
 
     name.appendChild(otherOption);
 
     if (
-        [...name.options]
-            .some(option => option.value === current)
+        [...name.options].some(
+            function (option) {
+
+                return option.value === current;
+            }
+        )
     ) {
 
         name.value = current;
@@ -723,7 +918,9 @@ function syncCustomName() {
         document.getElementById("name");
 
     const customGroup =
-        document.getElementById("customNameGroup");
+        document.getElementById(
+            "customNameGroup"
+        );
 
     if (!name || !customGroup) return;
 
@@ -735,7 +932,7 @@ function syncCustomName() {
 
 
 /* =========================================================
-   11. LƯU GIAO DỊCH
+   11. GIAO DỊCH
    ========================================================= */
 
 function saveTransaction() {
@@ -770,66 +967,95 @@ function saveTransaction() {
 
         const dish =
             data.dishes.find(
-                d => d.id === nameSelect.value
+                function (dish) {
+
+                    return (
+                        dish.id ===
+                        nameSelect.value
+                    );
+                }
             );
 
         if (dish) {
 
-            transactionName = dish.name;
+            transactionName =
+                dish.name;
 
             if (category) {
-                category.value = dish.category;
+
+                category.value =
+                    dish.category;
             }
         }
 
     } else if (customName) {
 
-        transactionName = customName.value.trim();
+        transactionName =
+            customName.value.trim();
     }
 
     if (!transactionName) {
 
-        showToast("Vui lòng chọn hoặc nhập tên!");
+        showToast(
+            "Vui lòng chọn hoặc nhập tên!"
+        );
 
         return;
     }
 
-    if (!category || !category.value) {
+    if (
+        !category ||
+        !category.value
+    ) {
 
-        showToast("Vui lòng chọn danh mục!");
+        showToast(
+            "Vui lòng chọn danh mục!"
+        );
 
         return;
     }
 
-    const money = Number(amount.value);
+    const money =
+        Number(amount.value);
 
     if (!money || money <= 0) {
 
-        showToast("Vui lòng nhập số tiền hợp lệ!");
+        showToast(
+            "Vui lòng nhập số tiền hợp lệ!"
+        );
 
         return;
     }
 
     if (!isValidDate(date.value)) {
 
-        showToast("Ngày không hợp lệ! Ví dụ: 20/08/2026");
+        showToast(
+            "Ngày không hợp lệ! Ví dụ: 20/08/2026"
+        );
 
         return;
     }
 
     const transaction = {
 
-        id: editingId || generateId(),
+        id:
+            editingId ||
+            generateId(),
 
-        type: currentType,
+        type:
+            currentType,
 
-        name: transactionName,
+        name:
+            transactionName,
 
-        category: category.value,
+        category:
+            category.value,
 
-        amount: money,
+        amount:
+            money,
 
-        date: date.value,
+        date:
+            date.value,
 
         source:
             currentType === "thu"
@@ -841,14 +1067,21 @@ function saveTransaction() {
                 ? note.value.trim()
                 : "",
 
-        createdAt: Date.now()
+        createdAt:
+            Date.now()
     };
 
     if (editingId) {
 
         const index =
             data.transactions.findIndex(
-                t => t.id === editingId
+                function (item) {
+
+                    return (
+                        item.id ===
+                        editingId
+                    );
+                }
             );
 
         if (index !== -1) {
@@ -857,13 +1090,19 @@ function saveTransaction() {
                 transaction;
         }
 
-        showToast("Đã cập nhật giao dịch!");
+        showToast(
+            "Đã cập nhật giao dịch!"
+        );
 
     } else {
 
-        data.transactions.push(transaction);
+        data.transactions.push(
+            transaction
+        );
 
-        showToast("Đã lưu giao dịch!");
+        showToast(
+            "Đã lưu giao dịch!"
+        );
     }
 
     saveData();
@@ -878,54 +1117,48 @@ function resetForm() {
 
     editingId = null;
 
-    const fields = [
+    [
         "name",
         "category",
         "customName",
         "amount",
         "note"
-    ];
+    ].forEach(
+        function (id) {
 
-    fields.forEach(id => {
+            const element =
+                document.getElementById(id);
 
-        const element =
-            document.getElementById(id);
-
-        if (!element) return;
-
-        if (
-            element.tagName === "SELECT"
-        ) {
-
-            element.value = "";
-
-        } else {
+            if (!element) return;
 
             element.value = "";
         }
-    });
+    );
 
     const date =
         document.getElementById("date");
 
     if (date) {
-        date.value = getTodayString();
+
+        date.value =
+            getTodayString();
     }
 
     const cancel =
-        document.getElementById("cancelButton");
+        document.getElementById(
+            "cancelButton"
+        );
 
     if (cancel) {
 
-        cancel.style.display = "none";
+        cancel.style.display =
+            "none";
     }
 
     currentType = "thu";
-
     currentSource = "ShopeeFood";
 
     setType("thu");
-
     setSource("ShopeeFood");
 
     updateForm();
@@ -946,85 +1179,124 @@ function editTransaction(id) {
 
     const transaction =
         data.transactions.find(
-            t => t.id === id
+            function (item) {
+
+                return item.id === id;
+            }
         );
 
     if (!transaction) return;
 
     editingId = id;
 
-    currentType = transaction.type;
+    currentType =
+        transaction.type;
 
     currentSource =
-        transaction.source || "ShopeeFood";
+        transaction.source ||
+        "ShopeeFood";
 
     const category =
-        document.getElementById("category");
+        document.getElementById(
+            "category"
+        );
 
     const name =
-        document.getElementById("name");
+        document.getElementById(
+            "name"
+        );
 
     const customName =
-        document.getElementById("customName");
+        document.getElementById(
+            "customName"
+        );
 
     const amount =
-        document.getElementById("amount");
+        document.getElementById(
+            "amount"
+        );
 
     const date =
-        document.getElementById("date");
+        document.getElementById(
+            "date"
+        );
 
     const note =
-        document.getElementById("note");
+        document.getElementById(
+            "note"
+        );
 
     if (category) {
-        category.value = transaction.category;
+
+        category.value =
+            transaction.category;
     }
 
     renderDishSelect();
 
     const dish =
         data.dishes.find(
-            d =>
-                d.name === transaction.name &&
-                d.category === transaction.category
+            function (item) {
+
+                return (
+                    item.name ===
+                    transaction.name &&
+                    item.category ===
+                    transaction.category
+                );
+            }
         );
 
     if (dish && name) {
 
-        name.value = dish.id;
+        name.value =
+            dish.id;
 
     } else if (name) {
 
-        name.value = "__custom__";
+        name.value =
+            "__custom__";
 
         if (customName) {
-            customName.value = transaction.name;
+
+            customName.value =
+                transaction.name;
         }
     }
 
     if (amount) {
-        amount.value = transaction.amount;
+
+        amount.value =
+            transaction.amount;
     }
 
     if (date) {
-        date.value = transaction.date;
+
+        date.value =
+            transaction.date;
     }
 
     if (note) {
-        note.value = transaction.note || "";
+
+        note.value =
+            transaction.note || "";
     }
 
     const cancel =
-        document.getElementById("cancelButton");
+        document.getElementById(
+            "cancelButton"
+        );
 
     if (cancel) {
-        cancel.style.display = "block";
+
+        cancel.style.display =
+            "block";
     }
 
     setType(currentType);
-
     setSource(currentSource);
 
+    syncCustomName();
     updateForm();
 
     goAdd();
@@ -1040,7 +1312,10 @@ function deleteTransaction(id) {
 
     const transaction =
         data.transactions.find(
-            t => t.id === id
+            function (item) {
+
+                return item.id === id;
+            }
         );
 
     if (!transaction) return;
@@ -1050,19 +1325,25 @@ function deleteTransaction(id) {
             `Xóa giao dịch "${transaction.name}"?`
         )
     ) {
+
         return;
     }
 
     data.transactions =
         data.transactions.filter(
-            t => t.id !== id
+            function (item) {
+
+                return item.id !== id;
+            }
         );
 
     saveData();
 
     renderAll();
 
-    showToast("Đã xóa giao dịch!");
+    showToast(
+        "Đã xóa giao dịch!"
+    );
 }
 
 
@@ -1073,24 +1354,34 @@ function deleteTransaction(id) {
 function calculateTotals(list) {
 
     let income = 0;
-
     let expense = 0;
 
-    list.forEach(t => {
+    list.forEach(
+        function (transaction) {
 
-        if (t.type === "thu") {
+            if (
+                transaction.type ===
+                "thu"
+            ) {
 
-            income += Number(t.amount) || 0;
+                income +=
+                    Number(
+                        transaction.amount
+                    ) || 0;
 
-        } else {
+            } else {
 
-            expense += Number(t.amount) || 0;
+                expense +=
+                    Number(
+                        transaction.amount
+                    ) || 0;
+            }
         }
-    });
+    );
 
     return {
-        income,
-        expense,
+        income: income,
+        expense: expense,
         profit: income - expense
     };
 }
@@ -1099,81 +1390,121 @@ function calculateTotals(list) {
 function renderSummary() {
 
     const totals =
-        calculateTotals(data.transactions);
+        calculateTotals(
+            data.transactions
+        );
 
     const profit =
-        document.getElementById("profit");
+        document.getElementById(
+            "profit"
+        );
 
     const income =
-        document.getElementById("totalIncome");
+        document.getElementById(
+            "totalIncome"
+        );
 
     const expense =
-        document.getElementById("totalExpense");
+        document.getElementById(
+            "totalExpense"
+        );
 
     const transactions =
-        document.getElementById("totalTransactions");
+        document.getElementById(
+            "totalTransactions"
+        );
 
     const quickIncome =
-        document.getElementById("quickIncome");
+        document.getElementById(
+            "quickIncome"
+        );
 
     const quickExpense =
-        document.getElementById("quickExpense");
+        document.getElementById(
+            "quickExpense"
+        );
 
     if (profit) {
+
         profit.textContent =
-            formatMoney(totals.profit);
+            formatMoney(
+                totals.profit
+            );
     }
 
     if (income) {
+
         income.textContent =
-            formatMoney(totals.income);
+            formatMoney(
+                totals.income
+            );
     }
 
     if (expense) {
+
         expense.textContent =
-            formatMoney(totals.expense);
+            formatMoney(
+                totals.expense
+            );
     }
 
     if (transactions) {
+
         transactions.textContent =
             data.transactions.length;
     }
 
     if (quickIncome) {
+
         quickIncome.textContent =
-            formatMoney(totals.income);
+            formatMoney(
+                totals.income
+            );
     }
 
     if (quickExpense) {
+
         quickExpense.textContent =
-            formatMoney(totals.expense);
+            formatMoney(
+                totals.expense
+            );
     }
 }
 
 
 /* =========================================================
-   13. LỊCH SỬ GIAO DỊCH
+   13. LỊCH SỬ
    ========================================================= */
 
 function renderTransactions() {
 
     const container =
-        document.getElementById("transactions");
+        document.getElementById(
+            "transactions"
+        );
 
     if (!container) return;
 
     const search =
-        document.getElementById("search");
+        document.getElementById(
+            "search"
+        );
 
     const filterType =
-        document.getElementById("filterType");
+        document.getElementById(
+            "filterType"
+        );
 
     const filterMonth =
-        document.getElementById("filterMonth");
+        document.getElementById(
+            "filterMonth"
+        );
 
     const searchValue =
         search
-            ? search.value.toLowerCase().trim()
+            ? search.value
+                .toLowerCase()
+                .trim()
             : "";
 
     const type =
@@ -1186,49 +1517,76 @@ function renderTransactions() {
             ? filterMonth.value
             : "all";
 
-    let list = [...data.transactions];
+    let list =
+        [...data.transactions];
 
     if (searchValue) {
 
-        list = list.filter(t => {
+        list =
+            list.filter(
+                function (transaction) {
 
-            const text = [
-                t.name,
-                t.category,
-                t.note,
-                t.source,
-                t.date
-            ]
-                .join(" ")
-                .toLowerCase();
+                    const text = [
+                        transaction.name,
+                        transaction.category,
+                        transaction.note,
+                        transaction.source,
+                        transaction.date
+                    ]
+                        .join(" ")
+                        .toLowerCase();
 
-            return text.includes(searchValue);
-        });
+                    return text.includes(
+                        searchValue
+                    );
+                }
+            );
     }
 
     if (type !== "all") {
 
-        list = list.filter(
-            t => t.type === type
-        );
+        list =
+            list.filter(
+                function (transaction) {
+
+                    return (
+                        transaction.type ===
+                        type
+                    );
+                }
+            );
     }
 
     if (month !== "all") {
 
-        list = list.filter(
-            t =>
-                getMonthKey(t.date) === month
-        );
+        list =
+            list.filter(
+                function (transaction) {
+
+                    return (
+                        getMonthKey(
+                            transaction.date
+                        ) === month
+                    );
+                }
+            );
     }
 
     list.sort(
-        (a, b) =>
-            dateToKey(b.date)
-                .localeCompare(dateToKey(a.date))
+        function (a, b) {
+
+            return dateToKey(
+                b.date
+            ).localeCompare(
+                dateToKey(a.date)
+            );
+        }
     );
 
     const historyCount =
-        document.getElementById("historyCount");
+        document.getElementById(
+            "historyCount"
+        );
 
     if (historyCount) {
 
@@ -1238,73 +1596,107 @@ function renderTransactions() {
 
     if (!list.length) {
 
-        container.innerHTML = `
+        container.innerHTML =
+            `
             <div class="empty-state">
                 Chưa có giao dịch
             </div>
-        `;
+            `;
 
         return;
     }
 
     container.innerHTML =
-        list.map(transaction => {
+        list.map(
+            function (transaction) {
 
-            const isThu =
-                transaction.type === "thu";
+                const isThu =
+                    transaction.type ===
+                    "thu";
 
-            return `
-                <div class="transaction-item">
+                return `
+                    <div class="transaction-item">
 
-                    <div class="transaction-icon ${isThu ? "thu" : "chi"}">
-                        ${isThu ? "↑" : "↓"}
-                    </div>
+                        <div class="transaction-icon ${isThu ? "thu" : "chi"}">
+                            ${isThu ? "↑" : "↓"}
+                        </div>
 
-                    <div class="transaction-info">
+                        <div class="transaction-info">
 
-                        <strong>
-                            ${escapeHTML(transaction.name)}
-                        </strong>
+                            <strong>
+                                ${escapeHTML(
+                                    transaction.name
+                                )}
+                            </strong>
 
-                        <span>
-                            ${escapeHTML(transaction.category)}
-                            ${transaction.source
-                                ? " • " + escapeHTML(transaction.source)
-                                : ""}
-                        </span>
+                            <span>
+                                ${escapeHTML(
+                                    transaction.category
+                                )}
 
-                        <small>
-                            ${escapeHTML(transaction.date)}
-                            ${transaction.note
-                                ? " • " + escapeHTML(transaction.note)
-                                : ""}
-                        </small>
+                                ${
+                                    transaction.source
+                                        ? " • " +
+                                          escapeHTML(
+                                              transaction.source
+                                          )
+                                        : ""
+                                }
+                            </span>
 
-                    </div>
+                            <small>
+                                ${escapeHTML(
+                                    transaction.date
+                                )}
 
-                    <div class="transaction-right">
+                                ${
+                                    transaction.note
+                                        ? " • " +
+                                          escapeHTML(
+                                              transaction.note
+                                          )
+                                        : ""
+                                }
+                            </small>
 
-                        <strong class="${isThu ? "money-green" : "money-red"}">
-                            ${isThu ? "+" : "-"}${formatMoney(transaction.amount)}
-                        </strong>
+                        </div>
 
-                        <div class="transaction-actions">
+                        <div class="transaction-right">
 
-                            <button onclick="editTransaction('${transaction.id}')">
-                                ✏️
-                            </button>
+                            <strong class="${
+                                isThu
+                                    ? "money-green"
+                                    : "money-red"
+                            }">
+                                ${
+                                    isThu
+                                        ? "+"
+                                        : "-"
+                                }${formatMoney(
+                                    transaction.amount
+                                )}
+                            </strong>
 
-                            <button onclick="deleteTransaction('${transaction.id}')">
-                                🗑️
-                            </button>
+                            <div class="transaction-actions">
+
+                                <button
+                                    onclick="editTransaction('${transaction.id}')">
+                                    ✏️
+                                </button>
+
+                                <button
+                                    onclick="deleteTransaction('${transaction.id}')">
+                                    🗑️
+                                </button>
+
+                            </div>
 
                         </div>
 
                     </div>
-
-                </div>
-            `;
-        }).join("");
+                `;
+            }
+        ).join("");
 }
 
 
@@ -1314,27 +1706,40 @@ function renderTransactions() {
 
 function getMonthKey(dateString) {
 
-    const parts = dateString.split("/");
+    if (!dateString) return "";
 
-    if (parts.length !== 3) return "";
+    const parts =
+        dateString.split("/");
 
-    return `${parts[2]}-${parts[1]}`;
+    if (parts.length !== 3) {
+
+        return "";
+    }
+
+    return (
+        `${parts[2]}-${parts[1]}`
+    );
 }
 
 
 function getMonthLabel(monthKey) {
 
     if (monthKey === "all") {
+
         return "Tất cả";
     }
 
-    const parts = monthKey.split("-");
+    const parts =
+        monthKey.split("-");
 
     if (parts.length !== 2) {
+
         return monthKey;
     }
 
-    return `Tháng ${Number(parts[1])}/${parts[0]}`;
+    return (
+        `Tháng ${Number(parts[1])}/${parts[0]}`
+    );
 }
 
 
@@ -1343,15 +1748,20 @@ function getAvailableMonths() {
     const months =
         new Set();
 
-    data.transactions.forEach(t => {
+    data.transactions.forEach(
+        function (transaction) {
 
-        const key =
-            getMonthKey(t.date);
+            const key =
+                getMonthKey(
+                    transaction.date
+                );
 
-        if (key) {
-            months.add(key);
+            if (key) {
+
+                months.add(key);
+            }
         }
-    });
+    );
 
     const current =
         new Date();
@@ -1362,7 +1772,9 @@ function getAvailableMonths() {
         ).padStart(2, "0")}`
     );
 
-    return [...months].sort().reverse();
+    return [
+        ...months
+    ].sort().reverse();
 }
 
 
@@ -1376,40 +1788,52 @@ function renderMonthFilters() {
     const months =
         getAvailableMonths();
 
-    filters.forEach(id => {
+    filters.forEach(
+        function (id) {
 
-        const select =
-            document.getElementById(id);
+            const select =
+                document.getElementById(id);
 
-        if (!select) return;
+            if (!select) return;
 
-        const oldValue =
-            select.value;
+            const oldValue =
+                select.value;
 
-        select.innerHTML =
-            `<option value="all">Tất cả tháng</option>`;
+            select.innerHTML =
+                '<option value="all">Tất cả tháng</option>';
 
-        months.forEach(month => {
+            months.forEach(
+                function (month) {
 
-            const option =
-                document.createElement("option");
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
 
-            option.value = month;
+                    option.value =
+                        month;
 
-            option.textContent =
-                getMonthLabel(month);
+                    option.textContent =
+                        getMonthLabel(
+                            month
+                        );
 
-            select.appendChild(option);
-        });
+                    select.appendChild(
+                        option
+                    );
+                }
+            );
 
-        if (
-            oldValue === "all" ||
-            months.includes(oldValue)
-        ) {
+            if (
+                oldValue === "all" ||
+                months.includes(oldValue)
+            ) {
 
-            select.value = oldValue || "all";
+                select.value =
+                    oldValue || "all";
+            }
         }
-    });
+    );
 }
 
 
@@ -1428,7 +1852,7 @@ function setStatisticType(type) {
     };
 
     Object.entries(tabs).forEach(
-        ([key, id]) => {
+        function ([key, id]) {
 
             const button =
                 document.getElementById(id);
@@ -1449,9 +1873,11 @@ function setStatisticType(type) {
 function renderStatistics() {
 
     const statMonth =
-        document.getElementById("statMonth");
+        document.getElementById(
+            "statMonth"
+        );
 
-    let month =
+    const month =
         statMonth
             ? statMonth.value
             : "all";
@@ -1461,27 +1887,42 @@ function renderStatistics() {
 
     if (month !== "all") {
 
-        list = list.filter(
-            t =>
-                getMonthKey(t.date) === month
-        );
+        list =
+            list.filter(
+                function (transaction) {
+
+                    return (
+                        getMonthKey(
+                            transaction.date
+                        ) === month
+                    );
+                }
+            );
     }
 
     if (statisticType !== "all") {
 
-        list = list.filter(
-            t =>
-                t.type === statisticType
-        );
+        list =
+            list.filter(
+                function (transaction) {
+
+                    return (
+                        transaction.type ===
+                        statisticType
+                    );
+                }
+            );
     }
 
     renderPieChart(list);
-
     renderDailyChart(list);
-
     renderCategoryStats(list);
 }
 
+
+/* =========================================================
+   16. BIỂU ĐỒ TRÒN
+   ========================================================= */
 
 function renderPieChart(list) {
 
@@ -1492,44 +1933,65 @@ function renderPieChart(list) {
         document.getElementById("legend");
 
     const pieTotal =
-        document.getElementById("pieTotal");
+        document.getElementById(
+            "pieTotal"
+        );
 
     const chartTotal =
-        document.getElementById("chartTotal");
+        document.getElementById(
+            "chartTotal"
+        );
 
     const chartTitle =
-        document.getElementById("chartMainTitle");
+        document.getElementById(
+            "chartMainTitle"
+        );
 
     if (!pie) return;
 
     const groups = {};
 
-    list.forEach(t => {
+    list.forEach(
+        function (transaction) {
 
-        const key =
-            t.category || "Khác";
+            const key =
+                transaction.category ||
+                "Khác";
 
-        groups[key] =
-            (groups[key] || 0) +
-            Number(t.amount);
-    });
+            groups[key] =
+                (groups[key] || 0) +
+                Number(
+                    transaction.amount
+                );
+        }
+    );
 
     const entries =
         Object.entries(groups)
-            .sort((a, b) => b[1] - a[1]);
+            .sort(
+                function (a, b) {
+
+                    return b[1] - a[1];
+                }
+            );
 
     const total =
         entries.reduce(
-            (sum, [, value]) => sum + value,
+            function (sum, item) {
+
+                return sum + item[1];
+            },
             0
         );
 
     if (pieTotal) {
+
         pieTotal.textContent =
             formatMoney(total);
     }
 
     if (chartTotal) {
+
         chartTotal.textContent =
             formatMoney(total);
     }
@@ -1541,7 +2003,9 @@ function renderPieChart(list) {
             chartTitle.textContent =
                 "Phân bổ khoản thu";
 
-        } else if (statisticType === "chi") {
+        } else if (
+            statisticType === "chi"
+        ) {
 
             chartTitle.textContent =
                 "Phân bổ khoản chi";
@@ -1561,7 +2025,11 @@ function renderPieChart(list) {
         if (legend) {
 
             legend.innerHTML =
-                `<div class="empty-state">Chưa có dữ liệu</div>`;
+                `
+                <div class="empty-state">
+                    Chưa có dữ liệu
+                </div>
+                `;
         }
 
         return;
@@ -1583,12 +2051,13 @@ function renderPieChart(list) {
     const gradients = [];
 
     entries.forEach(
-        ([category, value], index) => {
+        function ([category, value], index) {
 
             const percent =
                 value / total * 100;
 
-            const start = current;
+            const start =
+                current;
 
             const end =
                 current + percent;
@@ -1608,7 +2077,10 @@ function renderPieChart(list) {
 
         legend.innerHTML =
             entries.map(
-                ([category, value], index) => {
+                function (
+                    [category, value],
+                    index
+                ) {
 
                     const percent =
                         value / total * 100;
@@ -1625,7 +2097,9 @@ function renderPieChart(list) {
                             </span>
 
                             <span class="legend-name">
-                                ${escapeHTML(category)}
+                                ${escapeHTML(
+                                    category
+                                )}
                             </span>
 
                             <strong>
@@ -1645,36 +2119,47 @@ function renderPieChart(list) {
 
 
 /* =========================================================
-   16. BIỂU ĐỒ THEO NGÀY
+   17. BIỂU ĐỒ NGÀY
    ========================================================= */
 
 function renderDailyChart(list) {
 
     const container =
-        document.getElementById("barChart");
+        document.getElementById(
+            "barChart"
+        );
 
     const label =
-        document.getElementById("dailyLabel");
+        document.getElementById(
+            "dailyLabel"
+        );
 
     if (!container) return;
 
     const days = {};
 
-    list.forEach(t => {
+    list.forEach(
+        function (transaction) {
 
-        days[t.date] =
-            (days[t.date] || 0) +
-            Number(t.amount);
-    });
+            days[transaction.date] =
+                (days[transaction.date] || 0) +
+                Number(
+                    transaction.amount
+                );
+        }
+    );
 
     const entries =
         Object.entries(days)
             .sort(
-                (a, b) =>
-                    dateToKey(a[0])
-                        .localeCompare(
-                            dateToKey(b[0])
-                        )
+                function (a, b) {
+
+                    return dateToKey(
+                        a[0]
+                    ).localeCompare(
+                        dateToKey(b[0])
+                    );
+                }
             );
 
     if (label) {
@@ -1690,7 +2175,11 @@ function renderDailyChart(list) {
     if (!entries.length) {
 
         container.innerHTML =
-            `<div class="empty-state">Chưa có dữ liệu</div>`;
+            `
+            <div class="empty-state">
+                Chưa có dữ liệu
+            </div>
+            `;
 
         return;
     }
@@ -1698,13 +2187,16 @@ function renderDailyChart(list) {
     const max =
         Math.max(
             ...entries.map(
-                ([, value]) => value
+                function (item) {
+
+                    return item[1];
+                }
             )
         );
 
     container.innerHTML =
         entries.map(
-            ([date, value]) => {
+            function ([date, value]) {
 
                 const height =
                     max > 0
@@ -1731,7 +2223,7 @@ function renderDailyChart(list) {
                         </div>
 
                         <small>
-                            ${day}
+                            ${escapeHTML(day)}
                         </small>
 
                     </div>
@@ -1741,91 +2233,91 @@ function renderDailyChart(list) {
 }
 
 
-function formatShortMoney(value) {
-
-    value = Number(value) || 0;
-
-    if (value >= 1000000) {
-
-        return (
-            (value / 1000000)
-                .toFixed(1)
-                .replace(".0", "")
-            + "tr"
-        );
-    }
-
-    if (value >= 1000) {
-
-        return (
-            (value / 1000)
-                .toFixed(0)
-            + "k"
-        );
-    }
-
-    return value.toString();
-}
-
-
 /* =========================================================
-   17. CHI TIẾT DANH MỤC
+   18. THỐNG KÊ DANH MỤC
    ========================================================= */
 
 function renderCategoryStats(list) {
 
     const container =
-        document.getElementById("categoryStats");
+        document.getElementById(
+            "categoryStats"
+        );
 
     if (!container) return;
 
     const groups = {};
 
-    list.forEach(t => {
+    list.forEach(
+        function (transaction) {
 
-        const key =
-            t.category || "Khác";
+            const key =
+                transaction.category ||
+                "Khác";
 
-        if (!groups[key]) {
+            if (!groups[key]) {
 
-            groups[key] = {
-                total: 0,
-                count: 0,
-                sources: {}
-            };
+                groups[key] = {
+
+                    total: 0,
+
+                    count: 0,
+
+                    sources: {}
+                };
+            }
+
+            groups[key].total +=
+                Number(
+                    transaction.amount
+                );
+
+            groups[key].count++;
+
+            if (transaction.source) {
+
+                groups[key].sources[
+                    transaction.source
+                ] =
+                    (
+                        groups[key].sources[
+                            transaction.source
+                        ] || 0
+                    ) +
+                    Number(
+                        transaction.amount
+                    );
+            }
         }
-
-        groups[key].total +=
-            Number(t.amount);
-
-        groups[key].count++;
-
-        if (t.source) {
-
-            groups[key].sources[t.source] =
-                (groups[key].sources[t.source] || 0) +
-                Number(t.amount);
-        }
-    });
+    );
 
     const entries =
         Object.entries(groups)
             .sort(
-                (a, b) =>
-                    b[1].total - a[1].total
+                function (a, b) {
+
+                    return (
+                        b[1].total -
+                        a[1].total
+                    );
+                }
             );
 
     if (!entries.length) {
 
         container.innerHTML =
-            `<div class="empty-state">Chưa có dữ liệu</div>`;
+            `
+            <div class="empty-state">
+                Chưa có dữ liệu
+            </div>
+            `;
 
         return;
     }
 
     container.innerHTML =
         entries.map(
-            ([category, info]) => {
+            function ([category, info]) {
 
                 const sources =
                     Object.entries(
@@ -1838,11 +2330,15 @@ function renderCategoryStats(list) {
                         <div class="category-stat-head">
 
                             <strong>
-                                ${escapeHTML(category)}
+                                ${escapeHTML(
+                                    category
+                                )}
                             </strong>
 
                             <strong>
-                                ${formatMoney(info.total)}
+                                ${formatMoney(
+                                    info.total
+                                )}
                             </strong>
 
                         </div>
@@ -1855,14 +2351,21 @@ function renderCategoryStats(list) {
                             sources.length
                                 ? `
                                     <div class="category-sources">
-                                        ${sources.map(
-                                            ([source, amount]) => `
-                                                <span>
-                                                    ${escapeHTML(source)}:
-                                                    ${formatMoney(amount)}
-                                                </span>
-                                            `
-                                        ).join("")}
+                                        ${
+                                            sources.map(
+                                                function (
+                                                    [source, amount]
+                                                ) {
+
+                                                    return `
+                                                        <span>
+                                                            ${escapeHTML(source)}:
+                                                            ${formatMoney(amount)}
+                                                        </span>
+                                                    `;
+                                                }
+                                            ).join("")
+                                        }
                                     </div>
                                 `
                                 : ""
@@ -1876,16 +2379,20 @@ function renderCategoryStats(list) {
 
 
 /* =========================================================
-   18. QUẢN LÝ THỰC ĐƠN
+   19. QUẢN LÝ QUÁN
    ========================================================= */
 
 function renderMenu() {
 
     const container =
-        document.getElementById("menuList");
+        document.getElementById(
+            "menuList"
+        );
 
     const count =
-        document.getElementById("menuCount");
+        document.getElementById(
+            "menuCount"
+        );
 
     if (!container) return;
 
@@ -1908,72 +2415,83 @@ function renderMenu() {
     }
 
     container.innerHTML =
-        data.categories.map(category => {
+        data.categories.map(
+            function (category) {
 
-            const dishes =
-                data.dishes.filter(
-                    dish =>
-                        dish.category === category
-                );
+                const dishes =
+                    data.dishes.filter(
+                        function (dish) {
 
-            return `
-                <div class="menu-category">
-
-                    <div class="menu-category-head">
-
-                        <strong>
-                            📁 ${escapeHTML(category)}
-                        </strong>
-
-                        <button
-                            class="menu-delete"
-                            onclick="deleteCategory('${escapeHTML(category).replace(/'/g, "\\'")}')">
-                            🗑️
-                        </button>
-
-                    </div>
-
-                    <div class="menu-dishes">
-
-                        ${
-                            dishes.length
-                                ? dishes.map(dish => {
-
-                                    return `
-                                        <div class="menu-dish">
-
-                                            <span>
-                                                🍜
-                                                ${escapeHTML(dish.name)}
-                                            </span>
-
-                                            <button
-                                                onclick="deleteDish('${dish.id}')">
-                                                🗑️
-                                            </button>
-
-                                        </div>
-                                    `;
-
-                                }).join("")
-                                : `
-                                    <small>
-                                        Chưa có món
-                                    </small>
-                                `
+                            return (
+                                dish.category ===
+                                category
+                            );
                         }
+                    );
+
+                return `
+                    <div class="menu-category">
+
+                        <div class="menu-category-head">
+
+                            <strong>
+                                📁 ${escapeHTML(
+                                    category
+                                )}
+                            </strong>
+
+                            <button
+                                class="menu-delete"
+                                onclick="deleteCategory(${JSON.stringify(category)})">
+                                🗑️
+                            </button>
+
+                        </div>
+
+                        <div class="menu-dishes">
+
+                            ${
+                                dishes.length
+                                    ? dishes.map(
+                                        function (dish) {
+
+                                            return `
+                                                <div class="menu-dish">
+
+                                                    <span>
+                                                        🍜
+                                                        ${escapeHTML(
+                                                            dish.name
+                                                        )}
+                                                    </span>
+
+                                                    <button
+                                                        onclick="deleteDish('${dish.id}')">
+                                                        🗑️
+                                                    </button>
+
+                                                </div>
+                                            `;
+                                        }
+                                    ).join("")
+                                    : `
+                                        <small>
+                                            Chưa có món
+                                        </small>
+                                    `
+                            }
+
+                        </div>
 
                     </div>
-
-                </div>
-            `;
-
-        }).join("");
+                `;
+            }
+        ).join("");
 }
 
 
 /* =========================================================
-   19. COD - DANH MỤC
+   20. COD - DANH MỤC
    ========================================================= */
 
 function renderCODCategories() {
@@ -1999,39 +2517,63 @@ function renderCODCategories() {
     }
 
     container.innerHTML =
-        data.categories.map(category => {
+        data.categories.map(
+            function (category) {
 
-            const dishes =
-                data.dishes.filter(
-                    d =>
-                        d.category === category
+                const dishes =
+                    data.dishes.filter(
+                        function (dish) {
+
+                            return (
+                                dish.category ===
+                                category
+                            );
+                        }
+                    );
+
+                return `
+                    <button
+                        class="cod-category-button"
+                        data-category="${escapeHTML(category)}">
+
+                        <span>
+                            📁
+                            ${escapeHTML(category)}
+                        </span>
+
+                        <small>
+                            ${dishes.length} món
+                        </small>
+
+                    </button>
+                `;
+            }
+        ).join("");
+
+    container
+        .querySelectorAll(
+            ".cod-category-button"
+        )
+        .forEach(
+            function (button) {
+
+                button.addEventListener(
+                    "click",
+                    function () {
+
+                        showCODDishes(
+                            button.dataset.category
+                        );
+                    }
                 );
-
-            return `
-                <button
-                    class="cod-category-button"
-                    onclick="showCODDishes('${escapeHTML(category).replace(/'/g, "\\'")}')">
-
-                    <span>
-                        📁
-                        ${escapeHTML(category)}
-                    </span>
-
-                    <small>
-                        ${dishes.length} món
-                    </small>
-
-                </button>
-            `;
-
-        }).join("");
+            }
+        );
 }
 
 
 function showCODCategories() {
 
     currentCODCategory = null;
-
     currentCODDish = null;
 
     const categoryPage =
@@ -2050,15 +2592,21 @@ function showCODCategories() {
         );
 
     if (categoryPage) {
-        categoryPage.style.display = "block";
+
+        categoryPage.style.display =
+            "block";
     }
 
     if (dishPage) {
-        dishPage.style.display = "none";
+
+        dishPage.style.display =
+            "none";
     }
 
     if (detailPage) {
-        detailPage.style.display = "none";
+
+        detailPage.style.display =
+            "none";
     }
 
     renderCODCategories();
@@ -2067,7 +2615,8 @@ function showCODCategories() {
 
 function showCODDishes(category) {
 
-    currentCODCategory = category;
+    currentCODCategory =
+        category;
 
     const categoryPage =
         document.getElementById(
@@ -2085,15 +2634,21 @@ function showCODDishes(category) {
         );
 
     if (categoryPage) {
-        categoryPage.style.display = "none";
+
+        categoryPage.style.display =
+            "none";
     }
 
     if (dishPage) {
-        dishPage.style.display = "block";
+
+        dishPage.style.display =
+            "block";
     }
 
     if (detailPage) {
-        detailPage.style.display = "none";
+
+        detailPage.style.display =
+            "none";
     }
 
     const title =
@@ -2116,7 +2671,13 @@ function showCODDishes(category) {
 
     const dishes =
         data.dishes.filter(
-            d => d.category === category
+            function (dish) {
+
+                return (
+                    dish.category ===
+                    category
+                );
+            }
         );
 
     if (!dishes.length) {
@@ -2132,56 +2693,68 @@ function showCODDishes(category) {
     }
 
     list.innerHTML =
-        dishes.map(dish => {
+        dishes.map(
+            function (dish) {
 
-            const cod =
-                data.cod[dish.id];
+                const cod =
+                    data.cod[dish.id];
 
-            const totalCost =
-                cod
-                    ? calculateCODTotal(cod)
-                    : 0;
+                const totalCost =
+                    cod
+                        ? calculateCODTotal(cod)
+                        : 0;
 
-            return `
-                <button
-                    class="cod-dish-button"
-                    onclick="showCODDetail('${dish.id}')">
+                return `
+                    <button
+                        class="cod-dish-button"
+                        onclick="showCODDetail('${dish.id}')">
 
-                    <div>
+                        <div>
 
-                        <strong>
-                            🍜 ${escapeHTML(dish.name)}
-                        </strong>
+                            <strong>
+                                🍜 ${escapeHTML(
+                                    dish.name
+                                )}
+                            </strong>
 
-                        <small>
-                            Giá vốn:
-                            ${formatMoney(totalCost)}
-                        </small>
+                            <small>
+                                Giá vốn:
+                                ${formatMoney(
+                                    totalCost
+                                )}
+                            </small>
 
-                    </div>
+                        </div>
 
-                    <span>
-                        →
-                    </span>
+                        <span>
+                            →
+                        </span>
 
-                </button>
-            `;
-
-        }).join("");
+                    </button>
+                `;
+            }
+        ).join("");
 }
 
 
 /* =========================================================
-   20. COD - CHI TIẾT
+   21. COD - CHI TIẾT
    ========================================================= */
 
 function showCODDetail(dishId) {
 
-    currentCODDish = dishId;
+    currentCODDish =
+        dishId;
 
     const dish =
         data.dishes.find(
-            d => d.id === dishId
+            function (item) {
+
+                return (
+                    item.id ===
+                    dishId
+                );
+            }
         );
 
     if (!dish) return;
@@ -2212,15 +2785,21 @@ function showCODDetail(dishId) {
         );
 
     if (categoryPage) {
-        categoryPage.style.display = "none";
+
+        categoryPage.style.display =
+            "none";
     }
 
     if (dishPage) {
-        dishPage.style.display = "none";
+
+        dishPage.style.display =
+            "none";
     }
 
     if (detailPage) {
-        detailPage.style.display = "block";
+
+        detailPage.style.display =
+            "block";
     }
 
     const name =
@@ -2239,17 +2818,22 @@ function showCODDetail(dishId) {
         );
 
     if (name) {
-        name.textContent = dish.name;
+
+        name.textContent =
+            dish.name;
     }
 
     if (category) {
-        category.textContent = dish.category;
+
+        category.textContent =
+            dish.category;
     }
 
     if (selling) {
 
         selling.value =
-            data.cod[dishId].sellingPrice || "";
+            data.cod[dishId].sellingPrice ||
+            "";
     }
 
     clearCODPartInputs();
@@ -2260,13 +2844,24 @@ function showCODDetail(dishId) {
 
 function calculateCODTotal(cod) {
 
-    if (!cod || !Array.isArray(cod.parts)) {
+    if (
+        !cod ||
+        !Array.isArray(cod.parts)
+    ) {
+
         return 0;
     }
 
     return cod.parts.reduce(
-        (sum, part) =>
-            sum + Number(part.amount || 0),
+        function (sum, part) {
+
+            return (
+                sum +
+                Number(
+                    part.amount || 0
+                )
+            );
+        },
         0
     );
 }
@@ -2285,7 +2880,9 @@ function renderCODDetail() {
         calculateCODTotal(cod);
 
     const selling =
-        Number(cod.sellingPrice || 0);
+        Number(
+            cod.sellingPrice || 0
+        );
 
     const profit =
         selling - total;
@@ -2311,11 +2908,13 @@ function renderCODDetail() {
         );
 
     if (totalElement) {
+
         totalElement.textContent =
             formatMoney(total);
     }
 
     if (profitElement) {
+
         profitElement.textContent =
             formatMoney(profit);
     }
@@ -2342,7 +2941,7 @@ function renderCODDetail() {
 
     list.innerHTML =
         cod.parts.map(
-            part => {
+            function (part) {
 
                 return `
                     <div class="cod-part">
@@ -2350,14 +2949,18 @@ function renderCODDetail() {
                         <div>
 
                             <strong>
-                                ${escapeHTML(part.name)}
+                                ${escapeHTML(
+                                    part.name
+                                )}
                             </strong>
 
                             ${
                                 part.note
                                     ? `
                                         <small>
-                                            ${escapeHTML(part.note)}
+                                            ${escapeHTML(
+                                                part.note
+                                            )}
                                         </small>
                                     `
                                     : ""
@@ -2368,7 +2971,9 @@ function renderCODDetail() {
                         <div>
 
                             <strong>
-                                ${formatMoney(part.amount)}
+                                ${formatMoney(
+                                    part.amount
+                                )}
                             </strong>
 
                             <button
@@ -2400,13 +3005,18 @@ function renderCODDetailSummary() {
     if (!cod) return;
 
     cod.sellingPrice =
-        Number(input ? input.value : 0);
+        Number(
+            input
+                ? input.value
+                : 0
+        );
 
     const total =
         calculateCODTotal(cod);
 
     const profit =
-        cod.sellingPrice - total;
+        cod.sellingPrice -
+        total;
 
     const totalElement =
         document.getElementById(
@@ -2419,11 +3029,13 @@ function renderCODDetailSummary() {
         );
 
     if (totalElement) {
+
         totalElement.textContent =
             formatMoney(total);
     }
 
     if (profitElement) {
+
         profitElement.textContent =
             formatMoney(profit);
     }
@@ -2434,7 +3046,9 @@ function addCODPart() {
 
     if (!currentCODDish) {
 
-        showToast("Chưa chọn món!");
+        showToast(
+            "Chưa chọn món!"
+        );
 
         return;
     }
@@ -2464,14 +3078,21 @@ function addCODPart() {
 
     if (!partName) {
 
-        showToast("Nhập tên phần!");
+        showToast(
+            "Nhập tên phần!"
+        );
 
         return;
     }
 
-    if (!partAmount || partAmount <= 0) {
+    if (
+        !partAmount ||
+        partAmount <= 0
+    ) {
 
-        showToast("Nhập giá tiền hợp lệ!");
+        showToast(
+            "Nhập giá tiền hợp lệ!"
+        );
 
         return;
     }
@@ -2488,11 +3109,14 @@ function addCODPart() {
 
     data.cod[currentCODDish].parts.push({
 
-        id: generateId(),
+        id:
+            generateId(),
 
-        name: partName,
+        name:
+            partName,
 
-        amount: partAmount,
+        amount:
+            partAmount,
 
         note:
             note
@@ -2506,27 +3130,30 @@ function addCODPart() {
 
     renderCODDetail();
 
-    showToast("Đã thêm thành phần!");
+    showToast(
+        "Đã thêm thành phần!"
+    );
 }
 
 
 function clearCODPartInputs() {
 
-    const ids = [
+    [
         "codPartName",
         "codPartAmount",
         "codPartNote"
-    ];
+    ].forEach(
+        function (id) {
 
-    ids.forEach(id => {
+            const element =
+                document.getElementById(id);
 
-        const element =
-            document.getElementById(id);
+            if (element) {
 
-        if (element) {
-            element.value = "";
+                element.value = "";
+            }
         }
-    });
+    );
 }
 
 
@@ -2541,14 +3168,22 @@ function deleteCODPart(partId) {
 
     cod.parts =
         cod.parts.filter(
-            part => part.id !== partId
+            function (part) {
+
+                return (
+                    part.id !==
+                    partId
+                );
+            }
         );
 
     saveData();
 
     renderCODDetail();
 
-    showToast("Đã xóa thành phần!");
+    showToast(
+        "Đã xóa thành phần!"
+    );
 }
 
 
@@ -2556,7 +3191,9 @@ function saveCODDish() {
 
     if (!currentCODDish) {
 
-        showToast("Chưa chọn món!");
+        showToast(
+            "Chưa chọn món!"
+        );
 
         return;
     }
@@ -2577,47 +3214,56 @@ function saveCODDish() {
     }
 
     data.cod[currentCODDish].sellingPrice =
-        Number(input ? input.value : 0);
+        Number(
+            input
+                ? input.value
+                : 0
+        );
 
     saveData();
 
     renderCODDetail();
 
     if (currentCODCategory) {
-        showCODDishes(currentCODCategory);
+
+        showCODDishes(
+            currentCODCategory
+        );
     }
 
-    showToast("Đã lưu giá vốn món!");
+    showToast(
+        "Đã lưu giá vốn món!"
+    );
 }
 
 
 /* =========================================================
-   21. ĐIỀU HƯỚNG
+   22. ĐIỀU HƯỚNG
    ========================================================= */
 
 function hideAllMainSections() {
 
-    const sections = [
-        "homeSection",
-        "codSection"
-    ];
+    const home =
+        document.getElementById(
+            "homeSection"
+        );
 
-    sections.forEach(id => {
+    const cod =
+        document.getElementById(
+            "codSection"
+        );
 
-        const element =
-            document.getElementById(id);
+    if (home) {
 
-        if (!element) return;
+        home.style.display =
+            "none";
+    }
 
-        if (id === "homeSection") {
+    if (cod) {
 
-            element.style.display = "block";
-
-        } else {
-
-            element.style.display = "none";
-        }
-    });
+        cod.style.display =
+            "none";
+    }
 }
 
 
@@ -2625,10 +3271,14 @@ function clearNavActive() {
 
     document
         .querySelectorAll(".nav-button")
-        .forEach(button => {
+        .forEach(
+            function (button) {
 
-            button.classList.remove("active");
-        });
+                button.classList.remove(
+                    "active"
+                );
+            }
+        );
 }
 
 
@@ -2641,7 +3291,9 @@ function activateNav(id) {
 
     if (button) {
 
-        button.classList.add("active");
+        button.classList.add(
+            "active"
+        );
     }
 }
 
@@ -2653,10 +3305,14 @@ function goHome(scroll = true) {
     activateNav("navHome");
 
     const home =
-        document.getElementById("homeSection");
+        document.getElementById(
+            "homeSection"
+        );
 
     if (home) {
-        home.style.display = "block";
+
+        home.style.display =
+            "block";
     }
 
     if (scroll) {
@@ -2676,7 +3332,9 @@ function goAdd() {
     activateNav("navAdd");
 
     const section =
-        document.getElementById("addSection");
+        document.getElementById(
+            "addSection"
+        );
 
     if (section) {
 
@@ -2764,7 +3422,8 @@ function goCOD() {
 
     if (cod) {
 
-        cod.style.display = "block";
+        cod.style.display =
+            "block";
     }
 
     showCODCategories();
@@ -2777,7 +3436,7 @@ function goCOD() {
 
 
 /* =========================================================
-   22. SAO LƯU
+   23. SAO LƯU
    ========================================================= */
 
 function backup() {
@@ -2804,7 +3463,8 @@ function backup() {
                 )
             ],
             {
-                type: "application/json"
+                type:
+                    "application/json"
             }
         );
 
@@ -2832,12 +3492,14 @@ function backup() {
 
     URL.revokeObjectURL(url);
 
-    showToast("Đã sao lưu dữ liệu!");
+    showToast(
+        "Đã sao lưu dữ liệu!"
+    );
 }
 
 
 /* =========================================================
-   23. KHÔI PHỤC
+   24. KHÔI PHỤC
    ========================================================= */
 
 function restore(event) {
@@ -2850,103 +3512,112 @@ function restore(event) {
     const reader =
         new FileReader();
 
-    reader.onload = function(e) {
+    reader.onload =
+        function (e) {
 
-        try {
+            try {
 
-            const parsed =
-                JSON.parse(e.target.result);
+                const parsed =
+                    JSON.parse(
+                        e.target.result
+                    );
 
-            let restoredData;
+                let restoredData;
 
-            if (
-                parsed &&
-                parsed.data
-            ) {
+                if (
+                    parsed &&
+                    parsed.data
+                ) {
 
-                restoredData =
-                    parsed.data;
+                    restoredData =
+                        parsed.data;
 
-            } else {
+                } else {
 
-                restoredData = parsed;
-            }
+                    restoredData =
+                        parsed;
+                }
 
-            if (
-                !restoredData ||
-                !Array.isArray(
-                    restoredData.transactions
-                )
-            ) {
+                if (
+                    !restoredData ||
+                    !Array.isArray(
+                        restoredData.transactions
+                    )
+                ) {
 
-                throw new Error(
-                    "File không đúng định dạng"
+                    throw new Error(
+                        "File không đúng định dạng"
+                    );
+                }
+
+                data = {
+
+                    transactions:
+                        Array.isArray(
+                            restoredData.transactions
+                        )
+                            ? restoredData.transactions
+                            : [],
+
+                    categories:
+                        Array.isArray(
+                            restoredData.categories
+                        )
+                            ? restoredData.categories
+                            : [],
+
+                    dishes:
+                        Array.isArray(
+                            restoredData.dishes
+                        )
+                            ? restoredData.dishes
+                            : [],
+
+                    cod:
+                        restoredData.cod &&
+                        typeof restoredData.cod ===
+                        "object"
+                            ? restoredData.cod
+                            : {}
+                };
+
+                saveData();
+
+                renderAll();
+
+                showToast(
+                    "Đã khôi phục dữ liệu!"
+                );
+
+            } catch (error) {
+
+                console.error(error);
+
+                showToast(
+                    "File khôi phục không hợp lệ!"
                 );
             }
 
-            data = {
-
-                transactions:
-                    Array.isArray(
-                        restoredData.transactions
-                    )
-                        ? restoredData.transactions
-                        : [],
-
-                categories:
-                    Array.isArray(
-                        restoredData.categories
-                    )
-                        ? restoredData.categories
-                        : [],
-
-                dishes:
-                    Array.isArray(
-                        restoredData.dishes
-                    )
-                        ? restoredData.dishes
-                        : [],
-
-                cod:
-                    restoredData.cod &&
-                    typeof restoredData.cod === "object"
-                        ? restoredData.cod
-                        : {}
-            };
-
-            saveData();
-
-            renderAll();
-
-            showToast(
-                "Đã khôi phục dữ liệu!"
-            );
-
-        } catch (error) {
-
-            console.error(error);
-
-            showToast(
-                "File khôi phục không hợp lệ!"
-            );
-        }
-
-        event.target.value = "";
-    };
+            event.target.value = "";
+        };
 
     reader.readAsText(file);
 }
 
 
 /* =========================================================
-   24. XUẤT CSV
+   25. CSV
    ========================================================= */
 
 function exportCSV() {
 
-    if (!data.transactions.length) {
+    if (
+        !data.transactions.length
+    ) {
 
-        showToast("Chưa có dữ liệu để xuất!");
+        showToast(
+            "Chưa có dữ liệu để xuất!"
+        );
 
         return;
     }
@@ -2962,49 +3633,68 @@ function exportCSV() {
     ];
 
     const rows =
-        data.transactions.map(t => [
+        data.transactions.map(
+            function (transaction) {
 
-            t.date,
+                return [
 
-            t.type === "thu"
-                ? "THU"
-                : "CHI",
+                    transaction.date,
 
-            t.name,
+                    transaction.type === "thu"
+                        ? "THU"
+                        : "CHI",
 
-            t.category,
+                    transaction.name,
 
-            t.source || "",
+                    transaction.category,
 
-            t.amount,
+                    transaction.source || "",
 
-            t.note || ""
-        ]);
+                    transaction.amount,
 
-    const csv = [
-        headers,
-        ...rows
-    ]
-        .map(row =>
-            row.map(value => {
+                    transaction.note || ""
+                ];
+            }
+        );
 
-                const text =
-                    String(value ?? "");
+    const csv =
+        [
+            headers,
+            ...rows
+        ]
+            .map(
+                function (row) {
 
-                return `"${text.replace(
-                    /"/g,
-                    '""'
-                )}"`;
+                    return row.map(
+                        function (value) {
 
-            }).join(",")
-        )
-        .join("\n");
+                            const text =
+                                String(
+                                    value ?? ""
+                                );
+
+                            return (
+                                '"' +
+                                text.replace(
+                                    /"/g,
+                                    '""'
+                                ) +
+                                '"'
+                            );
+                        }
+                    ).join(",");
+                }
+            )
+            .join("\n");
 
     const blob =
         new Blob(
-            ["\ufeff" + csv],
+            [
+                "\ufeff" + csv
+            ],
             {
-                type: "text/csv;charset=utf-8;"
+                type:
+                    "text/csv;charset=utf-8;"
             }
         );
 
@@ -3027,24 +3717,24 @@ function exportCSV() {
 
     URL.revokeObjectURL(url);
 
-    showToast("Đã xuất CSV!");
+    showToast(
+        "Đã xuất CSV!"
+    );
 }
 
 
 /* =========================================================
-   25. XÓA TOÀN BỘ
+   26. XÓA TOÀN BỘ
    ========================================================= */
 
 function deleteAll() {
 
-    if (
-        !confirm(
+    const confirmed =
+        confirm(
             "Bạn có chắc muốn XÓA TOÀN BỘ dữ liệu không?\n\nHành động này không thể hoàn tác."
-        )
-    ) {
+        );
 
-        return;
-    }
+    if (!confirmed) return;
 
     data = {
 
@@ -3063,12 +3753,14 @@ function deleteAll() {
 
     renderAll();
 
-    showToast("Đã xóa toàn bộ dữ liệu!");
+    showToast(
+        "Đã xóa toàn bộ dữ liệu!"
+    );
 }
 
 
 /* =========================================================
-   26. RENDER TẤT CẢ
+   27. RENDER TẤT CẢ
    ========================================================= */
 
 function renderAll() {
@@ -3081,33 +3773,27 @@ function renderAll() {
 
     renderCODCategories();
 
+    renderMonthFilters();
+
     renderTransactions();
 
     renderSummary();
 
-    renderMonthFilters();
-
     renderStatistics();
-
 }
 
 
 /* =========================================================
-   27. LOAD DARK MODE
-   ========================================================= */
-
-loadDarkMode();
-
-
-/* =========================================================
-   28. XỬ LÝ PHÍM ENTER
+   28. ENTER
    ========================================================= */
 
 document.addEventListener(
     "keydown",
-    function(event) {
+    function (event) {
 
-        if (event.key !== "Enter") {
+        if (
+            event.key !== "Enter"
+        ) {
             return;
         }
 
@@ -3123,33 +3809,152 @@ document.addEventListener(
             event.preventDefault();
 
             saveTransaction();
+
+            return;
         }
 
         if (
-            target.id === "newCategory"
+            target.id ===
+            "newCategory"
         ) {
 
             event.preventDefault();
 
             addCategory();
+
+            return;
         }
 
         if (
-            target.id === "newDish"
+            target.id ===
+            "newDish"
         ) {
 
             event.preventDefault();
 
             addDish();
+
+            return;
         }
 
         if (
-            target.id === "codPartAmount"
+            target.id ===
+            "codPartAmount"
         ) {
 
             event.preventDefault();
 
             addCODPart();
+
+            return;
         }
     }
+);
+
+
+/* =========================================================
+   29. PHÒNG TRƯỜNG HỢP HTML CHẠY TRƯỚC JS
+   ========================================================= */
+
+window.toggleDark =
+    toggleDark;
+
+window.setType =
+    setType;
+
+window.setSource =
+    setSource;
+
+window.formatDateInput =
+    formatDateInput;
+
+window.syncCustomName =
+    syncCustomName;
+
+window.saveTransaction =
+    saveTransaction;
+
+window.cancelEdit =
+    cancelEdit;
+
+window.editTransaction =
+    editTransaction;
+
+window.deleteTransaction =
+    deleteTransaction;
+
+window.addCategory =
+    addCategory;
+
+window.deleteCategory =
+    deleteCategory;
+
+window.addDish =
+    addDish;
+
+window.deleteDish =
+    deleteDish;
+
+window.renderDishSelect =
+    renderDishSelect;
+
+window.renderStatistics =
+    renderStatistics;
+
+window.setStatisticType =
+    setStatisticType;
+
+window.addCODPart =
+    addCODPart;
+
+window.deleteCODPart =
+    deleteCODPart;
+
+window.saveCODDish =
+    saveCODDish;
+
+window.renderCODDetailSummary =
+    renderCODDetailSummary;
+
+window.showCODCategories =
+    showCODCategories;
+
+window.showCODDishes =
+    showCODDishes;
+
+window.showCODDetail =
+    showCODDetail;
+
+window.goHome =
+    goHome;
+
+window.goAdd =
+    goAdd;
+
+window.goStatistics =
+    goStatistics;
+
+window.goHistory =
+    goHistory;
+
+window.goRestaurant =
+    goRestaurant;
+
+window.goCOD =
+    goCOD;
+
+window.backup =
+    backup;
+
+window.restore =
+    restore;
+
+window.exportCSV =
+    exportCSV;
+
+window.deleteAll =
+    deleteAll;
+
+console.log(
+    "Quản lý Thu Chi: JS đã sẵn sàng."
 );
