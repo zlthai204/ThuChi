@@ -1,27 +1,21 @@
 /* =========================================================
-   QUẢN LÝ THU CHI - QUÁN
-   app.js
+   QUẢN LÝ THU CHI - APP.JS
    ========================================================= */
 
-// =========================================================
-// 1. DỮ LIỆU
-// =========================================================
+"use strict";
 
-let transactions = JSON.parse(
-    localStorage.getItem("transactions")
-) || [];
+/* =========================================================
+   1. DỮ LIỆU
+   ========================================================= */
 
-let categories = JSON.parse(
-    localStorage.getItem("categories")
-) || [];
+const STORAGE_KEY = "quan_ly_thu_chi_data_v1";
 
-let dishes = JSON.parse(
-    localStorage.getItem("dishes")
-) || [];
-
-let codData = JSON.parse(
-    localStorage.getItem("codData")
-) || {};
+let data = {
+    transactions: [],
+    categories: [],
+    dishes: [],
+    cod: {}
+};
 
 let currentType = "thu";
 let currentSource = "ShopeeFood";
@@ -29,68 +23,171 @@ let currentSource = "ShopeeFood";
 let editingId = null;
 
 let statisticType = "all";
-
 let currentCODCategory = null;
 let currentCODDish = null;
 
 
-// =========================================================
-// 2. KHỞI ĐỘNG
-// =========================================================
+/* =========================================================
+   2. KHỞI TẠO
+   ========================================================= */
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-    initDate();
+    loadData();
 
-    renderCategories();
+    setDefaultDate();
+
+    renderCategorySelect();
+
     renderDishSelect();
 
-    renderTransactions();
-    updateDashboard();
-
-    renderStatistics();
     renderMenu();
 
     renderCODCategories();
 
-    initMonthSelects();
+    renderTransactions();
 
-    loadDarkMode();
+    renderSummary();
+
+    renderStatistics();
+
+    renderMonthFilters();
+
+    updateForm();
+
+    goHome(false);
 
 });
 
 
-// =========================================================
-// 3. LOCAL STORAGE
-// =========================================================
+/* =========================================================
+   3. LOCAL STORAGE
+   ========================================================= */
+
+function loadData() {
+
+    try {
+
+        const saved = localStorage.getItem(STORAGE_KEY);
+
+        if (saved) {
+
+            const parsed = JSON.parse(saved);
+
+            data = {
+                transactions: Array.isArray(parsed.transactions)
+                    ? parsed.transactions
+                    : [],
+
+                categories: Array.isArray(parsed.categories)
+                    ? parsed.categories
+                    : [],
+
+                dishes: Array.isArray(parsed.dishes)
+                    ? parsed.dishes
+                    : [],
+
+                cod: parsed.cod && typeof parsed.cod === "object"
+                    ? parsed.cod
+                    : {}
+            };
+        }
+
+    } catch (error) {
+
+        console.error("Không thể đọc dữ liệu:", error);
+
+        data = {
+            transactions: [],
+            categories: [],
+            dishes: [],
+            cod: {}
+        };
+    }
+}
+
 
 function saveData() {
 
-    localStorage.setItem(
-        "transactions",
-        JSON.stringify(transactions)
-    );
+    try {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(data)
+        );
+
+    } catch (error) {
+
+        console.error("Không thể lưu dữ liệu:", error);
+
+        showToast("Không thể lưu dữ liệu!");
+    }
+}
+
+
+/* =========================================================
+   4. DARK MODE
+   ========================================================= */
+
+function toggleDark() {
+
+    document.body.classList.toggle("dark");
+
+    const isDark = document.body.classList.contains("dark");
 
     localStorage.setItem(
-        "categories",
-        JSON.stringify(categories)
-    );
-
-    localStorage.setItem(
-        "dishes",
-        JSON.stringify(dishes)
-    );
-
-    localStorage.setItem(
-        "codData",
-        JSON.stringify(codData)
+        "quan_ly_dark_mode",
+        isDark ? "1" : "0"
     );
 }
 
 
-// =========================================================
-// 4. TOAST
-// =========================================================
+function loadDarkMode() {
+
+    const dark = localStorage.getItem(
+        "quan_ly_dark_mode"
+    );
+
+    if (dark === "1") {
+
+        document.body.classList.add("dark");
+    }
+}
+
+
+/* =========================================================
+   5. TIỆN ÍCH
+   ========================================================= */
+
+function formatMoney(value) {
+
+    value = Number(value) || 0;
+
+    return value.toLocaleString("vi-VN") + " ₫";
+}
+
+
+function escapeHTML(value) {
+
+    if (value === undefined || value === null) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+function generateId() {
+
+    return Date.now().toString() +
+        Math.random().toString(36).substring(2, 9);
+}
+
 
 function showToast(message) {
 
@@ -104,82 +201,68 @@ function showToast(message) {
 
     clearTimeout(window.toastTimer);
 
-    window.toastTimer = setTimeout(function () {
+    window.toastTimer = setTimeout(() => {
+
         toast.classList.remove("show");
+
     }, 2500);
 }
 
 
-// =========================================================
-// 5. ĐỊNH DẠNG TIỀN
-// =========================================================
+/* =========================================================
+   6. NGÀY
+   ========================================================= */
 
-function formatMoney(number) {
+function getTodayString() {
 
-    number = Number(number) || 0;
+    const d = new Date();
 
-    return number.toLocaleString("vi-VN") + " ₫";
-}
+    const day = String(d.getDate()).padStart(2, "0");
 
+    const month = String(d.getMonth() + 1).padStart(2, "0");
 
-// =========================================================
-// 6. ĐỊNH DẠNG NGÀY
-// =========================================================
-
-function getToday() {
-
-    const date = new Date();
-
-    const day = String(
-        date.getDate()
-    ).padStart(2, "0");
-
-    const month = String(
-        date.getMonth() + 1
-    ).padStart(2, "0");
-
-    const year = date.getFullYear();
+    const year = d.getFullYear();
 
     return `${day}/${month}/${year}`;
 }
 
 
-function initDate() {
+function setDefaultDate() {
 
-    const dateInput =
-        document.getElementById("date");
+    const input = document.getElementById("date");
 
-    if (
-        dateInput &&
-        dateInput.value.trim() === ""
-    ) {
-        dateInput.value = getToday();
+    if (!input) return;
+
+    if (!input.value) {
+
+        input.value = getTodayString();
     }
 }
 
 
 function formatDateInput(input) {
 
-    let value = input.value
-        .replace(/\D/g, "")
-        .slice(0, 8);
+    let value = input.value.replace(/\D/g, "");
+
+    if (value.length > 8) {
+        value = value.substring(0, 8);
+    }
 
     if (value.length >= 5) {
 
         value =
-            value.slice(0, 2) +
+            value.substring(0, 2) +
             "/" +
-            value.slice(2, 4) +
+            value.substring(2, 4) +
             "/" +
-            value.slice(4);
+            value.substring(4);
 
     } else if (value.length >= 3) {
 
         value =
-            value.slice(0, 2) +
+            value.substring(0, 2) +
             "/" +
-            value.slice(2);
-
+            value.substring(2);
     }
 
     input.value = value;
@@ -192,228 +275,416 @@ function dateToKey(dateString) {
 
     const parts = dateString.split("/");
 
-    if (parts.length !== 3) {
-        return dateString;
-    }
+    if (parts.length !== 3) return "";
 
     return `${parts[2]}-${parts[1]}-${parts[0]}`;
 }
 
 
-function getMonthKey(dateString) {
+function isValidDate(dateString) {
 
-    const key = dateToKey(dateString);
+    if (!/^\d{2}\/\d{2}\/\d{4}$/.test(dateString)) {
+        return false;
+    }
 
-    if (!key) return "";
+    const parts = dateString.split("/");
 
-    return key.substring(0, 7);
-}
+    const day = Number(parts[0]);
+    const month = Number(parts[1]);
+    const year = Number(parts[2]);
 
+    const date = new Date(year, month - 1, day);
 
-// =========================================================
-// 7. DARK MODE
-// =========================================================
-
-function toggleDark() {
-
-    document.body.classList.toggle("dark-mode");
-
-    const enabled =
-        document.body.classList.contains("dark-mode");
-
-    localStorage.setItem(
-        "darkMode",
-        enabled ? "1" : "0"
+    return (
+        date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day
     );
 }
 
 
-function loadDarkMode() {
-
-    if (
-        localStorage.getItem("darkMode") === "1"
-    ) {
-        document.body.classList.add("dark-mode");
-    }
-}
-
-
-// =========================================================
-// 8. LOẠI THU / CHI
-// =========================================================
+/* =========================================================
+   7. THU / CHI
+   ========================================================= */
 
 function setType(type) {
 
     currentType = type;
 
-    const thuBtn =
-        document.getElementById("thuBtn");
+    const thuBtn = document.getElementById("thuBtn");
+    const chiBtn = document.getElementById("chiBtn");
 
-    const chiBtn =
-        document.getElementById("chiBtn");
+    if (thuBtn) {
+
+        thuBtn.classList.toggle(
+            "active-thu",
+            type === "thu"
+        );
+    }
+
+    if (chiBtn) {
+
+        chiBtn.classList.toggle(
+            "active-chi",
+            type === "chi"
+        );
+    }
 
     const sourceGroup =
         document.getElementById("sourceGroup");
 
-    if (type === "thu") {
+    if (sourceGroup) {
 
-        thuBtn.classList.add("active-thu");
-        chiBtn.classList.remove("active-chi");
-
-        if (sourceGroup) {
-            sourceGroup.style.display = "";
-        }
-
-    } else {
-
-        thuBtn.classList.remove("active-thu");
-        chiBtn.classList.add("active-chi");
-
-        if (sourceGroup) {
-            sourceGroup.style.display = "none";
-        }
+        sourceGroup.style.display =
+            type === "thu" ? "block" : "none";
     }
 
-    syncCustomName();
+    updateForm();
 }
 
-
-// =========================================================
-// 9. NGUỒN ĐƠN
-// =========================================================
 
 function setSource(source) {
 
     currentSource = source;
 
     const buttons = [
-        "sourceShopee",
-        "sourceGrab",
-        "sourceOut"
+        ["sourceShopee", "ShopeeFood"],
+        ["sourceGrab", "GrabFood"],
+        ["sourceOut", "Ngoài sàn"]
     ];
 
-    buttons.forEach(function (id) {
+    buttons.forEach(([id, value]) => {
 
-        const button =
-            document.getElementById(id);
+        const button = document.getElementById(id);
 
-        if (button) {
-            button.classList.remove(
-                "active-shopee",
-                "active-grab",
-                "active-out"
-            );
-        }
+        if (!button) return;
+
+        button.classList.toggle(
+            "active-shopee",
+            value === source && source === "ShopeeFood"
+        );
+
+        button.classList.toggle(
+            "active-grab",
+            value === source && source === "GrabFood"
+        );
+
+        button.classList.toggle(
+            "active-out",
+            value === source && source === "Ngoài sàn"
+        );
     });
+}
 
 
-    if (source === "ShopeeFood") {
+function updateForm() {
 
-        document
-            .getElementById("sourceShopee")
-            ?.classList.add("active-shopee");
+    const title = document.getElementById("formTitle");
 
-    }
+    if (title) {
 
-    if (source === "GrabFood") {
-
-        document
-            .getElementById("sourceGrab")
-            ?.classList.add("active-grab");
-
-    }
-
-    if (source === "Ngoài sàn") {
-
-        document
-            .getElementById("sourceOut")
-            ?.classList.add("active-out");
-
+        title.textContent =
+            editingId
+                ? "Sửa giao dịch"
+                : "Thêm giao dịch";
     }
 }
 
 
-// =========================================================
-// 10. DANH MỤC
-// =========================================================
+/* =========================================================
+   8. DANH MỤC
+   ========================================================= */
 
-function renderCategories() {
+function renderCategorySelect() {
 
-    const category =
-        document.getElementById("category");
+    const category = document.getElementById("category");
 
     const menuCategory =
         document.getElementById("menuDishCategory");
 
-    if (!category || !menuCategory) return;
+    if (category) {
 
+        const current = category.value;
 
-    category.innerHTML =
-        `<option value="">Chọn danh mục</option>`;
+        category.innerHTML =
+            `<option value="">Chọn danh mục</option>`;
 
-    menuCategory.innerHTML =
-        `<option value="">Chọn danh mục</option>`;
+        data.categories.forEach(cat => {
 
+            const option =
+                document.createElement("option");
 
-    categories.forEach(function (item) {
+            option.value = cat;
+            option.textContent = cat;
 
-        const option1 =
-            document.createElement("option");
+            category.appendChild(option);
+        });
 
-        option1.value = item.id;
-        option1.textContent = item.name;
+        if (data.categories.includes(current)) {
+            category.value = current;
+        }
+    }
 
-        category.appendChild(option1);
+    if (menuCategory) {
 
+        const current = menuCategory.value;
 
-        const option2 =
-            document.createElement("option");
+        menuCategory.innerHTML =
+            `<option value="">Chọn danh mục</option>`;
 
-        option2.value = item.id;
-        option2.textContent = item.name;
+        data.categories.forEach(cat => {
 
-        menuCategory.appendChild(option2);
+            const option =
+                document.createElement("option");
 
-    });
+            option.value = cat;
+            option.textContent = cat;
+
+            menuCategory.appendChild(option);
+        });
+
+        if (data.categories.includes(current)) {
+            menuCategory.value = current;
+        }
+    }
 }
 
 
-// =========================================================
-// 11. DANH SÁCH MÓN
-// =========================================================
+function addCategory() {
 
-function renderDishSelect() {
+    const input =
+        document.getElementById("newCategory");
 
-    const categoryId =
-        document.getElementById("category")?.value;
+    if (!input) return;
 
-    const nameSelect =
-        document.getElementById("name");
+    const name = input.value.trim();
 
-    if (!nameSelect) return;
+    if (!name) {
+
+        showToast("Vui lòng nhập tên danh mục!");
+
+        return;
+    }
+
+    const exists = data.categories.some(
+        cat => cat.toLowerCase() === name.toLowerCase()
+    );
+
+    if (exists) {
+
+        showToast("Danh mục này đã tồn tại!");
+
+        return;
+    }
+
+    data.categories.push(name);
+
+    saveData();
+
+    input.value = "";
+
+    renderCategorySelect();
+
+    renderMenu();
+
+    renderCODCategories();
+
+    showToast("Đã thêm danh mục!");
+}
 
 
-    nameSelect.innerHTML =
-        `<option value="">Chọn món</option>`;
+/* =========================================================
+   9. MÓN ĂN
+   ========================================================= */
+
+function addDish() {
+
+    const category =
+        document.getElementById("menuDishCategory");
+
+    const input =
+        document.getElementById("newDish");
+
+    if (!category || !input) return;
+
+    const categoryName = category.value;
+
+    const dishName = input.value.trim();
+
+    if (!categoryName) {
+
+        showToast("Vui lòng chọn danh mục!");
+
+        return;
+    }
+
+    if (!dishName) {
+
+        showToast("Vui lòng nhập tên món!");
+
+        return;
+    }
+
+    const exists = data.dishes.some(
+        dish =>
+            dish.category === categoryName &&
+            dish.name.toLowerCase() === dishName.toLowerCase()
+    );
+
+    if (exists) {
+
+        showToast("Món này đã tồn tại!");
+
+        return;
+    }
+
+    data.dishes.push({
+
+        id: generateId(),
+
+        name: dishName,
+
+        category: categoryName
+    });
+
+    saveData();
+
+    input.value = "";
+
+    renderDishSelect();
+
+    renderMenu();
+
+    renderCODCategories();
+
+    showToast("Đã thêm món!");
+}
 
 
-    let list = [];
+function deleteDish(id) {
 
-    if (categoryId) {
+    const dish =
+        data.dishes.find(d => d.id === id);
 
-        list = dishes.filter(function (dish) {
-            return String(dish.categoryId) ===
-                String(categoryId);
-        });
+    if (!dish) return;
+
+    if (!confirm(`Xóa món "${dish.name}"?`)) {
+        return;
+    }
+
+    data.dishes =
+        data.dishes.filter(d => d.id !== id);
+
+    delete data.cod[id];
+
+    saveData();
+
+    renderDishSelect();
+
+    renderMenu();
+
+    renderCODCategories();
+
+    showToast("Đã xóa món!");
+}
+
+
+function deleteCategory(categoryName) {
+
+    const hasDish =
+        data.dishes.some(
+            dish => dish.category === categoryName
+        );
+
+    if (hasDish) {
+
+        if (
+            !confirm(
+                `Danh mục "${categoryName}" đang có món.\n\nXóa danh mục và toàn bộ món bên trong?`
+            )
+        ) {
+
+            return;
+        }
 
     } else {
 
-        list = dishes;
+        if (
+            !confirm(
+                `Xóa danh mục "${categoryName}"?`
+            )
+        ) {
 
+            return;
+        }
     }
 
+    const dishIds =
+        data.dishes
+            .filter(d => d.category === categoryName)
+            .map(d => d.id);
 
-    list.forEach(function (dish) {
+    data.dishes =
+        data.dishes.filter(
+            d => d.category !== categoryName
+        );
+
+    dishIds.forEach(id => {
+
+        delete data.cod[id];
+    });
+
+    data.categories =
+        data.categories.filter(
+            cat => cat !== categoryName
+        );
+
+    saveData();
+
+    renderCategorySelect();
+
+    renderDishSelect();
+
+    renderMenu();
+
+    renderCODCategories();
+
+    showToast("Đã xóa danh mục!");
+}
+
+
+/* =========================================================
+   10. SELECT MÓN
+   ========================================================= */
+
+function renderDishSelect() {
+
+    const name =
+        document.getElementById("name");
+
+    const category =
+        document.getElementById("category");
+
+    if (!name) return;
+
+    const selectedCategory =
+        category ? category.value : "";
+
+    const current = name.value;
+
+    name.innerHTML =
+        `<option value="">Chọn món</option>`;
+
+    let dishes = data.dishes;
+
+    if (selectedCategory) {
+
+        dishes = dishes.filter(
+            dish => dish.category === selectedCategory
+        );
+    }
+
+    dishes.forEach(dish => {
 
         const option =
             document.createElement("option");
@@ -422,27 +693,29 @@ function renderDishSelect() {
 
         option.textContent = dish.name;
 
-        nameSelect.appendChild(option);
-
+        name.appendChild(option);
     });
 
-
-    const customOption =
+    const otherOption =
         document.createElement("option");
 
-    customOption.value = "__custom__";
+    otherOption.value = "__custom__";
 
-    customOption.textContent = "✏️ Nhập tên khác";
+    otherOption.textContent = "✏️ Khác / nhập tên";
 
-    nameSelect.appendChild(customOption);
+    name.appendChild(otherOption);
+
+    if (
+        [...name.options]
+            .some(option => option.value === current)
+    ) {
+
+        name.value = current;
+    }
 
     syncCustomName();
 }
 
-
-// =========================================================
-// 12. TÊN KHÁC
-// =========================================================
 
 function syncCustomName() {
 
@@ -454,336 +727,305 @@ function syncCustomName() {
 
     if (!name || !customGroup) return;
 
-
-    if (name.value === "__custom__") {
-
-        customGroup.style.display = "block";
-
-    } else {
-
-        customGroup.style.display = "none";
-
-    }
+    customGroup.style.display =
+        name.value === "__custom__"
+            ? "block"
+            : "none";
 }
 
 
-// =========================================================
-// 13. LẤY TÊN GIAO DỊCH
-// =========================================================
+/* =========================================================
+   11. LƯU GIAO DỊCH
+   ========================================================= */
 
-function getTransactionName() {
+function saveTransaction() {
 
     const nameSelect =
         document.getElementById("name");
 
+    const category =
+        document.getElementById("category");
+
     const customName =
         document.getElementById("customName");
 
+    const amount =
+        document.getElementById("amount");
+
+    const date =
+        document.getElementById("date");
+
+    const note =
+        document.getElementById("note");
+
+    if (!amount || !date) return;
+
+    let transactionName = "";
 
     if (
         nameSelect &&
-        nameSelect.value === "__custom__"
+        nameSelect.value &&
+        nameSelect.value !== "__custom__"
     ) {
 
-        return customName.value.trim();
-
-    }
-
-
-    if (nameSelect && nameSelect.value) {
-
         const dish =
-            dishes.find(function (item) {
-
-                return String(item.id) ===
-                    String(nameSelect.value);
-
-            });
+            data.dishes.find(
+                d => d.id === nameSelect.value
+            );
 
         if (dish) {
-            return dish.name;
+
+            transactionName = dish.name;
+
+            if (category) {
+                category.value = dish.category;
+            }
         }
 
-        return nameSelect.options[
-            nameSelect.selectedIndex
-        ].textContent;
+    } else if (customName) {
 
+        transactionName = customName.value.trim();
     }
 
+    if (!transactionName) {
 
-    return "";
-}
-
-
-// =========================================================
-// 14. LƯU GIAO DỊCH
-// =========================================================
-
-function saveTransaction() {
-
-    const name =
-        getTransactionName();
-
-    const categoryId =
-        document.getElementById("category").value;
-
-    const amount =
-        Number(
-            document.getElementById("amount").value
-        );
-
-    const date =
-        document.getElementById("date").value.trim();
-
-    const note =
-        document.getElementById("note").value.trim();
-
-
-    if (!name) {
-
-        showToast("⚠️ Vui lòng chọn tên món / khoản");
+        showToast("Vui lòng chọn hoặc nhập tên!");
 
         return;
     }
 
+    if (!category || !category.value) {
 
-    if (!amount || amount <= 0) {
-
-        showToast("⚠️ Vui lòng nhập số tiền");
-
-        return;
-    }
-
-
-    if (!isValidDate(date)) {
-
-        showToast("⚠️ Ngày không hợp lệ");
+        showToast("Vui lòng chọn danh mục!");
 
         return;
     }
 
+    const money = Number(amount.value);
 
-    const category =
-        categories.find(function (item) {
+    if (!money || money <= 0) {
 
-            return String(item.id) ===
-                String(categoryId);
+        showToast("Vui lòng nhập số tiền hợp lệ!");
 
-        });
+        return;
+    }
 
+    if (!isValidDate(date.value)) {
 
-    const data = {
+        showToast("Ngày không hợp lệ! Ví dụ: 20/08/2026");
 
-        id: editingId || Date.now(),
+        return;
+    }
+
+    const transaction = {
+
+        id: editingId || generateId(),
 
         type: currentType,
 
-        name: name,
+        name: transactionName,
 
-        categoryId: categoryId,
+        category: category.value,
 
-        categoryName:
-            category?.name || "Khác",
+        amount: money,
+
+        date: date.value,
 
         source:
             currentType === "thu"
                 ? currentSource
                 : "",
 
-        amount: amount,
+        note:
+            note
+                ? note.value.trim()
+                : "",
 
-        date: date,
-
-        note: note,
-
-        updatedAt: Date.now()
-
+        createdAt: Date.now()
     };
-
 
     if (editingId) {
 
         const index =
-            transactions.findIndex(function (item) {
-
-                return item.id === editingId;
-
-            });
+            data.transactions.findIndex(
+                t => t.id === editingId
+            );
 
         if (index !== -1) {
 
-            transactions[index] = data;
-
+            data.transactions[index] =
+                transaction;
         }
 
-        showToast("✅ Đã cập nhật giao dịch");
+        showToast("Đã cập nhật giao dịch!");
 
     } else {
 
-        transactions.push(data);
+        data.transactions.push(transaction);
 
-        showToast("✅ Đã lưu giao dịch");
-
+        showToast("Đã lưu giao dịch!");
     }
-
 
     saveData();
 
-    clearTransactionForm();
+    resetForm();
 
-    updateDashboard();
-
-    renderTransactions();
-
-    renderStatistics();
-
-    cancelEdit();
-
+    renderAll();
 }
 
 
-// =========================================================
-// 15. KIỂM TRA NGÀY
-// =========================================================
+function resetForm() {
 
-function isValidDate(value) {
+    editingId = null;
 
-    const regex =
-        /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    const fields = [
+        "name",
+        "category",
+        "customName",
+        "amount",
+        "note"
+    ];
 
-    const match = value.match(regex);
+    fields.forEach(id => {
 
-    if (!match) return false;
+        const element =
+            document.getElementById(id);
 
-    const day = Number(match[1]);
-    const month = Number(match[2]);
-    const year = Number(match[3]);
+        if (!element) return;
+
+        if (
+            element.tagName === "SELECT"
+        ) {
+
+            element.value = "";
+
+        } else {
+
+            element.value = "";
+        }
+    });
 
     const date =
-        new Date(year, month - 1, day);
+        document.getElementById("date");
 
-    return (
-        date.getFullYear() === year &&
-        date.getMonth() === month - 1 &&
-        date.getDate() === day
-    );
-}
+    if (date) {
+        date.value = getTodayString();
+    }
 
+    const cancel =
+        document.getElementById("cancelButton");
 
-// =========================================================
-// 16. XÓA FORM
-// =========================================================
+    if (cancel) {
 
-function clearTransactionForm() {
-
-    document.getElementById("name").value = "";
-
-    document.getElementById("category").value = "";
-
-    document.getElementById("customName").value = "";
-
-    document.getElementById("amount").value = "";
-
-    document.getElementById("date").value =
-        getToday();
-
-    document.getElementById("note").value = "";
-
-    document.getElementById("customNameGroup")
-        .style.display = "none";
+        cancel.style.display = "none";
+    }
 
     currentType = "thu";
 
-    setType("thu");
-
     currentSource = "ShopeeFood";
 
+    setType("thu");
+
     setSource("ShopeeFood");
+
+    updateForm();
+
+    renderDishSelect();
 }
 
 
-// =========================================================
-// 17. SỬA GIAO DỊCH
-// =========================================================
+function cancelEdit() {
+
+    resetForm();
+
+    showToast("Đã hủy sửa");
+}
+
 
 function editTransaction(id) {
 
     const transaction =
-        transactions.find(function (item) {
-            return item.id === id;
-        });
+        data.transactions.find(
+            t => t.id === id
+        );
 
     if (!transaction) return;
-
 
     editingId = id;
 
     currentType = transaction.type;
 
-    setType(transaction.type);
-
+    currentSource =
+        transaction.source || "ShopeeFood";
 
     const category =
         document.getElementById("category");
 
-    category.value =
-        transaction.categoryId || "";
+    const name =
+        document.getElementById("name");
 
+    const customName =
+        document.getElementById("customName");
+
+    const amount =
+        document.getElementById("amount");
+
+    const date =
+        document.getElementById("date");
+
+    const note =
+        document.getElementById("note");
+
+    if (category) {
+        category.value = transaction.category;
+    }
 
     renderDishSelect();
 
-
     const dish =
-        dishes.find(function (item) {
+        data.dishes.find(
+            d =>
+                d.name === transaction.name &&
+                d.category === transaction.category
+        );
 
-            return item.name === transaction.name &&
-                String(item.categoryId) ===
-                String(transaction.categoryId);
+    if (dish && name) {
 
-        });
+        name.value = dish.id;
 
+    } else if (name) {
 
-    if (dish) {
+        name.value = "__custom__";
 
-        document.getElementById("name").value =
-            dish.id;
-
-    } else {
-
-        document.getElementById("name").value =
-            "__custom__";
-
-        document.getElementById("customName").value =
-            transaction.name;
-
-        syncCustomName();
-
+        if (customName) {
+            customName.value = transaction.name;
+        }
     }
 
-
-    document.getElementById("amount").value =
-        transaction.amount;
-
-    document.getElementById("date").value =
-        transaction.date;
-
-    document.getElementById("note").value =
-        transaction.note || "";
-
-
-    if (transaction.source) {
-
-        setSource(transaction.source);
-
+    if (amount) {
+        amount.value = transaction.amount;
     }
 
+    if (date) {
+        date.value = transaction.date;
+    }
 
-    document.getElementById("formTitle")
-        .textContent = "Sửa giao dịch";
+    if (note) {
+        note.value = transaction.note || "";
+    }
 
-    document.getElementById("cancelButton")
-        .style.display = "block";
+    const cancel =
+        document.getElementById("cancelButton");
 
+    if (cancel) {
+        cancel.style.display = "block";
+    }
+
+    setType(currentType);
+
+    setSource(currentSource);
+
+    updateForm();
 
     goAdd();
 
@@ -791,115 +1033,127 @@ function editTransaction(id) {
         top: 0,
         behavior: "smooth"
     });
-
 }
 
-
-// =========================================================
-// 18. HỦY SỬA
-// =========================================================
-
-function cancelEdit() {
-
-    editingId = null;
-
-    document.getElementById("formTitle")
-        .textContent = "Thêm giao dịch";
-
-    document.getElementById("cancelButton")
-        .style.display = "none";
-
-    clearTransactionForm();
-}
-
-
-// =========================================================
-// 19. XÓA GIAO DỊCH
-// =========================================================
 
 function deleteTransaction(id) {
 
+    const transaction =
+        data.transactions.find(
+            t => t.id === id
+        );
+
+    if (!transaction) return;
+
     if (
         !confirm(
-            "Bạn có chắc muốn xóa giao dịch này?"
+            `Xóa giao dịch "${transaction.name}"?`
         )
     ) {
         return;
     }
 
-
-    transactions =
-        transactions.filter(function (item) {
-
-            return item.id !== id;
-
-        });
-
+    data.transactions =
+        data.transactions.filter(
+            t => t.id !== id
+        );
 
     saveData();
 
-    updateDashboard();
+    renderAll();
 
-    renderTransactions();
-
-    renderStatistics();
-
-    showToast("🗑️ Đã xóa giao dịch");
+    showToast("Đã xóa giao dịch!");
 }
 
 
-// =========================================================
-// 20. DASHBOARD
-// =========================================================
+/* =========================================================
+   12. TỔNG TIỀN
+   ========================================================= */
 
-function updateDashboard() {
+function calculateTotals(list) {
 
     let income = 0;
+
     let expense = 0;
 
+    list.forEach(t => {
 
-    transactions.forEach(function (item) {
+        if (t.type === "thu") {
 
-        if (item.type === "thu") {
-
-            income += Number(item.amount);
+            income += Number(t.amount) || 0;
 
         } else {
 
-            expense += Number(item.amount);
-
+            expense += Number(t.amount) || 0;
         }
-
     });
 
-
-    const profit = income - expense;
-
-
-    document.getElementById("profit")
-        .textContent = formatMoney(profit);
-
-    document.getElementById("totalIncome")
-        .textContent = formatMoney(income);
-
-    document.getElementById("totalExpense")
-        .textContent = formatMoney(expense);
-
-    document.getElementById("totalTransactions")
-        .textContent = transactions.length;
-
-
-    document.getElementById("quickIncome")
-        .textContent = formatMoney(income);
-
-    document.getElementById("quickExpense")
-        .textContent = formatMoney(expense);
+    return {
+        income,
+        expense,
+        profit: income - expense
+    };
 }
 
 
-// =========================================================
-// 21. LỊCH SỬ GIAO DỊCH
-// =========================================================
+function renderSummary() {
+
+    const totals =
+        calculateTotals(data.transactions);
+
+    const profit =
+        document.getElementById("profit");
+
+    const income =
+        document.getElementById("totalIncome");
+
+    const expense =
+        document.getElementById("totalExpense");
+
+    const transactions =
+        document.getElementById("totalTransactions");
+
+    const quickIncome =
+        document.getElementById("quickIncome");
+
+    const quickExpense =
+        document.getElementById("quickExpense");
+
+    if (profit) {
+        profit.textContent =
+            formatMoney(totals.profit);
+    }
+
+    if (income) {
+        income.textContent =
+            formatMoney(totals.income);
+    }
+
+    if (expense) {
+        expense.textContent =
+            formatMoney(totals.expense);
+    }
+
+    if (transactions) {
+        transactions.textContent =
+            data.transactions.length;
+    }
+
+    if (quickIncome) {
+        quickIncome.textContent =
+            formatMoney(totals.income);
+    }
+
+    if (quickExpense) {
+        quickExpense.textContent =
+            formatMoney(totals.expense);
+    }
+}
+
+
+/* =========================================================
+   13. LỊCH SỬ GIAO DỊCH
+   ========================================================= */
 
 function renderTransactions() {
 
@@ -908,287 +1162,234 @@ function renderTransactions() {
 
     if (!container) return;
 
-
     const search =
-        (
-            document.getElementById("search")?.value
-            || ""
-        ).toLowerCase().trim();
-
+        document.getElementById("search");
 
     const filterType =
-        document.getElementById("filterType")?.value
-        || "all";
-
+        document.getElementById("filterType");
 
     const filterMonth =
-        document.getElementById("filterMonth")?.value
-        || "all";
+        document.getElementById("filterMonth");
 
+    const searchValue =
+        search
+            ? search.value.toLowerCase().trim()
+            : "";
 
-    let list =
-        [...transactions];
+    const type =
+        filterType
+            ? filterType.value
+            : "all";
 
+    const month =
+        filterMonth
+            ? filterMonth.value
+            : "all";
 
-    if (filterType !== "all") {
+    let list = [...data.transactions];
 
-        list = list.filter(function (item) {
+    if (searchValue) {
 
-            return item.type === filterType;
-
-        });
-
-    }
-
-
-    if (filterMonth !== "all") {
-
-        list = list.filter(function (item) {
-
-            return getMonthKey(item.date) ===
-                filterMonth;
-
-        });
-
-    }
-
-
-    if (search) {
-
-        list = list.filter(function (item) {
+        list = list.filter(t => {
 
             const text = [
+                t.name,
+                t.category,
+                t.note,
+                t.source,
+                t.date
+            ]
+                .join(" ")
+                .toLowerCase();
 
-                item.name,
-
-                item.categoryName,
-
-                item.source,
-
-                item.note
-
-            ].join(" ").toLowerCase();
-
-            return text.includes(search);
-
+            return text.includes(searchValue);
         });
-
     }
 
+    if (type !== "all") {
 
-    list.sort(function (a, b) {
+        list = list.filter(
+            t => t.type === type
+        );
+    }
 
-        return (
+    if (month !== "all") {
+
+        list = list.filter(
+            t =>
+                getMonthKey(t.date) === month
+        );
+    }
+
+    list.sort(
+        (a, b) =>
             dateToKey(b.date)
                 .localeCompare(dateToKey(a.date))
-            ||
-            b.id - a.id
-        );
+    );
 
-    });
+    const historyCount =
+        document.getElementById("historyCount");
 
+    if (historyCount) {
 
-    document.getElementById("historyCount")
-        .textContent =
-        `${list.length} giao dịch`;
+        historyCount.textContent =
+            `${list.length} giao dịch`;
+    }
 
-
-    if (list.length === 0) {
+    if (!list.length) {
 
         container.innerHTML = `
             <div class="empty-state">
-                📭 Chưa có giao dịch
+                Chưa có giao dịch
             </div>
         `;
 
         return;
     }
 
+    container.innerHTML =
+        list.map(transaction => {
 
-    container.innerHTML = list.map(function (item) {
+            const isThu =
+                transaction.type === "thu";
 
-        const isIncome =
-            item.type === "thu";
+            return `
+                <div class="transaction-item">
 
-        const color =
-            isIncome ? "green" : "red";
-
-        const sign =
-            isIncome ? "+" : "-";
-
-        return `
-
-            <div class="transaction-item">
-
-                <div class="transaction-main">
-
-                    <div class="transaction-icon ${color}">
-                        ${isIncome ? "↑" : "↓"}
+                    <div class="transaction-icon ${isThu ? "thu" : "chi"}">
+                        ${isThu ? "↑" : "↓"}
                     </div>
 
                     <div class="transaction-info">
 
                         <strong>
-                            ${escapeHTML(item.name)}
+                            ${escapeHTML(transaction.name)}
                         </strong>
 
                         <span>
-                            ${escapeHTML(
-                                item.categoryName || "Khác"
-                            )}
+                            ${escapeHTML(transaction.category)}
+                            ${transaction.source
+                                ? " • " + escapeHTML(transaction.source)
+                                : ""}
                         </span>
 
                         <small>
-                            ${escapeHTML(item.date)}
-                            ${
-                                item.source
-                                    ? " • " +
-                                      escapeHTML(item.source)
-                                    : ""
-                            }
+                            ${escapeHTML(transaction.date)}
+                            ${transaction.note
+                                ? " • " + escapeHTML(transaction.note)
+                                : ""}
                         </small>
 
-                        ${
-                            item.note
-                                ? `
-                                    <small>
-                                        📝 ${escapeHTML(item.note)}
-                                    </small>
-                                  `
-                                : ""
-                        }
+                    </div>
+
+                    <div class="transaction-right">
+
+                        <strong class="${isThu ? "money-green" : "money-red"}">
+                            ${isThu ? "+" : "-"}${formatMoney(transaction.amount)}
+                        </strong>
+
+                        <div class="transaction-actions">
+
+                            <button onclick="editTransaction('${transaction.id}')">
+                                ✏️
+                            </button>
+
+                            <button onclick="deleteTransaction('${transaction.id}')">
+                                🗑️
+                            </button>
+
+                        </div>
 
                     </div>
 
                 </div>
-
-                <div class="transaction-right">
-
-                    <strong class="${color}">
-                        ${sign}${formatMoney(item.amount)}
-                    </strong>
-
-                    <div class="transaction-actions">
-
-                        <button
-                            onclick="editTransaction(${item.id})">
-                            ✏️
-                        </button>
-
-                        <button
-                            onclick="deleteTransaction(${item.id})">
-                            🗑️
-                        </button>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        `;
-
-    }).join("");
+            `;
+        }).join("");
 }
 
 
-// =========================================================
-// 22. ESCAPE HTML
-// =========================================================
+/* =========================================================
+   14. THÁNG
+   ========================================================= */
 
-function escapeHTML(value) {
+function getMonthKey(dateString) {
 
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    const parts = dateString.split("/");
+
+    if (parts.length !== 3) return "";
+
+    return `${parts[2]}-${parts[1]}`;
 }
 
 
-// =========================================================
-// 23. THÁNG
-// =========================================================
+function getMonthLabel(monthKey) {
 
-function initMonthSelects() {
+    if (monthKey === "all") {
+        return "Tất cả";
+    }
 
-    const statMonth =
-        document.getElementById("statMonth");
+    const parts = monthKey.split("-");
 
-    const filterMonth =
-        document.getElementById("filterMonth");
+    if (parts.length !== 2) {
+        return monthKey;
+    }
+
+    return `Tháng ${Number(parts[1])}/${parts[0]}`;
+}
 
 
-    const months = new Set();
+function getAvailableMonths() {
 
+    const months =
+        new Set();
 
-    transactions.forEach(function (item) {
+    data.transactions.forEach(t => {
 
         const key =
-            getMonthKey(item.date);
+            getMonthKey(t.date);
 
         if (key) {
             months.add(key);
         }
-
     });
 
-
-    // Tháng hiện tại
-    const now = new Date();
-
     const current =
-        `${now.getFullYear()}-${String(
-            now.getMonth() + 1
-        ).padStart(2, "0")}`;
+        new Date();
 
-    months.add(current);
+    months.add(
+        `${current.getFullYear()}-${String(
+            current.getMonth() + 1
+        ).padStart(2, "0")}`
+    );
 
-
-    const sorted =
-        [...months].sort().reverse();
-
-
-    if (statMonth) {
-
-        const oldValue =
-            statMonth.value;
-
-        statMonth.innerHTML = "";
-
-        sorted.forEach(function (month) {
-
-            const option =
-                document.createElement("option");
-
-            option.value = month;
-
-            option.textContent =
-                formatMonth(month);
-
-            statMonth.appendChild(option);
-
-        });
+    return [...months].sort().reverse();
+}
 
 
-        if (sorted.includes(oldValue)) {
-            statMonth.value = oldValue;
-        }
+function renderMonthFilters() {
 
-    }
+    const filters = [
+        "filterMonth",
+        "statMonth"
+    ];
 
+    const months =
+        getAvailableMonths();
 
-    if (filterMonth) {
+    filters.forEach(id => {
+
+        const select =
+            document.getElementById(id);
+
+        if (!select) return;
 
         const oldValue =
-            filterMonth.value || "all";
+            select.value;
 
-        filterMonth.innerHTML =
+        select.innerHTML =
             `<option value="all">Tất cả tháng</option>`;
 
-
-        sorted.forEach(function (month) {
+        months.forEach(month => {
 
             const option =
                 document.createElement("option");
@@ -1196,120 +1397,83 @@ function initMonthSelects() {
             option.value = month;
 
             option.textContent =
-                formatMonth(month);
+                getMonthLabel(month);
 
-            filterMonth.appendChild(option);
-
+            select.appendChild(option);
         });
 
-
         if (
-            oldValue &&
-            [...filterMonth.options]
-                .some(o => o.value === oldValue)
+            oldValue === "all" ||
+            months.includes(oldValue)
         ) {
-            filterMonth.value = oldValue;
+
+            select.value = oldValue || "all";
         }
-
-    }
+    });
 }
 
 
-function formatMonth(month) {
-
-    const parts =
-        month.split("-");
-
-    if (parts.length !== 2) {
-        return month;
-    }
-
-    return `${parts[1]}/${parts[0]}`;
-}
-
-
-// =========================================================
-// 24. THỐNG KÊ
-// =========================================================
+/* =========================================================
+   15. THỐNG KÊ
+   ========================================================= */
 
 function setStatisticType(type) {
 
     statisticType = type;
 
+    const tabs = {
+        all: "tabAll",
+        thu: "tabThu",
+        chi: "tabChi"
+    };
 
-    document
-        .getElementById("tabAll")
-        ?.classList.remove("active");
+    Object.entries(tabs).forEach(
+        ([key, id]) => {
 
-    document
-        .getElementById("tabThu")
-        ?.classList.remove("active");
+            const button =
+                document.getElementById(id);
 
-    document
-        .getElementById("tabChi")
-        ?.classList.remove("active");
+            if (!button) return;
 
-
-    if (type === "all") {
-
-        document
-            .getElementById("tabAll")
-            ?.classList.add("active");
-
-    }
-
-    if (type === "thu") {
-
-        document
-            .getElementById("tabThu")
-            ?.classList.add("active");
-
-    }
-
-    if (type === "chi") {
-
-        document
-            .getElementById("tabChi")
-            ?.classList.add("active");
-
-    }
-
+            button.classList.toggle(
+                "active",
+                key === type
+            );
+        }
+    );
 
     renderStatistics();
 }
 
 
-// =========================================================
-// 25. RENDER THỐNG KÊ
-// =========================================================
-
 function renderStatistics() {
 
-    const month =
-        document.getElementById("statMonth")?.value;
+    const statMonth =
+        document.getElementById("statMonth");
 
+    let month =
+        statMonth
+            ? statMonth.value
+            : "all";
 
     let list =
-        transactions.filter(function (item) {
+        [...data.transactions];
 
-            if (
-                month &&
-                getMonthKey(item.date) !== month
-            ) {
-                return false;
-            }
+    if (month !== "all") {
 
-            if (
-                statisticType !== "all" &&
-                item.type !== statisticType
-            ) {
-                return false;
-            }
+        list = list.filter(
+            t =>
+                getMonthKey(t.date) === month
+        );
+    }
 
-            return true;
+    if (statisticType !== "all") {
 
-        });
-
+        list = list.filter(
+            t =>
+                t.type === statisticType
+        );
+    }
 
     renderPieChart(list);
 
@@ -1318,10 +1482,6 @@ function renderStatistics() {
     renderCategoryStats(list);
 }
 
-
-// =========================================================
-// 26. PIE CHART
-// =========================================================
 
 function renderPieChart(list) {
 
@@ -1337,54 +1497,75 @@ function renderPieChart(list) {
     const chartTotal =
         document.getElementById("chartTotal");
 
+    const chartTitle =
+        document.getElementById("chartMainTitle");
 
-    if (!pie || !legend) return;
-
+    if (!pie) return;
 
     const groups = {};
 
-
-    list.forEach(function (item) {
+    list.forEach(t => {
 
         const key =
-            item.categoryName || "Khác";
+            t.category || "Khác";
 
         groups[key] =
             (groups[key] || 0) +
-            Number(item.amount);
-
+            Number(t.amount);
     });
 
-
     const entries =
-        Object.entries(groups);
-
+        Object.entries(groups)
+            .sort((a, b) => b[1] - a[1]);
 
     const total =
         entries.reduce(
-            (sum, item) => sum + item[1],
+            (sum, [, value]) => sum + value,
             0
         );
 
+    if (pieTotal) {
+        pieTotal.textContent =
+            formatMoney(total);
+    }
 
-    pieTotal.textContent =
-        formatMoney(total);
+    if (chartTotal) {
+        chartTotal.textContent =
+            formatMoney(total);
+    }
 
-    chartTotal.textContent =
-        formatMoney(total);
+    if (chartTitle) {
 
+        if (statisticType === "thu") {
 
-    if (entries.length === 0) {
+            chartTitle.textContent =
+                "Phân bổ khoản thu";
+
+        } else if (statisticType === "chi") {
+
+            chartTitle.textContent =
+                "Phân bổ khoản chi";
+
+        } else {
+
+            chartTitle.textContent =
+                "Phân bổ thu chi";
+        }
+    }
+
+    if (!total) {
 
         pie.style.background =
             "#e5e7eb";
 
-        legend.innerHTML =
-            `<span>Chưa có dữ liệu</span>`;
+        if (legend) {
+
+            legend.innerHTML =
+                `<div class="empty-state">Chưa có dữ liệu</div>`;
+        }
 
         return;
     }
-
 
     const colors = [
         "#22c55e",
@@ -1394,77 +1575,78 @@ function renderPieChart(list) {
         "#8b5cf6",
         "#ec4899",
         "#14b8a6",
-        "#f97316",
-        "#06b6d4",
-        "#84cc16"
+        "#f97316"
     ];
 
+    let current = 0;
 
-    let start = 0;
+    const gradients = [];
 
-    const parts = [];
-
-
-    entries.forEach(function (entry, index) {
-
-        const percent =
-            entry[1] / total * 100;
-
-        const end =
-            start + percent;
-
-        parts.push(
-            `${colors[index % colors.length]} ${start}% ${end}%`
-        );
-
-        start = end;
-
-    });
-
-
-    pie.style.background =
-        `conic-gradient(${parts.join(",")})`;
-
-
-    legend.innerHTML =
-        entries.map(function (entry, index) {
+    entries.forEach(
+        ([category, value], index) => {
 
             const percent =
-                ((entry[1] / total) * 100)
-                    .toFixed(1);
+                value / total * 100;
 
-            return `
+            const start = current;
 
-                <div class="legend-item">
+            const end =
+                current + percent;
 
-                    <span
-                        class="legend-color"
-                        style="
-                            background:
-                            ${colors[index % colors.length]}
-                        ">
-                    </span>
+            current = end;
 
-                    <span>
-                        ${escapeHTML(entry[0])}
-                    </span>
+            gradients.push(
+                `${colors[index % colors.length]} ${start}% ${end}%`
+            );
+        }
+    );
 
-                    <strong>
-                        ${formatMoney(entry[1])}
-                        (${percent}%)
-                    </strong>
+    pie.style.background =
+        `conic-gradient(${gradients.join(", ")})`;
 
-                </div>
+    if (legend) {
 
-            `;
+        legend.innerHTML =
+            entries.map(
+                ([category, value], index) => {
 
-        }).join("");
+                    const percent =
+                        value / total * 100;
+
+                    return `
+                        <div class="legend-item">
+
+                            <span
+                                class="legend-color"
+                                style="
+                                    background:
+                                    ${colors[index % colors.length]}
+                                ">
+                            </span>
+
+                            <span class="legend-name">
+                                ${escapeHTML(category)}
+                            </span>
+
+                            <strong>
+                                ${formatMoney(value)}
+                            </strong>
+
+                            <small>
+                                ${percent.toFixed(1)}%
+                            </small>
+
+                        </div>
+                    `;
+                }
+            ).join("");
+    }
 }
 
 
-// =========================================================
-// 27. BIỂU ĐỒ THEO NGÀY
-// =========================================================
+/* =========================================================
+   16. BIỂU ĐỒ THEO NGÀY
+   ========================================================= */
 
 function renderDailyChart(list) {
 
@@ -1474,112 +1656,121 @@ function renderDailyChart(list) {
     const label =
         document.getElementById("dailyLabel");
 
-
     if (!container) return;
-
 
     const days = {};
 
+    list.forEach(t => {
 
-    list.forEach(function (item) {
-
-        const key = item.date;
-
-        days[key] =
-            (days[key] || 0) +
-            Number(item.amount);
-
+        days[t.date] =
+            (days[t.date] || 0) +
+            Number(t.amount);
     });
-
 
     const entries =
         Object.entries(days)
-            .sort(function (a, b) {
-
-                return dateToKey(a[0])
-                    .localeCompare(
-                        dateToKey(b[0])
-                    );
-
-            });
-
+            .sort(
+                (a, b) =>
+                    dateToKey(a[0])
+                        .localeCompare(
+                            dateToKey(b[0])
+                        )
+            );
 
     if (label) {
 
-        if (statisticType === "thu") {
-            label.textContent = "Thu";
-        } else if (statisticType === "chi") {
-            label.textContent = "Chi";
-        } else {
-            label.textContent = "Tất cả";
-        }
-
+        label.textContent =
+            statisticType === "thu"
+                ? "Thu"
+                : statisticType === "chi"
+                    ? "Chi"
+                    : "Tất cả";
     }
 
-
-    if (entries.length === 0) {
+    if (!entries.length) {
 
         container.innerHTML =
-            `<div class="empty-state">
-                Chưa có dữ liệu
-            </div>`;
+            `<div class="empty-state">Chưa có dữ liệu</div>`;
 
         return;
     }
 
-
     const max =
         Math.max(
-            ...entries.map(item => item[1])
+            ...entries.map(
+                ([, value]) => value
+            )
         );
 
-
     container.innerHTML =
-        entries.map(function (entry) {
+        entries.map(
+            ([date, value]) => {
 
-            const percent =
-                max > 0
-                    ? (entry[1] / max) * 100
-                    : 0;
+                const height =
+                    max > 0
+                        ? Math.max(
+                            5,
+                            value / max * 100
+                        )
+                        : 5;
 
-            const shortDate =
-                entry[0].slice(0, 5);
+                const day =
+                    date.substring(0, 2);
 
+                return `
+                    <div class="bar-column">
 
-            return `
-
-                <div class="bar-item">
-
-                    <div class="bar-value">
-                        ${formatMoney(entry[1])}
-                    </div>
-
-                    <div class="bar-track">
-
-                        <div
-                            class="bar-fill"
-                            style="
-                                height:${percent}%;
-                            ">
+                        <div class="bar-value">
+                            ${formatShortMoney(value)}
                         </div>
 
+                        <div
+                            class="bar"
+                            style="height:${height}%"
+                            title="${escapeHTML(date)}: ${formatMoney(value)}">
+                        </div>
+
+                        <small>
+                            ${day}
+                        </small>
+
                     </div>
-
-                    <div class="bar-label">
-                        ${shortDate}
-                    </div>
-
-                </div>
-
-            `;
-
-        }).join("");
+                `;
+            }
+        ).join("");
 }
 
 
-// =========================================================
-// 28. CHI TIẾT DANH MỤC / NGUỒN
-// =========================================================
+function formatShortMoney(value) {
+
+    value = Number(value) || 0;
+
+    if (value >= 1000000) {
+
+        return (
+            (value / 1000000)
+                .toFixed(1)
+                .replace(".0", "")
+            + "tr"
+        );
+    }
+
+    if (value >= 1000) {
+
+        return (
+            (value / 1000)
+                .toFixed(0)
+            + "k"
+        );
+    }
+
+    return value.toString();
+}
+
+
+/* =========================================================
+   17. CHI TIẾT DANH MỤC
+   ========================================================= */
 
 function renderCategoryStats(list) {
 
@@ -1588,250 +1779,105 @@ function renderCategoryStats(list) {
 
     if (!container) return;
 
-
     const groups = {};
 
+    list.forEach(t => {
 
-    list.forEach(function (item) {
+        const key =
+            t.category || "Khác";
 
-        let key =
-            item.categoryName || "Khác";
+        if (!groups[key]) {
 
-
-        if (
-            statisticType === "thu" &&
-            item.source
-        ) {
-            key += ` • ${item.source}`;
+            groups[key] = {
+                total: 0,
+                count: 0,
+                sources: {}
+            };
         }
 
+        groups[key].total +=
+            Number(t.amount);
 
-        groups[key] =
-            (groups[key] || 0) +
-            Number(item.amount);
+        groups[key].count++;
 
+        if (t.source) {
+
+            groups[key].sources[t.source] =
+                (groups[key].sources[t.source] || 0) +
+                Number(t.amount);
+        }
     });
-
 
     const entries =
         Object.entries(groups)
-            .sort((a, b) => b[1] - a[1]);
-
-
-    if (entries.length === 0) {
-
-        container.innerHTML =
-            `<div class="empty-state">
-                Chưa có dữ liệu
-            </div>`;
-
-        return;
-    }
-
-
-    const total =
-        entries.reduce(
-            (sum, item) => sum + item[1],
-            0
-        );
-
-
-    container.innerHTML =
-        entries.map(function (entry) {
-
-            const percent =
-                total > 0
-                    ? entry[1] / total * 100
-                    : 0;
-
-
-            return `
-
-                <div class="category-stat">
-
-                    <div class="category-stat-head">
-
-                        <strong>
-                            ${escapeHTML(entry[0])}
-                        </strong>
-
-                        <span>
-                            ${formatMoney(entry[1])}
-                        </span>
-
-                    </div>
-
-                    <div class="category-stat-track">
-
-                        <div
-                            class="category-stat-fill"
-                            style="
-                                width:${percent}%;
-                            ">
-                        </div>
-
-                    </div>
-
-                </div>
-
-            `;
-
-        }).join("");
-}
-
-
-// =========================================================
-// 29. QUẢN LÝ DANH MỤC QUÁN
-// =========================================================
-
-function addCategory() {
-
-    const input =
-        document.getElementById("newCategory");
-
-    const name =
-        input.value.trim();
-
-
-    if (!name) {
-
-        showToast("⚠️ Nhập tên danh mục");
-
-        return;
-    }
-
-
-    const exists =
-        categories.some(function (item) {
-
-            return item.name
-                .toLowerCase() ===
-                name.toLowerCase();
-
-        });
-
-
-    if (exists) {
-
-        showToast("⚠️ Danh mục đã tồn tại");
-
-        return;
-    }
-
-
-    const category = {
-
-        id: Date.now(),
-
-        name: name
-
-    };
-
-
-    categories.push(category);
-
-    saveData();
-
-    input.value = "";
-
-    renderCategories();
-
-    renderDishSelect();
-
-    renderMenu();
-
-    renderCODCategories();
-
-    showToast("✅ Đã thêm danh mục");
-}
-
-
-// =========================================================
-// 30. THÊM MÓN
-// =========================================================
-
-function addDish() {
-
-    const categoryId =
-        document.getElementById(
-            "menuDishCategory"
-        ).value;
-
-
-    const input =
-        document.getElementById("newDish");
-
-
-    const name =
-        input.value.trim();
-
-
-    if (!categoryId) {
-
-        showToast("⚠️ Chọn danh mục");
-
-        return;
-    }
-
-
-    if (!name) {
-
-        showToast("⚠️ Nhập tên món");
-
-        return;
-    }
-
-
-    const exists =
-        dishes.some(function (item) {
-
-            return (
-                String(item.categoryId) ===
-                String(categoryId)
-                &&
-                item.name.toLowerCase() ===
-                name.toLowerCase()
+            .sort(
+                (a, b) =>
+                    b[1].total - a[1].total
             );
 
-        });
+    if (!entries.length) {
 
-
-    if (exists) {
-
-        showToast("⚠️ Món đã tồn tại");
+        container.innerHTML =
+            `<div class="empty-state">Chưa có dữ liệu</div>`;
 
         return;
     }
 
+    container.innerHTML =
+        entries.map(
+            ([category, info]) => {
 
-    dishes.push({
+                const sources =
+                    Object.entries(
+                        info.sources
+                    );
 
-        id: Date.now(),
+                return `
+                    <div class="category-stat">
 
-        categoryId: categoryId,
+                        <div class="category-stat-head">
 
-        name: name
+                            <strong>
+                                ${escapeHTML(category)}
+                            </strong>
 
-    });
+                            <strong>
+                                ${formatMoney(info.total)}
+                            </strong>
 
+                        </div>
 
-    saveData();
+                        <div class="category-stat-count">
+                            ${info.count} giao dịch
+                        </div>
 
-    input.value = "";
+                        ${
+                            sources.length
+                                ? `
+                                    <div class="category-sources">
+                                        ${sources.map(
+                                            ([source, amount]) => `
+                                                <span>
+                                                    ${escapeHTML(source)}:
+                                                    ${formatMoney(amount)}
+                                                </span>
+                                            `
+                                        ).join("")}
+                                    </div>
+                                `
+                                : ""
+                        }
 
-    renderDishSelect();
-
-    renderMenu();
-
-    renderCODCategories();
-
-    showToast("✅ Đã thêm món");
+                    </div>
+                `;
+            }
+        ).join("");
 }
 
 
-// =========================================================
-// 31. HIỂN THỊ MENU
-// =========================================================
+/* =========================================================
+   18. QUẢN LÝ THỰC ĐƠN
+   ========================================================= */
 
 function renderMenu() {
 
@@ -1841,56 +1887,47 @@ function renderMenu() {
     const count =
         document.getElementById("menuCount");
 
-
     if (!container) return;
-
 
     if (count) {
 
         count.textContent =
-            `${categories.length} danh mục`;
-
+            `${data.categories.length} danh mục`;
     }
 
-
-    if (categories.length === 0) {
+    if (!data.categories.length) {
 
         container.innerHTML =
-            `<div class="empty-state">
-                Chưa có danh mục
-            </div>`;
+            `
+            <div class="empty-state">
+                Chưa có danh mục nào.
+            </div>
+            `;
 
         return;
     }
 
-
     container.innerHTML =
-        categories.map(function (category) {
+        data.categories.map(category => {
 
-            const categoryDishes =
-                dishes.filter(function (dish) {
-
-                    return String(dish.categoryId) ===
-                        String(category.id);
-
-                });
-
+            const dishes =
+                data.dishes.filter(
+                    dish =>
+                        dish.category === category
+                );
 
             return `
-
                 <div class="menu-category">
 
                     <div class="menu-category-head">
 
                         <strong>
-                            📁
-                            ${escapeHTML(category.name)}
+                            📁 ${escapeHTML(category)}
                         </strong>
 
                         <button
-                            onclick="
-                                deleteCategory(${category.id})
-                            ">
+                            class="menu-delete"
+                            onclick="deleteCategory('${escapeHTML(category).replace(/'/g, "\\'")}')">
                             🗑️
                         </button>
 
@@ -1899,37 +1936,26 @@ function renderMenu() {
                     <div class="menu-dishes">
 
                         ${
-                            categoryDishes.length
-                                ? categoryDishes.map(
-                                    function (dish) {
+                            dishes.length
+                                ? dishes.map(dish => {
 
-                                        return `
+                                    return `
+                                        <div class="menu-dish">
 
-                                            <div
-                                                class="menu-dish">
+                                            <span>
+                                                🍜
+                                                ${escapeHTML(dish.name)}
+                                            </span>
 
-                                                <span>
-                                                    🍜
-                                                    ${escapeHTML(
-                                                        dish.name
-                                                    )}
-                                                </span>
+                                            <button
+                                                onclick="deleteDish('${dish.id}')">
+                                                🗑️
+                                            </button>
 
-                                                <button
-                                                    onclick="
-                                                        deleteDish(
-                                                            ${dish.id}
-                                                        )
-                                                    ">
-                                                    🗑️
-                                                </button>
+                                        </div>
+                                    `;
 
-                                            </div>
-
-                                        `;
-
-                                    }
-                                ).join("")
+                                }).join("")
                                 : `
                                     <small>
                                         Chưa có món
@@ -1940,309 +1966,15 @@ function renderMenu() {
                     </div>
 
                 </div>
-
             `;
 
         }).join("");
 }
 
 
-// =========================================================
-// 32. XÓA DANH MỤC
-// =========================================================
-
-function deleteCategory(id) {
-
-    const hasDish =
-        dishes.some(function (dish) {
-
-            return String(dish.categoryId) ===
-                String(id);
-
-        });
-
-
-    if (hasDish) {
-
-        if (
-            !confirm(
-                "Danh mục này có món. Xóa danh mục sẽ xóa luôn các món. Tiếp tục?"
-            )
-        ) {
-            return;
-        }
-
-    } else {
-
-        if (
-            !confirm(
-                "Bạn có chắc muốn xóa danh mục này?"
-            )
-        ) {
-            return;
-        }
-
-    }
-
-
-    categories =
-        categories.filter(function (item) {
-
-            return item.id !== id;
-
-        });
-
-
-    dishes =
-        dishes.filter(function (dish) {
-
-            return String(dish.categoryId) !==
-                String(id);
-
-        });
-
-
-    saveData();
-
-    renderCategories();
-
-    renderDishSelect();
-
-    renderMenu();
-
-    renderCODCategories();
-
-    showToast("🗑️ Đã xóa danh mục");
-}
-
-
-// =========================================================
-// 33. XÓA MÓN
-// =========================================================
-
-function deleteDish(id) {
-
-    if (
-        !confirm(
-            "Bạn có chắc muốn xóa món này?"
-        )
-    ) {
-        return;
-    }
-
-
-    dishes =
-        dishes.filter(function (item) {
-
-            return item.id !== id;
-
-        });
-
-
-    delete codData[id];
-
-
-    saveData();
-
-    renderDishSelect();
-
-    renderMenu();
-
-    renderCODCategories();
-
-    showToast("🗑️ Đã xóa món");
-}
-
-
-// =========================================================
-// 34. ĐIỀU HƯỚNG
-// =========================================================
-
-function hideAllSections() {
-
-    document.getElementById("homeSection")
-        .style.display = "none";
-
-    document.getElementById("codSection")
-        .style.display = "none";
-}
-
-
-function clearNavActive() {
-
-    document.querySelectorAll(".nav-button")
-        .forEach(function (button) {
-
-            button.classList.remove("active");
-
-        });
-}
-
-
-function goHome() {
-
-    hideAllSections();
-
-    document.getElementById("homeSection")
-        .style.display = "block";
-
-    clearNavActive();
-
-    document.getElementById("navHome")
-        .classList.add("active");
-
-    document.getElementById("pageTitle")
-        .textContent = "Thu Chi";
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
-
-
-function goAdd() {
-
-    hideAllSections();
-
-    document.getElementById("homeSection")
-        .style.display = "block";
-
-    clearNavActive();
-
-    document.getElementById("navAdd")
-        .classList.add("active");
-
-    document.getElementById("pageTitle")
-        .textContent = "Thêm giao dịch";
-
-
-    setTimeout(function () {
-
-        document.getElementById("addSection")
-            ?.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-
-    }, 50);
-}
-
-
-function goStatistics() {
-
-    hideAllSections();
-
-    document.getElementById("homeSection")
-        .style.display = "block";
-
-    clearNavActive();
-
-    document.getElementById("navStatistics")
-        .classList.add("active");
-
-    document.getElementById("pageTitle")
-        .textContent = "Thống kê";
-
-
-    setTimeout(function () {
-
-        document.getElementById(
-            "statisticsSection"
-        )?.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    }, 50);
-}
-
-
-function goHistory() {
-
-    hideAllSections();
-
-    document.getElementById("homeSection")
-        .style.display = "block";
-
-    clearNavActive();
-
-    document.getElementById("navHistory")
-        .classList.add("active");
-
-    document.getElementById("pageTitle")
-        .textContent = "Lịch sử";
-
-
-    setTimeout(function () {
-
-        document.getElementById(
-            "historySection"
-        )?.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    }, 50);
-}
-
-
-function goRestaurant() {
-
-    hideAllSections();
-
-    document.getElementById("homeSection")
-        .style.display = "block";
-
-    clearNavActive();
-
-    document.getElementById("navRestaurant")
-        .classList.add("active");
-
-    document.getElementById("pageTitle")
-        .textContent = "Quản lý Quán";
-
-
-    setTimeout(function () {
-
-        document.getElementById(
-            "restaurantSection"
-        )?.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-
-    }, 50);
-}
-
-
-function goCOD() {
-
-    hideAllSections();
-
-    document.getElementById("codSection")
-        .style.display = "block";
-
-    clearNavActive();
-
-    document.getElementById("navCOD")
-        .classList.add("active");
-
-    document.getElementById("pageTitle")
-        .textContent = "COD - Giá vốn";
-
-    renderCODCategories();
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-}
-
-
-// =========================================================
-// 35. COD - DANH MỤC
-// =========================================================
+/* =========================================================
+   19. COD - DANH MỤC
+   ========================================================= */
 
 function renderCODCategories() {
 
@@ -2253,181 +1985,43 @@ function renderCODCategories() {
 
     if (!container) return;
 
-
-    document.getElementById(
-        "codCategoryPage"
-    ).style.display = "block";
-
-    document.getElementById(
-        "codDishPage"
-    ).style.display = "none";
-
-    document.getElementById(
-        "codDetailPage"
-    ).style.display = "none";
-
-
-    if (categories.length === 0) {
+    if (!data.categories.length) {
 
         container.innerHTML =
-            `<div class="empty-state">
-                Chưa có danh mục món.
-                Hãy tạo danh mục ở phần Quản lý Quán.
-            </div>`;
+            `
+            <div class="empty-state">
+                Chưa có danh mục.
+                Hãy tạo danh mục ở mục Quán.
+            </div>
+            `;
 
         return;
     }
 
-
     container.innerHTML =
-        categories.map(function (category) {
+        data.categories.map(category => {
 
-            const dishCount =
-                dishes.filter(function (dish) {
-
-                    return String(dish.categoryId) ===
-                        String(category.id);
-
-                }).length;
-
+            const dishes =
+                data.dishes.filter(
+                    d =>
+                        d.category === category
+                );
 
             return `
-
                 <button
                     class="cod-category-button"
-                    onclick="
-                        showCODDishes(${category.id})
-                    ">
+                    onclick="showCODDishes('${escapeHTML(category).replace(/'/g, "\\'")}')">
 
                     <span>
                         📁
-                        ${escapeHTML(category.name)}
+                        ${escapeHTML(category)}
                     </span>
 
                     <small>
-                        ${dishCount} món →
+                        ${dishes.length} món
                     </small>
 
                 </button>
-
-            `;
-
-        }).join("");
-}
-
-
-// =========================================================
-// 36. COD - MÓN
-// =========================================================
-
-function showCODDishes(categoryId) {
-
-    currentCODCategory = categoryId;
-
-
-    const category =
-        categories.find(function (item) {
-
-            return String(item.id) ===
-                String(categoryId);
-
-        });
-
-
-    if (!category) return;
-
-
-    document.getElementById(
-        "codCategoryPage"
-    ).style.display = "none";
-
-    document.getElementById(
-        "codDishPage"
-    ).style.display = "block";
-
-    document.getElementById(
-        "codDetailPage"
-    ).style.display = "none";
-
-
-    document.getElementById(
-        "codDishCategoryTitle"
-    ).textContent =
-        `🍜 ${category.name}`;
-
-
-    const container =
-        document.getElementById(
-            "codDishList"
-        );
-
-
-    const categoryDishes =
-        dishes.filter(function (dish) {
-
-            return String(dish.categoryId) ===
-                String(categoryId);
-
-        });
-
-
-    if (categoryDishes.length === 0) {
-
-        container.innerHTML =
-            `<div class="empty-state">
-                Chưa có món trong danh mục này.
-            </div>`;
-
-        return;
-    }
-
-
-    container.innerHTML =
-        categoryDishes.map(function (dish) {
-
-            const data =
-                codData[dish.id] || {};
-
-            const parts =
-                data.parts || [];
-
-            const total =
-                parts.reduce(
-                    (sum, part) =>
-                        sum + Number(part.amount || 0),
-                    0
-                );
-
-
-            return `
-
-                <button
-                    class="cod-dish-button"
-                    onclick="
-                        showCODDetail(${dish.id})
-                    ">
-
-                    <div>
-
-                        <strong>
-                            🍜
-                            ${escapeHTML(dish.name)}
-                        </strong>
-
-                        <small>
-                            ${
-                                parts.length
-                            } thành phần
-                        </small>
-
-                    </div>
-
-                    <strong>
-                        ${formatMoney(total)}
-                    </strong>
-
-                </button>
-
             `;
 
         }).join("");
@@ -2440,130 +2034,318 @@ function showCODCategories() {
 
     currentCODDish = null;
 
+    const categoryPage =
+        document.getElementById(
+            "codCategoryPage"
+        );
+
+    const dishPage =
+        document.getElementById(
+            "codDishPage"
+        );
+
+    const detailPage =
+        document.getElementById(
+            "codDetailPage"
+        );
+
+    if (categoryPage) {
+        categoryPage.style.display = "block";
+    }
+
+    if (dishPage) {
+        dishPage.style.display = "none";
+    }
+
+    if (detailPage) {
+        detailPage.style.display = "none";
+    }
+
     renderCODCategories();
 }
 
 
-// =========================================================
-// 37. COD - CHI TIẾT MÓN
-// =========================================================
+function showCODDishes(category) {
+
+    currentCODCategory = category;
+
+    const categoryPage =
+        document.getElementById(
+            "codCategoryPage"
+        );
+
+    const dishPage =
+        document.getElementById(
+            "codDishPage"
+        );
+
+    const detailPage =
+        document.getElementById(
+            "codDetailPage"
+        );
+
+    if (categoryPage) {
+        categoryPage.style.display = "none";
+    }
+
+    if (dishPage) {
+        dishPage.style.display = "block";
+    }
+
+    if (detailPage) {
+        detailPage.style.display = "none";
+    }
+
+    const title =
+        document.getElementById(
+            "codDishCategoryTitle"
+        );
+
+    if (title) {
+
+        title.textContent =
+            `🍜 ${category}`;
+    }
+
+    const list =
+        document.getElementById(
+            "codDishList"
+        );
+
+    if (!list) return;
+
+    const dishes =
+        data.dishes.filter(
+            d => d.category === category
+        );
+
+    if (!dishes.length) {
+
+        list.innerHTML =
+            `
+            <div class="empty-state">
+                Danh mục này chưa có món.
+            </div>
+            `;
+
+        return;
+    }
+
+    list.innerHTML =
+        dishes.map(dish => {
+
+            const cod =
+                data.cod[dish.id];
+
+            const totalCost =
+                cod
+                    ? calculateCODTotal(cod)
+                    : 0;
+
+            return `
+                <button
+                    class="cod-dish-button"
+                    onclick="showCODDetail('${dish.id}')">
+
+                    <div>
+
+                        <strong>
+                            🍜 ${escapeHTML(dish.name)}
+                        </strong>
+
+                        <small>
+                            Giá vốn:
+                            ${formatMoney(totalCost)}
+                        </small>
+
+                    </div>
+
+                    <span>
+                        →
+                    </span>
+
+                </button>
+            `;
+
+        }).join("");
+}
+
+
+/* =========================================================
+   20. COD - CHI TIẾT
+   ========================================================= */
 
 function showCODDetail(dishId) {
 
     currentCODDish = dishId;
 
-
     const dish =
-        dishes.find(function (item) {
-
-            return item.id === dishId;
-
-        });
-
+        data.dishes.find(
+            d => d.id === dishId
+        );
 
     if (!dish) return;
 
+    if (!data.cod[dishId]) {
 
-    const category =
-        categories.find(function (item) {
-
-            return String(item.id) ===
-                String(dish.categoryId);
-
-        });
-
-
-    document.getElementById(
-        "codCategoryPage"
-    ).style.display = "none";
-
-    document.getElementById(
-        "codDishPage"
-    ).style.display = "none";
-
-    document.getElementById(
-        "codDetailPage"
-    ).style.display = "block";
-
-
-    document.getElementById(
-        "codDetailName"
-    ).textContent = dish.name;
-
-
-    document.getElementById(
-        "codDetailCategory"
-    ).textContent =
-        category?.name || "Khác";
-
-
-    const data =
-        codData[dishId] || {
+        data.cod[dishId] = {
 
             sellingPrice: 0,
 
             parts: []
-
         };
+    }
 
+    const categoryPage =
+        document.getElementById(
+            "codCategoryPage"
+        );
 
-    document.getElementById(
-        "codSellingPrice"
-    ).value =
-        data.sellingPrice || "";
+    const dishPage =
+        document.getElementById(
+            "codDishPage"
+        );
 
+    const detailPage =
+        document.getElementById(
+            "codDetailPage"
+        );
+
+    if (categoryPage) {
+        categoryPage.style.display = "none";
+    }
+
+    if (dishPage) {
+        dishPage.style.display = "none";
+    }
+
+    if (detailPage) {
+        detailPage.style.display = "block";
+    }
+
+    const name =
+        document.getElementById(
+            "codDetailName"
+        );
+
+    const category =
+        document.getElementById(
+            "codDetailCategory"
+        );
+
+    const selling =
+        document.getElementById(
+            "codSellingPrice"
+        );
+
+    if (name) {
+        name.textContent = dish.name;
+    }
+
+    if (category) {
+        category.textContent = dish.category;
+    }
+
+    if (selling) {
+
+        selling.value =
+            data.cod[dishId].sellingPrice || "";
+    }
+
+    clearCODPartInputs();
 
     renderCODDetail();
 }
 
 
-// =========================================================
-// 38. COD - RENDER CHI TIẾT
-// =========================================================
+function calculateCODTotal(cod) {
+
+    if (!cod || !Array.isArray(cod.parts)) {
+        return 0;
+    }
+
+    return cod.parts.reduce(
+        (sum, part) =>
+            sum + Number(part.amount || 0),
+        0
+    );
+}
+
 
 function renderCODDetail() {
 
-    const data =
-        codData[currentCODDish] || {
+    if (!currentCODDish) return;
 
-            sellingPrice: 0,
+    const cod =
+        data.cod[currentCODDish];
 
-            parts: []
+    if (!cod) return;
 
-        };
+    const total =
+        calculateCODTotal(cod);
 
+    const selling =
+        Number(cod.sellingPrice || 0);
 
-    const parts =
-        data.parts || [];
+    const profit =
+        selling - total;
 
+    const totalElement =
+        document.getElementById(
+            "codTotalCost"
+        );
 
-    const container =
+    const profitElement =
+        document.getElementById(
+            "codProfit"
+        );
+
+    const count =
+        document.getElementById(
+            "codPartCount"
+        );
+
+    const list =
         document.getElementById(
             "codPartList"
         );
 
+    if (totalElement) {
+        totalElement.textContent =
+            formatMoney(total);
+    }
 
-    document.getElementById(
-        "codPartCount"
-    ).textContent =
-        `${parts.length} phần`;
+    if (profitElement) {
+        profitElement.textContent =
+            formatMoney(profit);
+    }
 
+    if (count) {
 
-    if (parts.length === 0) {
+        count.textContent =
+            `${cod.parts.length} phần`;
+    }
 
-        container.innerHTML =
-            `<div class="empty-state">
+    if (!list) return;
+
+    if (!cod.parts.length) {
+
+        list.innerHTML =
+            `
+            <div class="empty-state">
                 Chưa có thành phần giá vốn.
-            </div>`;
+            </div>
+            `;
 
-    } else {
+        return;
+    }
 
-        container.innerHTML =
-            parts.map(function (part, index) {
+    list.innerHTML =
+        cod.parts.map(
+            part => {
 
                 return `
-
-                    <div class="cod-part-item">
+                    <div class="cod-part">
 
                         <div>
 
@@ -2575,11 +2357,9 @@ function renderCODDetail() {
                                 part.note
                                     ? `
                                         <small>
-                                            ${escapeHTML(
-                                                part.note
-                                            )}
+                                            ${escapeHTML(part.note)}
                                         </small>
-                                      `
+                                    `
                                     : ""
                             }
 
@@ -2592,363 +2372,473 @@ function renderCODDetail() {
                             </strong>
 
                             <button
-                                onclick="
-                                    deleteCODPart(${index})
-                                ">
+                                onclick="deleteCODPart('${part.id}')">
                                 🗑️
                             </button>
 
                         </div>
 
                     </div>
-
                 `;
-
-            }).join("");
-
-    }
-
-
-    renderCODDetailSummary();
+            }
+        ).join("");
 }
 
-
-// =========================================================
-// 39. COD - TỔNG TIỀN
-// =========================================================
 
 function renderCODDetailSummary() {
 
-    const data =
-        codData[currentCODDish] || {
+    if (!currentCODDish) return;
 
-            sellingPrice: 0,
-
-            parts: []
-
-        };
-
-
-    const parts =
-        data.parts || [];
-
-
-    const totalCost =
-        parts.reduce(
-            (sum, part) =>
-                sum + Number(part.amount || 0),
-            0
+    const input =
+        document.getElementById(
+            "codSellingPrice"
         );
 
+    const cod =
+        data.cod[currentCODDish];
 
-    const sellingPrice =
-        Number(
-            document.getElementById(
-                "codSellingPrice"
-            )?.value
-        ) || Number(data.sellingPrice || 0);
+    if (!cod) return;
 
+    cod.sellingPrice =
+        Number(input ? input.value : 0);
+
+    const total =
+        calculateCODTotal(cod);
 
     const profit =
-        sellingPrice - totalCost;
+        cod.sellingPrice - total;
 
+    const totalElement =
+        document.getElementById(
+            "codTotalCost"
+        );
 
-    document.getElementById(
-        "codTotalCost"
-    ).textContent =
-        formatMoney(totalCost);
+    const profitElement =
+        document.getElementById(
+            "codProfit"
+        );
 
+    if (totalElement) {
+        totalElement.textContent =
+            formatMoney(total);
+    }
 
-    document.getElementById(
-        "codProfit"
-    ).textContent =
-        formatMoney(profit);
+    if (profitElement) {
+        profitElement.textContent =
+            formatMoney(profit);
+    }
 }
 
-
-// =========================================================
-// 40. COD - THÊM THÀNH PHẦN
-// =========================================================
 
 function addCODPart() {
 
     if (!currentCODDish) {
 
-        showToast("⚠️ Chưa chọn món");
+        showToast("Chưa chọn món!");
 
         return;
     }
-
 
     const name =
         document.getElementById(
             "codPartName"
-        ).value.trim();
-
-
-    const amount =
-        Number(
-            document.getElementById(
-                "codPartAmount"
-            ).value
         );
 
+    const amount =
+        document.getElementById(
+            "codPartAmount"
+        );
 
     const note =
         document.getElementById(
             "codPartNote"
-        ).value.trim();
+        );
 
+    if (!name || !amount) return;
 
-    if (!name) {
+    const partName =
+        name.value.trim();
 
-        showToast("⚠️ Nhập tên phần");
+    const partAmount =
+        Number(amount.value);
+
+    if (!partName) {
+
+        showToast("Nhập tên phần!");
 
         return;
     }
 
+    if (!partAmount || partAmount <= 0) {
 
-    if (!amount || amount < 0) {
-
-        showToast("⚠️ Nhập giá tiền");
+        showToast("Nhập giá tiền hợp lệ!");
 
         return;
     }
 
+    if (!data.cod[currentCODDish]) {
 
-    if (!codData[currentCODDish]) {
-
-        codData[currentCODDish] = {
+        data.cod[currentCODDish] = {
 
             sellingPrice: 0,
 
             parts: []
-
         };
-
     }
 
+    data.cod[currentCODDish].parts.push({
 
-    codData[currentCODDish].parts.push({
+        id: generateId(),
 
-        name: name,
+        name: partName,
 
-        amount: amount,
+        amount: partAmount,
 
-        note: note
-
+        note:
+            note
+                ? note.value.trim()
+                : ""
     });
 
-
     saveData();
 
+    clearCODPartInputs();
 
-    document.getElementById(
-        "codPartName"
-    ).value = "";
+    renderCODDetail();
 
-    document.getElementById(
-        "codPartAmount"
-    ).value = "";
+    showToast("Đã thêm thành phần!");
+}
 
-    document.getElementById(
+
+function clearCODPartInputs() {
+
+    const ids = [
+        "codPartName",
+        "codPartAmount",
         "codPartNote"
-    ).value = "";
+    ];
 
+    ids.forEach(id => {
 
-    renderCODDetail();
+        const element =
+            document.getElementById(id);
 
-    showToast("✅ Đã thêm thành phần");
+        if (element) {
+            element.value = "";
+        }
+    });
 }
 
 
-// =========================================================
-// 41. COD - XÓA THÀNH PHẦN
-// =========================================================
+function deleteCODPart(partId) {
 
-function deleteCODPart(index) {
+    if (!currentCODDish) return;
 
-    if (!codData[currentCODDish]) {
-        return;
-    }
+    const cod =
+        data.cod[currentCODDish];
 
+    if (!cod) return;
 
-    if (
-        !confirm(
-            "Bạn có chắc muốn xóa thành phần này?"
-        )
-    ) {
-        return;
-    }
-
-
-    codData[currentCODDish].parts.splice(
-        index,
-        1
-    );
-
+    cod.parts =
+        cod.parts.filter(
+            part => part.id !== partId
+        );
 
     saveData();
 
     renderCODDetail();
 
-    showToast("🗑️ Đã xóa thành phần");
+    showToast("Đã xóa thành phần!");
 }
 
-
-// =========================================================
-// 42. COD - LƯU GIÁ VỐN
-// =========================================================
 
 function saveCODDish() {
 
     if (!currentCODDish) {
 
-        showToast("⚠️ Chưa chọn món");
+        showToast("Chưa chọn món!");
 
         return;
     }
 
+    const input =
+        document.getElementById(
+            "codSellingPrice"
+        );
 
-    const sellingPrice =
-        Number(
-            document.getElementById(
-                "codSellingPrice"
-            ).value
-        ) || 0;
+    if (!data.cod[currentCODDish]) {
 
-
-    if (!codData[currentCODDish]) {
-
-        codData[currentCODDish] = {
+        data.cod[currentCODDish] = {
 
             sellingPrice: 0,
 
             parts: []
-
         };
-
     }
 
-
-    codData[currentCODDish]
-        .sellingPrice =
-        sellingPrice;
-
+    data.cod[currentCODDish].sellingPrice =
+        Number(input ? input.value : 0);
 
     saveData();
 
     renderCODDetail();
 
-    renderCODDishesAfterSave();
+    if (currentCODCategory) {
+        showCODDishes(currentCODCategory);
+    }
 
-    showToast("✅ Đã lưu giá vốn món");
+    showToast("Đã lưu giá vốn món!");
 }
 
 
-function renderCODDishesAfterSave() {
+/* =========================================================
+   21. ĐIỀU HƯỚNG
+   ========================================================= */
 
-    if (currentCODCategory) {
+function hideAllMainSections() {
 
-        showCODDishes(
-            currentCODCategory
-        );
+    const sections = [
+        "homeSection",
+        "codSection"
+    ];
 
+    sections.forEach(id => {
+
+        const element =
+            document.getElementById(id);
+
+        if (!element) return;
+
+        if (id === "homeSection") {
+
+            element.style.display = "block";
+
+        } else {
+
+            element.style.display = "none";
+        }
+    });
+}
+
+
+function clearNavActive() {
+
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(button => {
+
+            button.classList.remove("active");
+        });
+}
+
+
+function activateNav(id) {
+
+    clearNavActive();
+
+    const button =
+        document.getElementById(id);
+
+    if (button) {
+
+        button.classList.add("active");
     }
 }
 
 
-// =========================================================
-// 43. COD - QUAY LẠI
-// =========================================================
+function goHome(scroll = true) {
 
-function showCODDishesBack() {
+    hideAllMainSections();
 
-    if (currentCODCategory) {
+    activateNav("navHome");
 
-        showCODDishes(
-            currentCODCategory
-        );
+    const home =
+        document.getElementById("homeSection");
 
-    } else {
+    if (home) {
+        home.style.display = "block";
+    }
 
-        showCODCategories();
+    if (scroll) {
 
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     }
 }
 
 
-// =========================================================
-// 44. BACKUP JSON
-// =========================================================
+function goAdd() {
+
+    goHome(false);
+
+    activateNav("navAdd");
+
+    const section =
+        document.getElementById("addSection");
+
+    if (section) {
+
+        section.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+}
+
+
+function goStatistics() {
+
+    goHome(false);
+
+    activateNav("navStatistics");
+
+    const section =
+        document.getElementById(
+            "statisticsSection"
+        );
+
+    if (section) {
+
+        section.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+}
+
+
+function goHistory() {
+
+    goHome(false);
+
+    activateNav("navHistory");
+
+    const section =
+        document.getElementById(
+            "historySection"
+        );
+
+    if (section) {
+
+        section.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+}
+
+
+function goRestaurant() {
+
+    goHome(false);
+
+    activateNav("navRestaurant");
+
+    const section =
+        document.getElementById(
+            "restaurantSection"
+        );
+
+    if (section) {
+
+        section.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+}
+
+
+function goCOD() {
+
+    hideAllMainSections();
+
+    activateNav("navCOD");
+
+    const cod =
+        document.getElementById(
+            "codSection"
+        );
+
+    if (cod) {
+
+        cod.style.display = "block";
+    }
+
+    showCODCategories();
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+
+/* =========================================================
+   22. SAO LƯU
+   ========================================================= */
 
 function backup() {
 
-    const data = {
+    saveData();
+
+    const backupData = {
 
         version: 1,
 
         exportedAt:
             new Date().toISOString(),
 
-        transactions:
-            transactions,
-
-        categories:
-            categories,
-
-        dishes:
-            dishes,
-
-        codData:
-            codData
-
+        data: data
     };
-
-
-    const json =
-        JSON.stringify(
-            data,
-            null,
-            2
-        );
-
 
     const blob =
         new Blob(
-            [json],
+            [
+                JSON.stringify(
+                    backupData,
+                    null,
+                    2
+                )
+            ],
             {
                 type: "application/json"
             }
         );
 
-
     const url =
         URL.createObjectURL(blob);
-
 
     const a =
         document.createElement("a");
 
+    const date =
+        new Date()
+            .toISOString()
+            .slice(0, 10);
+
     a.href = url;
 
     a.download =
-        `backup-thu-chi-${getToday()
-            .replaceAll("/", "-")}.json`;
+        `backup-quan-ly-thu-chi-${date}.json`;
 
+    document.body.appendChild(a);
 
     a.click();
 
+    a.remove();
 
     URL.revokeObjectURL(url);
 
-    showToast("📤 Đã sao lưu dữ liệu");
+    showToast("Đã sao lưu dữ liệu!");
 }
 
 
-// =========================================================
-// 45. RESTORE JSON
-// =========================================================
+/* =========================================================
+   23. KHÔI PHỤC
+   ========================================================= */
 
 function restore(event) {
 
@@ -2957,320 +2847,309 @@ function restore(event) {
 
     if (!file) return;
 
-
     const reader =
         new FileReader();
 
-
-    reader.onload = function (e) {
+    reader.onload = function(e) {
 
         try {
 
-            const data =
+            const parsed =
                 JSON.parse(e.target.result);
 
+            let restoredData;
 
             if (
-                !data ||
+                parsed &&
+                parsed.data
+            ) {
+
+                restoredData =
+                    parsed.data;
+
+            } else {
+
+                restoredData = parsed;
+            }
+
+            if (
+                !restoredData ||
                 !Array.isArray(
-                    data.transactions
+                    restoredData.transactions
                 )
             ) {
 
                 throw new Error(
-                    "File không hợp lệ"
+                    "File không đúng định dạng"
                 );
-
             }
 
+            data = {
 
-            if (
-                !confirm(
-                    "Khôi phục sẽ thay thế dữ liệu hiện tại. Tiếp tục?"
-                )
-            ) {
-                return;
-            }
+                transactions:
+                    Array.isArray(
+                        restoredData.transactions
+                    )
+                        ? restoredData.transactions
+                        : [],
 
+                categories:
+                    Array.isArray(
+                        restoredData.categories
+                    )
+                        ? restoredData.categories
+                        : [],
 
-            transactions =
-                Array.isArray(
-                    data.transactions
-                )
-                    ? data.transactions
-                    : [];
+                dishes:
+                    Array.isArray(
+                        restoredData.dishes
+                    )
+                        ? restoredData.dishes
+                        : [],
 
-
-            categories =
-                Array.isArray(
-                    data.categories
-                )
-                    ? data.categories
-                    : [];
-
-
-            dishes =
-                Array.isArray(
-                    data.dishes
-                )
-                    ? data.dishes
-                    : [];
-
-
-            codData =
-                data.codData &&
-                typeof data.codData === "object"
-                    ? data.codData
-                    : {};
-
+                cod:
+                    restoredData.cod &&
+                    typeof restoredData.cod === "object"
+                        ? restoredData.cod
+                        : {}
+            };
 
             saveData();
 
-
-            initMonthSelects();
-
-            renderCategories();
-
-            renderDishSelect();
-
-            renderMenu();
-
-            updateDashboard();
-
-            renderTransactions();
-
-            renderStatistics();
-
-            renderCODCategories();
-
+            renderAll();
 
             showToast(
-                "📥 Khôi phục dữ liệu thành công"
+                "Đã khôi phục dữ liệu!"
             );
-
 
         } catch (error) {
 
-            alert(
-                "Không thể khôi phục file: " +
-                error.message
-            );
+            console.error(error);
 
+            showToast(
+                "File khôi phục không hợp lệ!"
+            );
         }
 
-
         event.target.value = "";
-
     };
-
 
     reader.readAsText(file);
 }
 
 
-// =========================================================
-// 46. XUẤT CSV
-// =========================================================
+/* =========================================================
+   24. XUẤT CSV
+   ========================================================= */
 
 function exportCSV() {
 
-    if (transactions.length === 0) {
+    if (!data.transactions.length) {
 
-        showToast(
-            "⚠️ Chưa có dữ liệu để xuất"
-        );
+        showToast("Chưa có dữ liệu để xuất!");
 
         return;
     }
 
-
     const headers = [
-
         "Ngày",
-
         "Loại",
-
         "Tên",
-
         "Danh mục",
-
         "Nguồn đơn",
-
         "Số tiền",
-
         "Ghi chú"
-
     ];
 
-
     const rows =
-        transactions.map(function (item) {
+        data.transactions.map(t => [
 
-            return [
+            t.date,
 
-                item.date,
+            t.type === "thu"
+                ? "THU"
+                : "CHI",
 
-                item.type === "thu"
-                    ? "Thu"
-                    : "Chi",
+            t.name,
 
-                item.name,
+            t.category,
 
-                item.categoryName || "",
+            t.source || "",
 
-                item.source || "",
+            t.amount,
 
-                item.amount,
-
-                item.note || ""
-
-            ];
-
-        });
-
+            t.note || ""
+        ]);
 
     const csv = [
-
         headers,
-
         ...rows
+    ]
+        .map(row =>
+            row.map(value => {
 
-    ].map(function (row) {
+                const text =
+                    String(value ?? "");
 
-        return row.map(function (value) {
+                return `"${text.replace(
+                    /"/g,
+                    '""'
+                )}"`;
 
-            return `"${String(value)
-                .replace(/"/g, '""')}"`;
-
-        }).join(",");
-
-    }).join("\n");
-
+            }).join(",")
+        )
+        .join("\n");
 
     const blob =
         new Blob(
-            [
-                "\uFEFF" + csv
-            ],
+            ["\ufeff" + csv],
             {
-                type:
-                    "text/csv;charset=utf-8;"
+                type: "text/csv;charset=utf-8;"
             }
         );
-
 
     const url =
         URL.createObjectURL(blob);
 
-
     const a =
         document.createElement("a");
-
 
     a.href = url;
 
     a.download =
-        `thu-chi-${getToday()
-            .replaceAll("/", "-")}.csv`;
+        "lich-su-giao-dich.csv";
 
+    document.body.appendChild(a);
 
     a.click();
 
+    a.remove();
 
     URL.revokeObjectURL(url);
 
-
-    showToast("📊 Đã xuất file CSV");
+    showToast("Đã xuất CSV!");
 }
 
 
-// =========================================================
-// 47. XÓA TOÀN BỘ
-// =========================================================
+/* =========================================================
+   25. XÓA TOÀN BỘ
+   ========================================================= */
 
 function deleteAll() {
 
     if (
         !confirm(
-            "⚠️ Bạn có chắc muốn XÓA TOÀN BỘ dữ liệu không?"
+            "Bạn có chắc muốn XÓA TOÀN BỘ dữ liệu không?\n\nHành động này không thể hoàn tác."
         )
     ) {
+
         return;
     }
 
+    data = {
 
-    if (
-        !confirm(
-            "Hành động này không thể hoàn tác. Tiếp tục?"
-        )
-    ) {
-        return;
-    }
+        transactions: [],
 
+        categories: [],
 
-    transactions = [];
+        dishes: [],
 
-    categories = [];
-
-    dishes = [];
-
-    codData = {};
-
+        cod: {}
+    };
 
     saveData();
 
+    resetForm();
 
-    renderCategories();
+    renderAll();
+
+    showToast("Đã xóa toàn bộ dữ liệu!");
+}
+
+
+/* =========================================================
+   26. RENDER TẤT CẢ
+   ========================================================= */
+
+function renderAll() {
+
+    renderCategorySelect();
 
     renderDishSelect();
 
     renderMenu();
 
-    updateDashboard();
+    renderCODCategories();
 
     renderTransactions();
 
-    initMonthSelects();
+    renderSummary();
+
+    renderMonthFilters();
 
     renderStatistics();
 
-    renderCODCategories();
-
-
-    clearTransactionForm();
-
-
-    showToast(
-        "🗑️ Đã xóa toàn bộ dữ liệu"
-    );
 }
 
 
-// =========================================================
-// 48. KHỞI TẠO TRẠNG THÁI BAN ĐẦU
-// =========================================================
+/* =========================================================
+   27. LOAD DARK MODE
+   ========================================================= */
 
-setTimeout(function () {
+loadDarkMode();
 
-    if (
-        document.getElementById("homeSection")
-    ) {
 
-        document.getElementById(
-            "homeSection"
-        ).style.display = "block";
+/* =========================================================
+   28. XỬ LÝ PHÍM ENTER
+   ========================================================= */
 
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key !== "Enter") {
+            return;
+        }
+
+        const target =
+            event.target;
+
+        if (!target) return;
+
+        if (
+            target.id === "amount"
+        ) {
+
+            event.preventDefault();
+
+            saveTransaction();
+        }
+
+        if (
+            target.id === "newCategory"
+        ) {
+
+            event.preventDefault();
+
+            addCategory();
+        }
+
+        if (
+            target.id === "newDish"
+        ) {
+
+            event.preventDefault();
+
+            addDish();
+        }
+
+        if (
+            target.id === "codPartAmount"
+        ) {
+
+            event.preventDefault();
+
+            addCODPart();
+        }
     }
-
-
-    if (
-        document.getElementById("codSection")
-    ) {
-
-        document.getElementById(
-            "codSection"
-        ).style.display = "none";
-
-    }
-
-}, 100);
+);
