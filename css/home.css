@@ -1,44 +1,453 @@
+/* =========================================================
+   HOME PAGE
+========================================================= */
+
+
+/* =========================================================
+   BALANCE CARD
+========================================================= */
+
 .balance-card {
     position: relative;
-    overflow: hidden;
 
-    margin-bottom: 15px;
+    padding: 24px 20px;
 
-    padding: 23px;
-
-    border-radius: 27px;
-
-    color: white;
+    border-radius: 24px;
 
     background:
         linear-gradient(
             135deg,
-            #2563eb,
-            #4f46e5 52%,
-            #7c3aed
+            #16a34a 0%,
+            #22c55e 55%,
+            #4ade80 100%
+        );
+
+    color: #ffffff;
+
+    box-shadow:
+        0 12px 30px rgba(34, 197, 94, 0.22);
+
+    overflow: hidden;
+}
+
+
+/* ánh sáng nền */
+
+.balance-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    top: -80px;
+    right: -50px;
+
+    background: rgba(255,255,255,0.12);
+
+    border-radius: 50%;
+}
+
+
+.balance-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 120px;
+    height: 120px;
+
+    bottom: -70px;
+    left: -30px;
+
+    background: rgba(255,255,255,0.08);
+
+    border-radius: 50%;
+}
+
+
+.balance-label {
+    position: relative;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    opacity: 0.9;
+}
+
+
+.balance-number {
+    position: relative;
+
+    margin-top: 7px;
+
+    font-size: 32px;
+
+    line-height: 1.15;
+
+    font-weight: 800;
+
+    letter-spacing: -0.5px;
+}
+
+
+/* =========================================================
+   BALANCE GRID
+========================================================= */
+
+.balance-grid {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 8px;
+
+    margin-top: 22px;
+}
+
+
+.balance-item {
+    padding: 11px 8px;
+
+    border-radius: 13px;
+
+    background:
+        rgba(255,255,255,0.14);
+
+    border:
+        1px solid
+        rgba(255,255,255,0.12);
+
+    backdrop-filter: blur(5px);
+}
+
+
+.balance-item span {
+    display: block;
+
+    font-size: 10px;
+
+    opacity: 0.82;
+
+    margin-bottom: 4px;
+}
+
+
+.balance-item strong {
+    display: block;
+
+    font-size: 13px;
+
+    font-weight: 750;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.card {
+    margin-top: 16px;
+
+    padding: 20px;
+
+    background: #ffffff;
+
+    border:
+        1px solid #e9edf3;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 5px 18px rgba(15, 23, 42, 0.045);
+}
+
+
+.section-heading {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 16px;
+}
+
+
+.section-heading h2 {
+    margin: 0;
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    color: #111827;
+}
+
+
+.section-heading small {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #8b95a5;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   TRANSACTION TYPE
+========================================================= */
+
+.transaction-type {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 10px;
+
+    margin:
+        4px 0 22px;
+
+    padding: 5px;
+
+    background: #f1f3f7;
+
+    border:
+        1px solid #e7eaf0;
+
+    border-radius: 17px;
+}
+
+
+/* =========================================================
+   TYPE BUTTON
+========================================================= */
+
+.type-button {
+    position: relative;
+
+    width: 100%;
+
+    min-height: 54px;
+
+    padding: 0 12px;
+
+    border: none;
+
+    border-radius: 13px;
+
+    background: transparent;
+
+    color: #7b8494;
+
+    font-family: inherit;
+
+    font-size: 16px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 7px;
+
+    transition:
+        all 0.2s ease;
+
+    -webkit-tap-highlight-color:
+        transparent;
+}
+
+
+/* hover */
+
+.type-button:hover {
+    background: #e7eaf0;
+
+    color: #374151;
+}
+
+
+/* click */
+
+.type-button:active {
+    transform: scale(0.96);
+}
+
+
+/* =========================================================
+   THU ACTIVE
+========================================================= */
+
+.type-button#incomeTypeButton.active {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #22c55e
         );
 
     box-shadow:
-        0 18px 45px
-        rgba(79,70,229,.25);
+        0 6px 15px
+        rgba(34,197,94,0.25),
+
+        inset 0 1px 0
+        rgba(255,255,255,0.25);
 }
 
-.balance-label {
+
+/* =========================================================
+   CHI ACTIVE
+========================================================= */
+
+.type-button#expenseTypeButton.active {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ef4444,
+            #f43f5e
+        );
+
+    box-shadow:
+        0 6px 15px
+        rgba(239,68,68,0.25),
+
+        inset 0 1px 0
+        rgba(255,255,255,0.25);
+}
+
+
+/* =========================================================
+   FIELD
+========================================================= */
+
+.field-label {
+    display: block;
+
+    margin:
+        16px 0 7px;
+
+    color: #667085;
+
     font-size: 11px;
-    font-weight: 700;
-    opacity: .8;
+
+    font-weight: 800;
+
+    letter-spacing: 0.6px;
 }
 
-.balance-number {
-    margin: 7px 0 20px;
 
-    font-size: 34px;
-    line-height: 1;
+input,
+select {
+    box-sizing: border-box;
 
-    font-weight: 900;
+    width: 100%;
+
+    min-height: 46px;
+
+    padding:
+        0 13px;
+
+    border:
+        1px solid #dfe4ea;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    color: #1f2937;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
 }
 
-.balance-grid {
+
+input:focus,
+select:focus {
+    border-color: #22c55e;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(34,197,94,0.10);
+}
+
+
+input::placeholder {
+    color: #a0a8b5;
+}
+
+
+/* =========================================================
+   AMOUNT INPUT
+========================================================= */
+
+.amount-input {
+    min-height: 58px;
+
+    padding:
+        0 16px;
+
+    color: #111827;
+
+    font-size: 23px;
+
+    font-weight: 800;
+
+    text-align: center;
+
+    background:
+        #f8fafc;
+
+    border:
+        1px solid #dce2e9;
+}
+
+
+.amount-input:focus {
+    background: #ffffff;
+
+    border-color: #22c55e;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(34,197,94,0.10);
+}
+
+
+/* =========================================================
+   SOURCE
+========================================================= */
+
+.source-grid {
     display: grid;
 
     grid-template-columns:
@@ -47,189 +456,595 @@
     gap: 8px;
 }
 
-.balance-item {
-    padding: 12px;
-
-    border-radius: 15px;
-
-    background:
-        rgba(255,255,255,.14);
-}
-
-.balance-item span {
-    display: block;
-
-    font-size: 10px;
-
-    opacity: .75;
-}
-
-.balance-item strong {
-    display: block;
-
-    margin-top: 5px;
-
-    font-size: 13px;
-}
-
-
-/* TYPE */
-
-.transaction-type {
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 5px;
-
-    padding: 5px;
-
-    border-radius: 16px;
-
-    background: #f1f3f7;
-}
-
-.type-button {
-    border: 0;
-
-    border-radius: 12px;
-
-    padding: 12px;
-
-    background: transparent;
-
-    color: #8a90a0;
-
-    font-weight: 850;
-}
-
-.type-button.active {
-    color: var(--green);
-
-    background: #e8fff1;
-}
-
-
-/* SOURCE */
-
-.source-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 7px;
-}
 
 .source-button {
-    border: 1px solid #e5e7eb;
+    min-height: 44px;
+
+    padding:
+        6px 5px;
+
+    border:
+        1px solid #e1e5eb;
+
+    border-radius: 11px;
+
+    background: #ffffff;
+
+    color: #667085;
+
+    font-family: inherit;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        all 0.2s ease;
+}
+
+
+.source-button:hover {
+    background: #f8fafc;
+}
+
+
+.source-button:active {
+    transform: scale(0.96);
+}
+
+
+.source-button.active {
+    color: #166534;
+
+    background:
+        #ecfdf3;
+
+    border-color:
+        #86efac;
+
+    box-shadow:
+        0 3px 9px
+        rgba(34,197,94,0.10);
+}
+
+
+/* =========================================================
+   APP FEE
+========================================================= */
+
+.field-help {
+    display: block;
+
+    margin-top: 6px;
+
+    color: #98a2b3;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.primary-button {
+    width: 100%;
+
+    min-height: 51px;
+
+    margin-top: 20px;
+
+    border: none;
 
     border-radius: 13px;
 
-    padding: 11px 5px;
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #22c55e
+        );
 
-    background: #f8fafc;
+    color: #ffffff;
 
-    color: #73798a;
+    font-family: inherit;
 
-    font-size: 10px;
+    font-size: 15px;
 
     font-weight: 800;
-}
 
-.source-button.active {
-    color: #2563eb;
+    cursor: pointer;
 
-    border-color: #a9c6ff;
+    box-shadow:
+        0 7px 16px
+        rgba(34,197,94,0.20);
 
-    background: #eef4ff;
-}
-
-#sourceShopee.active {
-    color: #ee4d2d;
-
-    border-color: #ffb39e;
-
-    background: #fff3ef;
-}
-
-#sourceGrab.active {
-    color: #00a85a;
-
-    border-color: #9ee5c3;
-
-    background: #ecfff6;
+    transition:
+        all 0.2s ease;
 }
 
 
-/* AMOUNT */
+.primary-button:hover {
+    filter: brightness(1.03);
 
-.amount-input {
-    text-align: center;
-
-    font-size: 26px;
-
-    font-weight: 850;
-
-    padding: 17px;
+    transform: translateY(-1px);
 }
 
 
-/* QUICK */
+.primary-button:active {
+    transform: scale(0.98);
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+========================================================= */
+
+.secondary-button {
+    width: 100%;
+
+    min-height: 46px;
+
+    margin-top: 9px;
+
+    border:
+        1px solid #dfe3e8;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    color: #667085;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+
+.secondary-button:hover {
+    background: #f8fafc;
+}
+
+
+/* =========================================================
+   QUICK SUMMARY
+========================================================= */
 
 .quick-grid {
     display: grid;
 
     grid-template-columns:
-        1fr 1fr;
+        repeat(2, 1fr);
 
-    gap: 9px;
+    gap: 10px;
 }
+
 
 .quick-card {
-    padding: 15px;
+    min-height: 90px;
 
-    border-radius: 17px;
+    padding: 14px;
 
-    background: #f8fafc;
+    border-radius: 15px;
+
+    border:
+        1px solid transparent;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
 }
+
 
 .quick-card span {
-    display: block;
-
-    color: var(--muted);
-
     font-size: 10px;
 
-    font-weight: 750;
+    font-weight: 800;
+
+    letter-spacing: 0.5px;
+
+    color: #667085;
 }
 
-.quick-card strong {
-    display: block;
 
-    margin-top: 6px;
+.quick-card strong {
+    margin-top: 10px;
 
     font-size: 17px;
 
-    font-weight: 900;
+    font-weight: 800;
 }
+
+
+/* =========================================================
+   QUICK COLORS
+========================================================= */
 
 .green-card {
     background: #effdf4;
+
+    border-color: #d1fadf;
 }
+
 
 .red-card {
-    background: #fff2f2;
+    background: #fff1f2;
+
+    border-color: #ffe0e5;
 }
 
+
 .orange-card {
-    background: #fff7ed;
+    background: #fff8eb;
+
+    border-color: #ffe8bd;
 }
+
 
 .blue-card {
     background: #eff6ff;
+
+    border-color: #dbeafe;
 }
 
-body.dark .quick-card {
-    background: #111822;
+
+.green-text {
+    color: #16a34a;
+}
+
+
+.red-text {
+    color: #ef4444;
+}
+
+
+.orange-text {
+    color: #ea580c;
+}
+
+
+.blue-text {
+    color: #2563eb;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark .card {
+    background: #111827;
+
+    border-color: #273244;
+
+    box-shadow:
+        0 5px 18px
+        rgba(0,0,0,0.18);
+}
+
+
+body.dark .section-heading h2 {
+    color: #f9fafb;
+}
+
+
+body.dark .section-heading small {
+    color: #8f9bad;
+}
+
+
+/* =========================================================
+   DARK - THU / CHI
+========================================================= */
+
+body.dark .transaction-type {
+    background: #1f2937;
+
+    border-color: #303b4d;
+}
+
+
+body.dark .type-button {
+    color: #9ca3af;
+}
+
+
+body.dark .type-button:hover {
+    background: #273244;
+
+    color: #e5e7eb;
+}
+
+
+body.dark
+.type-button#incomeTypeButton.active {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #15803d,
+            #16a34a
+        );
+
+    box-shadow:
+        0 6px 15px
+        rgba(22,163,74,0.25);
+}
+
+
+body.dark
+.type-button#expenseTypeButton.active {
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #dc2626,
+            #e11d48
+        );
+
+    box-shadow:
+        0 6px 15px
+        rgba(220,38,38,0.25);
+}
+
+
+/* =========================================================
+   DARK - INPUT
+========================================================= */
+
+body.dark input,
+body.dark select {
+    background: #1f2937;
+
+    border-color: #374151;
+
+    color: #f9fafb;
+}
+
+
+body.dark input::placeholder {
+    color: #6b7280;
+}
+
+
+body.dark input:focus,
+body.dark select:focus {
+    border-color: #22c55e;
+
+    background: #111827;
+}
+
+
+body.dark .amount-input {
+    background: #1a2433;
+
+    border-color: #374151;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   DARK - SOURCE
+========================================================= */
+
+body.dark .source-button {
+    background: #1f2937;
+
+    border-color: #374151;
+
+    color: #9ca3af;
+}
+
+
+body.dark .source-button:hover {
+    background: #273244;
+}
+
+
+body.dark .source-button.active {
+    color: #86efac;
+
+    background: #123321;
+
+    border-color: #166534;
+}
+
+
+/* =========================================================
+   DARK - SECONDARY
+========================================================= */
+
+body.dark .secondary-button {
+    background: #1f2937;
+
+    border-color: #374151;
+
+    color: #d1d5db;
+}
+
+
+body.dark .secondary-button:hover {
+    background: #273244;
+}
+
+
+/* =========================================================
+   DARK - QUICK CARDS
+========================================================= */
+
+body.dark .green-card {
+    background: #10271a;
+
+    border-color: #1d4d2d;
+}
+
+
+body.dark .red-card {
+    background: #2b151a;
+
+    border-color: #54202a;
+}
+
+
+body.dark .orange-card {
+    background: #2b2110;
+
+    border-color: #59451c;
+}
+
+
+body.dark .blue-card {
+    background: #111f35;
+
+    border-color: #1e3a5f;
+}
+
+
+body.dark .quick-card span {
+    color: #9ca3af;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    .balance-card {
+        padding: 21px 16px;
+
+        border-radius: 21px;
+    }
+
+
+    .balance-number {
+        font-size: 28px;
+    }
+
+
+    .balance-grid {
+        gap: 6px;
+
+        margin-top: 18px;
+    }
+
+
+    .balance-item {
+        padding:
+            10px 6px;
+
+        border-radius: 11px;
+    }
+
+
+    .balance-item span {
+        font-size: 9px;
+    }
+
+
+    .balance-item strong {
+        font-size: 11px;
+    }
+
+
+    .card {
+        padding: 17px;
+
+        border-radius: 18px;
+    }
+
+
+    .transaction-type {
+        gap: 8px;
+
+        padding: 4px;
+
+        border-radius: 15px;
+    }
+
+
+    .type-button {
+        min-height: 51px;
+
+        font-size: 15px;
+
+        border-radius: 11px;
+    }
+
+
+    .source-grid {
+        gap: 6px;
+    }
+
+
+    .source-button {
+        font-size: 10px;
+    }
+
+
+    .quick-grid {
+        gap: 8px;
+    }
+
+
+    .quick-card {
+        min-height: 82px;
+
+        padding: 12px;
+
+        border-radius: 13px;
+    }
+
+
+    .quick-card strong {
+        font-size: 15px;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL SCREEN
+========================================================= */
+
+@media (max-width: 360px) {
+
+    .balance-grid {
+        grid-template-columns:
+            1fr 1fr;
+
+    }
+
+
+    .balance-item:last-child {
+        grid-column:
+            1 / -1;
+    }
+
+
+    .source-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .source-button {
+        min-height: 42px;
+    }
+
 }
