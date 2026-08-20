@@ -1,11 +1,10 @@
-let statisticsPeriod = "day";
-
-let statisticsDate = new Date();
-
+/* =========================
+   STATISTICS STATE
+========================= */
 
 function setStatisticsPeriod(period) {
 
-    statisticsPeriod = period;
+    AppState.statisticsPeriod = period;
 
     document
         .querySelectorAll(".period-tab")
@@ -19,7 +18,6 @@ function setStatisticsPeriod(period) {
         });
 
     renderStatistics();
-
 }
 
 
@@ -29,43 +27,46 @@ function setStatisticsPeriod(period) {
 
 function getStatisticsRange() {
 
-    const date =
-        new Date(statisticsDate);
+    const date = new Date(
+        AppState.statisticsDate
+    );
 
     let start;
     let end;
 
 
-    if (statisticsPeriod === "day") {
+    /* =====================
+       DAY
+    ===================== */
 
-        start =
-            new Date(date);
+    if (AppState.statisticsPeriod === "day") {
 
-        end =
-            new Date(date);
+        start = new Date(date);
+        end = new Date(date);
 
     }
 
 
-    if (statisticsPeriod === "week") {
+    /* =====================
+       WEEK
+    ===================== */
 
-        const day =
-            date.getDay();
+    else if (AppState.statisticsPeriod === "week") {
+
+        const day = date.getDay();
 
         const diff =
             day === 0
                 ? -6
                 : 1 - day;
 
-        start =
-            new Date(date);
+        start = new Date(date);
 
         start.setDate(
             date.getDate() + diff
         );
 
-        end =
-            new Date(start);
+        end = new Date(start);
 
         end.setDate(
             start.getDate() + 6
@@ -74,21 +75,23 @@ function getStatisticsRange() {
     }
 
 
-    if (statisticsPeriod === "month") {
+    /* =====================
+       MONTH
+    ===================== */
 
-        start =
-            new Date(
-                date.getFullYear(),
-                date.getMonth(),
-                1
-            );
+    else if (AppState.statisticsPeriod === "month") {
 
-        end =
-            new Date(
-                date.getFullYear(),
-                date.getMonth() + 1,
-                0
-            );
+        start = new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            1
+        );
+
+        end = new Date(
+            date.getFullYear(),
+            date.getMonth() + 1,
+            0
+        );
 
     }
 
@@ -97,44 +100,60 @@ function getStatisticsRange() {
         start: formatDate(start),
         end: formatDate(end)
     };
-
 }
 
 
 /* =========================
-   RENDER
+   RENDER STATISTICS
 ========================= */
 
 function renderStatistics() {
 
-    const range =
-        getStatisticsRange();
+    const range = getStatisticsRange();
 
 
     const transactions =
-        AppState.transactions.filter(
-            transaction => {
+        Array.isArray(AppState.transactions)
+            ? AppState.transactions.filter(
+                transaction => {
 
-                return (
-                    transaction.date >=
-                        range.start &&
-                    transaction.date <=
-                        range.end
-                );
+                    if (!transaction.date) {
+                        return false;
+                    }
 
-            }
+                    return (
+                        transaction.date >= range.start &&
+                        transaction.date <= range.end
+                    );
+
+                }
+            )
+            : [];
+
+
+    /* =====================
+       INCOME
+    ===================== */
+
+    const income =
+        transactions.filter(
+            t => t.type === "thu"
         );
 
 
-    const income =
-        transactions
-            .filter(t => t.type === "thu");
-
+    /* =====================
+       EXPENSE
+    ===================== */
 
     const expenses =
-        transactions
-            .filter(t => t.type === "chi");
+        transactions.filter(
+            t => t.type === "chi"
+        );
 
+
+    /* =====================
+       REVENUE
+    ===================== */
 
     const revenue =
         income.reduce(
@@ -144,6 +163,10 @@ function renderStatistics() {
         );
 
 
+    /* =====================
+       EXPENSE
+    ===================== */
+
     const expense =
         expenses.reduce(
             (sum, t) =>
@@ -151,6 +174,10 @@ function renderStatistics() {
             0
         );
 
+
+    /* =====================
+       SHOPEE FEE
+    ===================== */
 
     const shopeeFee =
         income
@@ -164,6 +191,10 @@ function renderStatistics() {
             );
 
 
+    /* =====================
+       GRAB FEE
+    ===================== */
+
     const grabFee =
         income
             .filter(
@@ -176,15 +207,19 @@ function renderStatistics() {
             );
 
 
-    /*
-       COD sẽ được tính từ món bán.
-    */
+    /* =====================
+       COD COST
+    ===================== */
 
     const codCost =
         calculatePeriodCODCost(
             income
         );
 
+
+    /* =====================
+       PROFIT
+    ===================== */
 
     const profit =
         revenue -
@@ -193,6 +228,10 @@ function renderStatistics() {
         shopeeFee -
         grabFee;
 
+
+    /* =====================
+       UPDATE UI
+    ===================== */
 
     setText(
         "statisticsRevenue",
@@ -225,24 +264,33 @@ function renderStatistics() {
     );
 
 
+    /* =====================
+       DETAILS
+    ===================== */
+
     renderStatisticsDishes(
         income
     );
 
+
     renderStatisticsSources(
         income
     );
+
 
     renderStatisticsChart(
         transactions
     );
 
 
+    /* =====================
+       PERIOD LABEL
+    ===================== */
+
     setText(
         "statisticsPeriodLabel",
         getPeriodLabel()
     );
-
 }
 
 
@@ -272,7 +320,9 @@ function calculatePeriodCODCost(
 
 
             const parts =
-                dish.cod_parts || [];
+                Array.isArray(dish.cod_parts)
+                    ? dish.cod_parts
+                    : [];
 
 
             const cost =
@@ -293,7 +343,6 @@ function calculatePeriodCODCost(
 
 
     return total;
-
 }
 
 
@@ -309,6 +358,7 @@ function renderStatisticsDishes(
         document.getElementById(
             "statisticsDishList"
         );
+
 
     if (!container) return;
 
@@ -343,10 +393,12 @@ function renderStatisticsDishes(
 
             map[name].quantity++;
 
+
             map[name].revenue +=
                 Number(
                     transaction.amount || 0
                 );
+
 
             map[name].fee +=
                 Number(
@@ -364,16 +416,21 @@ function renderStatisticsDishes(
 
             if (dish) {
 
+                const parts =
+                    Array.isArray(dish.cod_parts)
+                        ? dish.cod_parts
+                        : [];
+
+
                 map[name].cost +=
-                    (dish.cod_parts || [])
-                        .reduce(
-                            (sum, part) =>
-                                sum +
-                                Number(
-                                    part.amount || 0
-                                ),
-                            0
-                        );
+                    parts.reduce(
+                        (sum, part) =>
+                            sum +
+                            Number(
+                                part.amount || 0
+                            ),
+                        0
+                    );
 
             }
 
@@ -439,7 +496,6 @@ function renderStatisticsDishes(
 
             }
         );
-
 }
 
 
@@ -455,6 +511,7 @@ function renderStatisticsSources(
         document.getElementById(
             "statisticsSourceList"
         );
+
 
     if (!container) return;
 
@@ -480,8 +537,8 @@ function renderStatisticsSources(
 
         const revenue =
             items.reduce(
-                (s, t) =>
-                    s +
+                (sum, t) =>
+                    sum +
                     Number(t.amount || 0),
                 0
             );
@@ -489,8 +546,8 @@ function renderStatisticsSources(
 
         const fee =
             items.reduce(
-                (s, t) =>
-                    s +
+                (sum, t) =>
+                    sum +
                     Number(t.app_fee || 0),
                 0
             );
@@ -501,7 +558,7 @@ function renderStatisticsSources(
             <div class="statistics-source-row">
 
                 <strong>
-                    ${source}
+                    ${escapeHTML(source)}
                 </strong>
 
                 <div class="statistics-source-money">
@@ -521,7 +578,6 @@ function renderStatisticsSources(
         `;
 
     });
-
 }
 
 
@@ -531,72 +587,95 @@ function renderStatisticsSources(
 
 function statisticsPrevious() {
 
-    if (statisticsPeriod === "day") {
+    if (
+        AppState.statisticsPeriod === "day"
+    ) {
 
-        statisticsDate.setDate(
-            statisticsDate.getDate() - 1
+        AppState.statisticsDate.setDate(
+            AppState.statisticsDate.getDate() - 1
         );
 
     }
 
-    if (statisticsPeriod === "week") {
 
-        statisticsDate.setDate(
-            statisticsDate.getDate() - 7
+    else if (
+        AppState.statisticsPeriod === "week"
+    ) {
+
+        AppState.statisticsDate.setDate(
+            AppState.statisticsDate.getDate() - 7
         );
 
     }
 
-    if (statisticsPeriod === "month") {
 
-        statisticsDate.setMonth(
-            statisticsDate.getMonth() - 1
+    else if (
+        AppState.statisticsPeriod === "month"
+    ) {
+
+        AppState.statisticsDate.setMonth(
+            AppState.statisticsDate.getMonth() - 1
         );
 
     }
+
 
     renderStatistics();
-
 }
 
 
 function statisticsNext() {
 
-    if (statisticsPeriod === "day") {
+    if (
+        AppState.statisticsPeriod === "day"
+    ) {
 
-        statisticsDate.setDate(
-            statisticsDate.getDate() + 1
+        AppState.statisticsDate.setDate(
+            AppState.statisticsDate.getDate() + 1
         );
 
     }
 
-    if (statisticsPeriod === "week") {
 
-        statisticsDate.setDate(
-            statisticsDate.getDate() + 7
+    else if (
+        AppState.statisticsPeriod === "week"
+    ) {
+
+        AppState.statisticsDate.setDate(
+            AppState.statisticsDate.getDate() + 7
         );
 
     }
 
-    if (statisticsPeriod === "month") {
 
-        statisticsDate.setMonth(
-            statisticsDate.getMonth() + 1
+    else if (
+        AppState.statisticsPeriod === "month"
+    ) {
+
+        AppState.statisticsDate.setMonth(
+            AppState.statisticsDate.getMonth() + 1
         );
 
     }
+
 
     renderStatistics();
-
 }
 
+
+/* =========================
+   PERIOD LABEL
+========================= */
 
 function getPeriodLabel() {
 
     const range =
         getStatisticsRange();
 
-    if (statisticsPeriod === "day") {
+
+    if (
+        AppState.statisticsPeriod === "day"
+    ) {
 
         return formatVietnameseDate(
             range.start
@@ -604,114 +683,206 @@ function getPeriodLabel() {
 
     }
 
+
     return `${formatVietnameseDate(
         range.start
     )} - ${formatVietnameseDate(
         range.end
     )}`;
-
 }
-function renderStatisticsChart() {
 
-    const chart = document.getElementById("statisticsChart");
+
+/* =========================
+   STATISTICS CHART
+========================= */
+
+function renderStatisticsChart(
+    transactions
+) {
+
+    const chart =
+        document.getElementById(
+            "statisticsChart"
+        );
+
 
     if (!chart) return;
 
+
     chart.innerHTML = "";
 
-    const transactions = window.transactions || [];
+
+    transactions =
+        Array.isArray(transactions)
+            ? transactions
+            : [];
+
 
     if (!transactions.length) {
+
         chart.innerHTML = `
             <div class="empty-chart">
                 Chưa có dữ liệu để hiển thị
             </div>
         `;
+
         return;
     }
 
-    // Lấy dữ liệu theo ngày
+
+    /* =====================
+       DAILY DATA
+    ===================== */
+
     const daily = {};
 
-    transactions.forEach(transaction => {
 
-        if (!transaction.date) return;
+    transactions.forEach(
+        transaction => {
 
-        const date = transaction.date;
+            if (!transaction.date) {
+                return;
+            }
 
-        if (!daily[date]) {
-            daily[date] = {
-                thu: 0,
-                chi: 0
-            };
+
+            const date =
+                transaction.date;
+
+
+            if (!daily[date]) {
+
+                daily[date] = {
+                    thu: 0,
+                    chi: 0
+                };
+
+            }
+
+
+            const amount =
+                Number(
+                    transaction.amount
+                ) || 0;
+
+
+            if (
+                transaction.type === "thu"
+            ) {
+
+                daily[date].thu += amount;
+
+            }
+
+
+            if (
+                transaction.type === "chi"
+            ) {
+
+                daily[date].chi += amount;
+
+            }
+
         }
+    );
 
-        const amount = Number(transaction.amount) || 0;
 
-        if (transaction.type === "thu") {
-            daily[date].thu += amount;
-        }
+    const dates =
+        Object.keys(daily).sort();
 
-        if (transaction.type === "chi") {
-            daily[date].chi += amount;
-        }
-    });
-
-    const dates = Object.keys(daily).sort();
 
     if (!dates.length) {
+
         chart.innerHTML = `
             <div class="empty-chart">
                 Chưa có dữ liệu
             </div>
         `;
+
         return;
     }
 
-    const maxValue = Math.max(
-        ...dates.map(date =>
-            Math.max(
-                daily[date].thu,
-                daily[date].chi
-            )
-        ),
-        1
-    );
+
+    /* =====================
+       MAX VALUE
+    ===================== */
+
+    const maxValue =
+        Math.max(
+            ...dates.map(
+                date =>
+                    Math.max(
+                        daily[date].thu,
+                        daily[date].chi
+                    )
+            ),
+            1
+        );
+
+
+    /* =====================
+       RENDER BARS
+    ===================== */
 
     dates.forEach(date => {
 
-        const data = daily[date];
+        const data =
+            daily[date];
+
 
         const thuPercent =
             (data.thu / maxValue) * 100;
 
+
         const chiPercent =
             (data.chi / maxValue) * 100;
 
-        const dateObject = new Date(date + "T00:00:00");
+
+        const dateObject =
+            new Date(
+                date + "T00:00:00"
+            );
+
 
         const label =
             dateObject.getDate() +
             "/" +
             (dateObject.getMonth() + 1);
 
-        const item = document.createElement("div");
 
-        item.className = "chart-day";
+        const item =
+            document.createElement(
+                "div"
+            );
+
+
+        item.className =
+            "chart-day";
+
 
         item.innerHTML = `
+
             <div class="chart-bars">
 
                 <div
                     class="chart-bar income"
-                    style="height:${Math.max(thuPercent, 2)}%"
-                    title="Thu: ${formatMoney(data.thu)}">
+                    style="height:${Math.max(
+                        thuPercent,
+                        2
+                    )}%"
+                    title="Thu: ${formatMoney(
+                        data.thu
+                    )}">
                 </div>
 
                 <div
                     class="chart-bar expense"
-                    style="height:${Math.max(chiPercent, 2)}%"
-                    title="Chi: ${formatMoney(data.chi)}">
+                    style="height:${Math.max(
+                        chiPercent,
+                        2
+                    )}%"
+                    title="Chi: ${formatMoney(
+                        data.chi
+                    )}">
                 </div>
 
             </div>
@@ -719,9 +890,11 @@ function renderStatisticsChart() {
             <div class="chart-date">
                 ${label}
             </div>
+
         `;
 
+
         chart.appendChild(item);
+
     });
-}
 }
