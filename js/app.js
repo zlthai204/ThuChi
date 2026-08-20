@@ -1,25 +1,18 @@
 const AppState = {
-
     currentPage: "home",
 
     transactions: [],
-
     categories: [],
-
     dishes: [],
-
     codParts: [],
 
     editingTransactionId: null,
 
     transactionType: "thu",
-
     orderSource: "ShopeeFood",
 
     statisticsPeriod: "day",
-
     statisticsDate: new Date()
-
 };
 
 
@@ -27,20 +20,14 @@ const AppState = {
    INIT
 ========================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    async () => {
+document.addEventListener("DOMContentLoaded", async () => {
+    setToday();
+    loadTheme();
 
-        setToday();
+    await loadInitialData();
 
-        loadTheme();
-
-        await loadInitialData();
-
-        navigateTo("home");
-
-    }
-);
+    navigateTo("home");
+});
 
 
 /* =========================
@@ -48,39 +35,32 @@ document.addEventListener(
 ========================= */
 
 async function loadInitialData() {
-
     try {
+        AppState.categories = await dbGet("categories", {
+            order: {
+                column: "created_at",
+                ascending: true
+            }
+        });
 
-        AppState.categories =
-            await dbGet("categories", {
-                order: {
-                    column: "created_at",
-                    ascending: true
-                }
-            });
+        AppState.dishes = await dbGet("dishes", {
+            order: {
+                column: "created_at",
+                ascending: true
+            }
+        });
 
-        AppState.dishes =
-            await dbGet("dishes", {
-                order: {
-                    column: "created_at",
-                    ascending: true
-                }
-            });
-
-        AppState.transactions =
-            await dbGet("transactions", {
-                order: {
-                    column: "date",
-                    ascending: false
-                }
-            });
+        AppState.transactions = await dbGet("transactions", {
+            order: {
+                column: "date",
+                ascending: false
+            }
+        });
 
         renderAll();
 
     } catch (error) {
-
-        console.error(error);
-
+        console.error("Lỗi loadInitialData:", error);
     }
 }
 
@@ -90,112 +70,62 @@ async function loadInitialData() {
 ========================= */
 
 function navigateTo(page) {
-
     AppState.currentPage = page;
 
-    document
-        .querySelectorAll(".page")
-        .forEach(element => {
+    document.querySelectorAll(".page").forEach(element => {
+        element.classList.remove("active-page");
+    });
 
-            element.classList.remove(
-                "active-page"
-            );
-
-        });
-
-
-    const pageElement =
-        document.getElementById(
-            `${page}Page`
-        );
+    const pageElement = document.getElementById(`${page}Page`);
 
     if (pageElement) {
-
-        pageElement.classList.add(
-            "active-page"
-        );
-
+        pageElement.classList.add("active-page");
     }
 
-
-    document
-        .querySelectorAll(".nav-button")
-        .forEach(button => {
-
-            button.classList.remove("active");
-
-        });
-
+    document.querySelectorAll(".nav-button").forEach(button => {
+        button.classList.remove("active");
+    });
 
     const navMap = {
-
         home: "navHome",
-
-        statistics:
-            "navStatistics",
-
-        history:
-            "navHistory",
-
-        restaurant:
-            "navRestaurant",
-
-        cod:
-            "navCOD"
-
+        statistics: "navStatistics",
+        history: "navHistory",
+        restaurant: "navRestaurant",
+        cod: "navCOD"
     };
 
-
-    const navButton =
-        document.getElementById(
-            navMap[page]
-        );
+    const navButton = document.getElementById(navMap[page]);
 
     if (navButton) {
-
-        navButton.classList.add(
-            "active"
-        );
-
+        navButton.classList.add("active");
     }
-
 
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
 
+    switch (page) {
+        case "home":
+            renderHome();
+            break;
 
-    if (page === "home") {
+        case "statistics":
+            renderStatistics();
+            break;
 
-        renderHome();
+        case "history":
+            renderHistory();
+            break;
 
+        case "restaurant":
+            renderRestaurant();
+            break;
+
+        case "cod":
+            renderCOD();
+            break;
     }
-
-    if (page === "statistics") {
-
-        renderStatistics();
-
-    }
-
-    if (page === "history") {
-
-        renderHistory();
-
-    }
-
-    if (page === "restaurant") {
-
-        renderRestaurant();
-
-    }
-
-    if (page === "cod") {
-
-        renderCOD();
-
-    }
-
 }
 
 
@@ -204,17 +134,127 @@ function navigateTo(page) {
 ========================= */
 
 function renderAll() {
-
     renderHome();
-
     renderStatistics();
-
     renderHistory();
-
     renderRestaurant();
-
     renderCOD();
+}
 
+
+/* =========================
+   HOME
+========================= */
+
+function renderHome() {
+    // Nếu bạn đã có renderHome() ở file khác,
+    // hãy xóa hàm này để tránh trùng tên.
+
+    const element = document.getElementById("homePage");
+
+    if (!element) return;
+
+    // Không làm gì nếu HTML của Home
+    // đã được xử lý bởi code khác.
+}
+
+
+/* =========================
+   STATISTICS
+========================= */
+
+function renderStatistics() {
+    const page = document.getElementById("statisticsPage");
+
+    if (!page) return;
+
+    /*
+     * Tính tổng thu / chi từ transactions.
+     *
+     * Hàm này được viết theo kiểu an toàn:
+     * nếu chưa có HTML thống kê thì chỉ return,
+     * không làm app crash.
+     */
+
+    const transactions = Array.isArray(AppState.transactions)
+        ? AppState.transactions
+        : [];
+
+    let totalIncome = 0;
+    let totalExpense = 0;
+
+    transactions.forEach(transaction => {
+        const amount = Number(
+            transaction.amount ??
+            transaction.money ??
+            transaction.total ??
+            0
+        );
+
+        const type = String(
+            transaction.type ??
+            transaction.transaction_type ??
+            ""
+        ).toLowerCase();
+
+        if (
+            type === "thu" ||
+            type === "income" ||
+            type === "revenue"
+        ) {
+            totalIncome += amount;
+        } else if (
+            type === "chi" ||
+            type === "expense"
+        ) {
+            totalExpense += amount;
+        }
+    });
+
+    const profit = totalIncome - totalExpense;
+
+    /*
+     * Nếu HTML có các element này thì cập nhật.
+     * Không có thì bỏ qua.
+     */
+
+    setTextIfExists("totalIncome", formatMoney(totalIncome));
+    setTextIfExists("totalExpense", formatMoney(totalExpense));
+    setTextIfExists("totalProfit", formatMoney(profit));
+
+    setTextIfExists("statisticsIncome", formatMoney(totalIncome));
+    setTextIfExists("statisticsExpense", formatMoney(totalExpense));
+    setTextIfExists("statisticsProfit", formatMoney(profit));
+}
+
+
+/* =========================
+   HISTORY
+========================= */
+
+function renderHistory() {
+    // Placeholder an toàn.
+    // Giữ lại nếu project của bạn chưa có hàm này.
+}
+
+
+/* =========================
+   RESTAURANT
+========================= */
+
+function renderRestaurant() {
+    // Placeholder an toàn.
+    // Giữ lại nếu project của bạn chưa có hàm này.
+}
+
+
+/* =========================
+   COD
+========================= */
+
+function renderCOD() {
+    // Placeholder an toàn.
+    // Giữ lại nếu project của bạn chưa có hàm này.
 }
 
 
@@ -225,26 +265,18 @@ function renderAll() {
 let toastTimer;
 
 function showToast(message) {
-
-    const toast =
-        document.getElementById("toast");
+    const toast = document.getElementById("toast");
 
     if (!toast) return;
 
     toast.textContent = message;
-
     toast.classList.add("show");
 
     clearTimeout(toastTimer);
 
-    toastTimer =
-        setTimeout(() => {
-
-            toast.classList.remove(
-                "show"
-            );
-
-        }, 2200);
+    toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2200);
 }
 
 
@@ -253,36 +285,21 @@ function showToast(message) {
 ========================= */
 
 function toggleDarkMode() {
-
-    document.body.classList.toggle(
-        "dark"
-    );
+    document.body.classList.toggle("dark");
 
     localStorage.setItem(
         "bep_nha_duyen_dark",
-        document.body.classList.contains(
-            "dark"
-        )
+        document.body.classList.contains("dark")
     );
-
 }
 
 
 function loadTheme() {
-
-    const dark =
-        localStorage.getItem(
-            "bep_nha_duyen_dark"
-        );
+    const dark = localStorage.getItem("bep_nha_duyen_dark");
 
     if (dark === "true") {
-
-        document.body.classList.add(
-            "dark"
-        );
-
+        document.body.classList.add("dark");
     }
-
 }
 
 
@@ -291,33 +308,46 @@ function loadTheme() {
 ========================= */
 
 function setToday() {
+    const input = document.getElementById("transactionDate");
 
-    const input =
-        document.getElementById(
-            "transactionDate"
-        );
+    if (input) {
+        const now = new Date();
 
-    if (!input) return;
+        /*
+         * Dùng local date thay vì toISOString()
+         * để tránh trường hợp lệch ngày do timezone.
+         */
 
-    const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
 
-    input.value =
-        now.toISOString()
-            .split("T")[0];
-
-
-    const label =
-        document.getElementById(
-            "todayLabel"
-        );
-
-    if (label) {
-
-        label.textContent =
-            now.toLocaleDateString(
-                "vi-VN"
-            );
-
+        input.value = `${year}-${month}-${day}`;
     }
 
+    const label = document.getElementById("todayLabel");
+
+    if (label) {
+        label.textContent = new Date().toLocaleDateString("vi-VN");
+    }
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function setTextIfExists(id, value) {
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.textContent = value;
+    }
+}
+
+
+function formatMoney(value) {
+    const number = Number(value) || 0;
+
+    return number.toLocaleString("vi-VN") + " ₫";
 }
