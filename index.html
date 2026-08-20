@@ -4,676 +4,356 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta name="viewport" content="width=device-width,
-initial-scale=1,
-maximum-scale=1,
-viewport-fit=cover">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 
-    <meta name="theme-color" content="#f7f8fc">
+    <meta name="theme-color" content="#f5f7fb">
 
-    <title>Quản Lý Thu Chi - Quán</title>
+    <title>Bếp Nhà Duyên - Quản lý bán hàng</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/home.css">
+    <link rel="stylesheet" href="css/statistics.css">
+    <link rel="stylesheet" href="css/history.css">
+    <link rel="stylesheet" href="css/restaurant.css">
+    <link rel="stylesheet" href="css/cod.css">
 </head>
 
 <body>
 
-    <div class="app">
+<div class="app">
 
-        <header class="header">
-            <div class="header-left">
-                <small>QUẢN LÝ BÁN HÀNG</small>
-                <h1 id="pageTitle">Thu Chi</h1>
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div>
+            <div class="brand-subtitle">
+                QUẢN LÝ BÁN HÀNG
             </div>
 
-            <button class="header-action" onclick="toggleDark()">🌙</button>
-        </header>
-
-        <div id="homeSection">
-
-            <section class="balance-card">
-
-                <div class="balance-label">Lợi nhuận hiện tại</div>
-
-                <div class="balance-number" id="profit">0 ₫</div>
-
-                <div class="balance-grid">
-
-                    <div class="balance-item">
-                        <span>Doanh thu</span>
-                        <strong id="totalIncome">0 ₫</strong>
-                    </div>
-
-                    <div class="balance-item">
-                        <span>Chi phí</span>
-                        <strong id="totalExpense">0 ₫</strong>
-                    </div>
-
-                    <div class="balance-item">
-                        <span>Giao dịch</span>
-                        <strong id="totalTransactions">0</strong>
-                    </div>
-
-                </div>
-
-            </section>
-
-            <section class="card" id="addSection">
-
-                <div class="card-title">
-                    <h2 id="formTitle">Thêm giao dịch</h2>
-                    <small>Bán hàng</small>
-                </div>
-
-                <div class="type-switch">
-
-                    <button id="thuBtn"
-                        class="type-button active-thu"
-                        onclick="setType('thu')">
-                        💚 THU
-                    </button>
-
-                    <button id="chiBtn"
-                        class="type-button"
-                        onclick="setType('chi')">
-                        ❤️ CHI
-                    </button>
-
-                </div>
-
-                <div class="form-grid">
-
-                    <div>
-                        <label class="input-label">TÊN MÓN / KHOẢN</label>
-
-                        <select id="name" onchange="syncCustomName()">
-                            <option value="">Chọn món</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="input-label">DANH MỤC</label>
-
-                        <select id="category" onchange="renderDishSelect()">
-                            <option value="">Chọn danh mục</option>
-                        </select>
-                    </div>
-
-                    <div id="customNameGroup" style="display:none">
-
-                        <label class="input-label">TÊN KHÁC</label>
-
-                        <input id="customName"
-                            type="text"
-                            placeholder="Nhập tên món / khoản">
-
-                    </div>
-
-                    <div id="sourceGroup">
-
-                        <label class="input-label">NGUỒN ĐƠN</label>
-
-                        <div class="source-grid">
-
-                            <button type="button"
-                                id="sourceShopee"
-                                class="source-button active-shopee"
-                                onclick="setSource('ShopeeFood')">
-                                🟠 ShopeeFood
-                            </button>
-
-                            <button type="button"
-                                id="sourceGrab"
-                                class="source-button"
-                                onclick="setSource('GrabFood')">
-                                🟢 GrabFood
-                            </button>
-
-                            <button type="button"
-                                id="sourceOut"
-                                class="source-button"
-                                onclick="setSource('Ngoài sàn')">
-                                🔵 Ngoài sàn
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <div>
-                        <label class="input-label">SỐ TIỀN</label>
-
-                        <input id="amount"
-                            class="amount-input"
-                            type="number"
-                            inputmode="decimal"
-                            placeholder="0">
-                    </div>
-
-                    <div>
-                        <label class="input-label">NGÀY</label>
-
-                        <input id="date"
-                            type="text"
-                            inputmode="numeric"
-                            maxlength="10"
-                            placeholder="20/08/2026"
-                            oninput="formatDateInput(this)">
-                    </div>
-
-                    <div>
-                        <label class="input-label">GHI CHÚ</label>
-
-                        <input id="note"
-                            type="text"
-                            placeholder="Không bắt buộc">
-                    </div>
-
-                    <button class="primary-button"
-                        onclick="saveTransaction()">
-                        💾 Lưu giao dịch
-                    </button>
-
-                    <button id="cancelButton"
-                        class="data-button"
-                        onclick="cancelEdit()"
-                        style="display:none">
-                        Hủy sửa
-                    </button>
-
-                </div>
-
-            </section>
-
-            <section class="card">
-
-                <div class="card-title">
-                    <h2>Tổng quan</h2>
-                    <small>Tất cả</small>
-                </div>
-
-                <div class="quick-grid">
-
-                    <div class="quick-card">
-                        <div class="quick-icon green">↑</div>
-
-                        <div class="quick-label">
-                            TỔNG DOANH THU
-                        </div>
-
-                        <div class="quick-money green"
-                            id="quickIncome">
-                            0 ₫
-                        </div>
-                    </div>
-
-                    <div class="quick-card">
-                        <div class="quick-icon red">↓</div>
-
-                        <div class="quick-label">
-                            TỔNG CHI PHÍ
-                        </div>
-
-                        <div class="quick-money red"
-                            id="quickExpense">
-                            0 ₫
-                        </div>
-                    </div>
-
-                </div>
-
-            </section>
-
-            <section class="card" id="statisticsSection">
-
-                <div class="card-title">
-
-                    <h2>Thống kê</h2>
-
-                    <select id="statMonth"
-                        class="month-select"
-                        onchange="renderStatistics()">
-                    </select>
-
-                </div>
-
-                <div class="stat-tabs">
-
-                    <button id="tabAll"
-                        class="stat-tab active"
-                        onclick="setStatisticType('all')">
-                        Tất cả
-                    </button>
-
-                    <button id="tabThu"
-                        class="stat-tab"
-                        onclick="setStatisticType('thu')">
-                        💚 Thu
-                    </button>
-
-                    <button id="tabChi"
-                        class="stat-tab"
-                        onclick="setStatisticType('chi')">
-                        ❤️ Chi
-                    </button>
-
-                </div>
-
-                <div class="chart-title">
-
-                    <strong id="chartMainTitle">
-                        Phân bổ thu chi
-                    </strong>
-
-                    <span id="chartTotal">0 ₫</span>
-
-                </div>
-
-                <div class="pie-wrap">
-
-                    <div class="pie" id="pie">
-
-                        <div class="pie-center">
-
-                            <strong id="pieTotal">0 ₫</strong>
-
-                            <span id="pieLabel">Tổng</span>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="legend" id="legend"></div>
-
-                <br>
-
-                <div class="chart-title">
-
-                    <strong>Biểu đồ theo ngày</strong>
-
-                    <span id="dailyLabel">Tất cả</span>
-
-                </div>
-
-                <div class="bar-chart" id="barChart"></div>
-
-                <br>
-
-                <div class="chart-title">
-
-                    <strong>
-                        Chi tiết danh mục / nguồn đơn
-                    </strong>
-
-                </div>
-
-                <div id="categoryStats"></div>
-
-            </section>
-
-            <section class="card" id="historySection">
-
-                <div class="card-title">
-
-                    <h2>Lịch sử giao dịch</h2>
-
-                    <small id="historyCount">
-                        0 giao dịch
-                    </small>
-
-                </div>
-
-                <input class="search"
-                    id="search"
-                    type="search"
-                    placeholder="🔎 Tìm tên, danh mục..."
-                    oninput="renderTransactions()">
-
-                <div class="filter-grid">
-
-                    <select id="filterType"
-                        onchange="renderTransactions()">
-
-                        <option value="all">Tất cả</option>
-                        <option value="thu">💚 Thu</option>
-                        <option value="chi">❤️ Chi</option>
-
-                    </select>
-
-                    <select id="filterMonth"
-                        onchange="renderTransactions()">
-                    </select>
-
-                </div>
-
-                <div id="transactions"></div>
-
-            </section>
-
-            <section class="card" id="restaurantSection">
-
-                <div class="card-title">
-
-                    <h2>🍜 Quản lý Quán</h2>
-
-                    <small>Thực đơn</small>
-
-                </div>
-
-                <div class="menu-hint">
-                    💡 Tạo <b>Danh mục</b> trước,
-                    sau đó thêm <b>món ăn</b>.
-                    Giá vốn của món được quản lý
-                    ở mục <b>💰 COD</b>.
-                </div>
-
-                <br>
-
-                <div class="menu-add-box">
-
-                    <div class="menu-add-title">
-                        📁 Thêm danh mục món
-                    </div>
-
-                    <div class="menu-row">
-
-                        <input id="newCategory"
-                            type="text"
-                            placeholder="Ví dụ: Mì Trộn, Cơm, Đồ Chiên">
-
-                        <button class="menu-button"
-                            onclick="addCategory()">
-                            + Thêm
-                        </button>
-
-                    </div>
-
-                </div>
-
-                <div class="menu-add-box">
-
-                    <div class="menu-add-title">
-                        🍜 Thêm món vào danh mục
-                    </div>
-
-                    <div class="form-grid">
-
-                        <select id="menuDishCategory">
-                            <option value="">
-                                Chọn danh mục
-                            </option>
-                        </select>
-
-                        <div class="menu-row">
-
-                            <input id="newDish"
-                                type="text"
-                                placeholder="Ví dụ: Mì Trộn Thập Cẩm">
-
-                            <button class="menu-button"
-                                onclick="addDish()">
-                                + Thêm
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <div class="card-title">
-
-                    <h2 style="font-size:15px">
-                        Thực đơn của quán
-                    </h2>
-
-                    <small id="menuCount">
-                        0 danh mục
-                    </small>
-
-                </div>
-
-                <div class="menu-list" id="menuList"></div>
-
-            </section>
-
-            <section class="card">
-
-                <div class="card-title">
-                    <h2>Dữ liệu</h2>
-                </div>
-
-                <div class="data-grid">
-
-                    <button class="data-button"
-                        onclick="backup()">
-                        📤 Sao lưu
-                    </button>
-
-                    <button class="data-button"
-                        onclick="document.getElementById('file').click()">
-                        📥 Khôi phục
-                    </button>
-
-                    <button class="data-button"
-                        onclick="exportCSV()">
-                        📊 Xuất CSV
-                    </button>
-
-                    <button class="data-button danger"
-                        onclick="deleteAll()">
-                        🗑️ Xóa dữ liệu
-                    </button>
-
-                </div>
-
-                <input type="file"
-                    id="file"
-                    accept=".json"
-                    style="display:none"
-                    onchange="restore(event)">
-
-            </section>
-
+            <h1 id="pageTitle">
+                Bếp Nhà Duyên
+            </h1>
         </div>
 
-        <section id="codSection">
+        <button
+            class="header-theme-button"
+            onclick="toggleDarkMode()">
+            🌙
+        </button>
 
-            <div class="cod-intro">
+    </header>
 
-                <div class="cod-intro-title">
-                    💰 COD - Giá vốn món
+
+    <!-- =========================
+         HOME
+    ========================== -->
+
+    <main id="homePage" class="page active-page">
+
+        <!-- BALANCE -->
+
+        <section class="balance-card">
+
+            <div class="balance-label">
+                LỢI NHUẬN THỰC
+            </div>
+
+            <div
+                id="homeProfit"
+                class="balance-number">
+                0 ₫
+            </div>
+
+            <div class="balance-grid">
+
+                <div class="balance-item">
+                    <span>Doanh thu</span>
+                    <strong id="homeRevenue">0 ₫</strong>
                 </div>
 
-                <div class="cod-intro-text">
-                    Quản lý giá tiền gốc và từng thành phần
-                    của mỗi món trong quán.
+                <div class="balance-item">
+                    <span>Chi phí</span>
+                    <strong id="homeExpense">0 ₫</strong>
+                </div>
+
+                <div class="balance-item">
+                    <span>Đơn hàng</span>
+                    <strong id="homeOrders">0</strong>
                 </div>
 
             </div>
 
-            <div id="codCategoryPage" class="card">
+        </section>
 
-                <div class="card-title">
 
-                    <h2>📁 Danh mục</h2>
+        <!-- ADD TRANSACTION -->
 
-                    <small>Chọn danh mục</small>
+        <section class="card">
 
-                </div>
+            <div class="section-heading">
 
-                <div id="codCategoryList"
-                    class="cod-category-list">
+                <div>
+                    <h2>Thêm giao dịch</h2>
+
+                    <small>
+                        Bếp Nhà Duyên
+                    </small>
                 </div>
 
             </div>
 
-            <div id="codDishPage"
-                class="card"
-                style="display:none">
 
-                <button class="cod-back"
-                    onclick="showCODCategories()">
-                    ← Quay lại danh mục
+            <div class="transaction-type">
+
+                <button
+                    id="incomeTypeButton"
+                    class="type-button active"
+                    onclick="setTransactionType('thu')">
+
+                    💚 Thu
+
                 </button>
 
-                <div class="card-title">
+                <button
+                    id="expenseTypeButton"
+                    class="type-button"
+                    onclick="setTransactionType('chi')">
 
-                    <h2 id="codDishCategoryTitle">
-                        Danh sách món
-                    </h2>
+                    ❤️ Chi
 
-                </div>
-
-                <div id="codDishList"
-                    class="cod-dish-list">
-                </div>
+                </button>
 
             </div>
 
-            <div id="codDetailPage"
-                class="card"
-                style="display:none">
 
-                <button class="cod-back"
-                    onclick="showCODDishes()">
-                    ← Quay lại món
-                </button>
+            <!-- CATEGORY -->
 
-                <div class="cod-detail-head">
+            <label class="field-label">
+                DANH MỤC
+            </label>
 
-                    <div>
+            <select id="transactionCategory">
+                <option value="">
+                    Chọn danh mục
+                </option>
+            </select>
 
-                        <div class="cod-detail-title"
-                            id="codDetailName">
-                            Món
-                        </div>
 
-                        <div class="cod-detail-category"
-                            id="codDetailCategory">
-                            Danh mục
-                        </div>
+            <!-- DISH -->
 
-                    </div>
+            <label class="field-label">
+                MÓN / KHOẢN
+            </label>
 
-                </div>
+            <select id="transactionDish">
 
-                <div class="cod-selling">
+                <option value="">
+                    Chọn món
+                </option>
 
-                    <label class="input-label">
-                        GIÁ BÁN MÓN
-                    </label>
+            </select>
 
-                    <input id="codSellingPrice"
-                        type="number"
-                        inputmode="decimal"
-                        placeholder="Ví dụ: 35000"
-                        oninput="renderCODDetailSummary()">
 
-                </div>
+            <!-- CUSTOM NAME -->
 
-                <div class="cod-price-grid">
+            <label class="field-label">
+                TÊN KHÁC
+            </label>
 
-                    <div class="cod-price-box cost">
+            <input
+                id="transactionName"
+                type="text"
+                placeholder="Tên món / khoản chi">
 
-                        <span>TỔNG GIÁ VỐN</span>
 
-                        <strong id="codTotalCost">
-                            0 ₫
-                        </strong>
+            <!-- SOURCE -->
 
-                    </div>
+            <div id="orderSourceBox">
 
-                    <div class="cod-price-box profit">
+                <label class="field-label">
+                    NGUỒN ĐƠN
+                </label>
 
-                        <span>LỢI NHUẬN</span>
+                <div class="source-grid">
 
-                        <strong id="codProfit">
-                            0 ₫
-                        </strong>
+                    <button
+                        id="sourceShopee"
+                        class="source-button active"
+                        onclick="setOrderSource('ShopeeFood')">
 
-                    </div>
+                        🟠 ShopeeFood
 
-                </div>
-
-                <div class="cod-detail-section">
-
-                    <div class="cod-detail-section-title">
-
-                        <strong>
-                            📦 Chi tiết từng phần
-                        </strong>
-
-                        <span id="codPartCount">
-                            0 phần
-                        </span>
-
-                    </div>
-
-                    <div id="codPartList"
-                        class="cod-part-list">
-                    </div>
-
-                    <div class="cod-add-part">
-
-                        <div class="cod-add-title">
-                            ➕ Thêm thành phần / chi phí
-                        </div>
-
-                        <div class="cod-add-grid">
-
-                            <div>
-
-                                <label class="input-label">
-                                    TÊN PHẦN
-                                </label>
-
-                                <input id="codPartName"
-                                    type="text"
-                                    placeholder="Ví dụ: Thịt">
-
-                            </div>
-
-                            <div>
-
-                                <label class="input-label">
-                                    GIÁ TIỀN
-                                </label>
-
-                                <input id="codPartAmount"
-                                    type="number"
-                                    inputmode="decimal"
-                                    placeholder="8000">
-
-                            </div>
-
-                            <div class="full">
-
-                                <label class="input-label">
-                                    GHI CHÚ
-                                </label>
-
-                                <input id="codPartNote"
-                                    type="text"
-                                    placeholder="Ví dụ: 100g thịt">
-
-                            </div>
-
-                        </div>
-
-                        <button class="cod-save"
-                            onclick="addCODPart()">
-                            ➕ Thêm phần giá vốn
-                        </button>
-
-                    </div>
-
-                    <button class="cod-save"
-                        onclick="saveCODDish()">
-                        💾 Lưu giá vốn món
                     </button>
+
+                    <button
+                        id="sourceGrab"
+                        class="source-button"
+                        onclick="setOrderSource('GrabFood')">
+
+                        🟢 GrabFood
+
+                    </button>
+
+                    <button
+                        id="sourceOutside"
+                        class="source-button"
+                        onclick="setOrderSource('Ngoài sàn')">
+
+                        🔵 Ngoài sàn
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- APP FEE -->
+
+            <div id="appFeeBox">
+
+                <label class="field-label">
+                    KHẤU TRỪ APP
+                </label>
+
+                <input
+                    id="appFee"
+                    type="number"
+                    inputmode="decimal"
+                    placeholder="Tự nhập tiền khấu trừ">
+
+                <small class="field-help">
+                    Nhập số tiền thực tế bị app khấu trừ cho đơn này.
+                </small>
+
+            </div>
+
+
+            <!-- AMOUNT -->
+
+            <label class="field-label">
+                SỐ TIỀN
+            </label>
+
+            <input
+                id="transactionAmount"
+                class="amount-input"
+                type="number"
+                inputmode="decimal"
+                placeholder="0">
+
+
+            <!-- DATE -->
+
+            <label class="field-label">
+                NGÀY
+            </label>
+
+            <input
+                id="transactionDate"
+                type="date">
+
+
+            <!-- NOTE -->
+
+            <label class="field-label">
+                GHI CHÚ
+            </label>
+
+            <input
+                id="transactionNote"
+                type="text"
+                placeholder="Không bắt buộc">
+
+
+            <button
+                class="primary-button"
+                onclick="saveTransaction()">
+
+                💾 Lưu giao dịch
+
+            </button>
+
+
+            <button
+                id="cancelEditButton"
+                class="secondary-button"
+                onclick="cancelEdit()"
+                style="display:none">
+
+                Hủy sửa
+
+            </button>
+
+        </section>
+
+
+        <!-- QUICK SUMMARY -->
+
+        <section class="card">
+
+            <div class="section-heading">
+                <h2>Hôm nay</h2>
+                <small id="todayLabel"></small>
+            </div>
+
+            <div class="quick-grid">
+
+                <div class="quick-card green-card">
+
+                    <span>
+                        DOANH THU
+                    </span>
+
+                    <strong
+                        id="todayRevenue"
+                        class="green-text">
+                        0 ₫
+                    </strong>
+
+                </div>
+
+                <div class="quick-card red-card">
+
+                    <span>
+                        CHI PHÍ
+                    </span>
+
+                    <strong
+                        id="todayExpense"
+                        class="red-text">
+                        0 ₫
+                    </strong>
+
+                </div>
+
+                <div class="quick-card orange-card">
+
+                    <span>
+                        PHÍ APP
+                    </span>
+
+                    <strong
+                        id="todayAppFee"
+                        class="orange-text">
+                        0 ₫
+                    </strong>
+
+                </div>
+
+                <div class="quick-card blue-card">
+
+                    <span>
+                        GIÁ VỐN
+                    </span>
+
+                    <strong
+                        id="todayCost"
+                        class="blue-text">
+                        0 ₫
+                    </strong>
 
                 </div>
 
@@ -681,61 +361,667 @@ viewport-fit=cover">
 
         </section>
 
-    </div>
+    </main>
 
-    <nav class="bottom-nav">
 
-        <div class="bottom-inner">
+    <!-- =========================
+         STATISTICS
+    ========================== -->
 
-            <button id="navHome"
-                class="nav-button active"
-                onclick="goHome()">
-                <span class="nav-icon">🏠</span>
-                Trang chủ
+    <main id="statisticsPage" class="page">
+
+        <section class="statistics-hero">
+
+            <div>
+                <span>PHÂN TÍCH</span>
+
+                <h2>
+                    Thống kê
+                </h2>
+            </div>
+
+        </section>
+
+
+        <section class="card">
+
+            <div class="period-tabs">
+
+                <button
+                    class="period-tab active"
+                    data-period="day"
+                    onclick="setStatisticsPeriod('day')">
+                    Ngày
+                </button>
+
+                <button
+                    class="period-tab"
+                    data-period="week"
+                    onclick="setStatisticsPeriod('week')">
+                    Tuần
+                </button>
+
+                <button
+                    class="period-tab"
+                    data-period="month"
+                    onclick="setStatisticsPeriod('month')">
+                    Tháng
+                </button>
+
+            </div>
+
+
+            <div class="statistics-date-row">
+
+                <button
+                    onclick="statisticsPrevious()">
+                    ‹
+                </button>
+
+                <strong id="statisticsPeriodLabel">
+                    Hôm nay
+                </strong>
+
+                <button
+                    onclick="statisticsNext()">
+                    ›
+                </button>
+
+            </div>
+
+
+            <!-- PROFIT -->
+
+            <div class="profit-summary">
+
+                <span>
+                    LỢI NHUẬN THỰC
+                </span>
+
+                <strong id="statisticsProfit">
+                    0 ₫
+                </strong>
+
+            </div>
+
+
+            <!-- BREAKDOWN -->
+
+            <div class="breakdown-list">
+
+                <div class="breakdown-row">
+                    <span>Doanh thu</span>
+                    <strong id="statisticsRevenue">
+                        0 ₫
+                    </strong>
+                </div>
+
+                <div class="breakdown-row">
+                    <span>Giá vốn COD</span>
+                    <strong id="statisticsCOD">
+                        0 ₫
+                    </strong>
+                </div>
+
+                <div class="breakdown-row">
+                    <span>Chi phí</span>
+                    <strong id="statisticsExpense">
+                        0 ₫
+                    </strong>
+                </div>
+
+                <div class="breakdown-row">
+                    <span>Khấu trừ ShopeeFood</span>
+                    <strong id="statisticsShopeeFee">
+                        0 ₫
+                    </strong>
+                </div>
+
+                <div class="breakdown-row">
+                    <span>Khấu trừ GrabFood</span>
+                    <strong id="statisticsGrabFee">
+                        0 ₫
+                    </strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DETAIL -->
+
+        <section class="card">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Chi tiết bán hàng</h2>
+
+                    <small>
+                        Từng món đã bán
+                    </small>
+                </div>
+
+            </div>
+
+            <div id="statisticsDishList">
+            </div>
+
+        </section>
+
+
+        <!-- SOURCE -->
+
+        <section class="card">
+
+            <div class="section-heading">
+                <h2>Theo nguồn đơn</h2>
+            </div>
+
+            <div id="statisticsSourceList">
+            </div>
+
+        </section>
+
+
+        <!-- DAILY CHART -->
+
+        <section class="card">
+
+            <div class="section-heading">
+                <h2>Biểu đồ</h2>
+            </div>
+
+            <div
+                id="statisticsChart"
+                class="statistics-chart">
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         HISTORY
+    ========================== -->
+
+    <main id="historyPage" class="page">
+
+        <section class="card">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>Lịch sử giao dịch</h2>
+
+                    <small id="historyCount">
+                        0 giao dịch
+                    </small>
+                </div>
+
+            </div>
+
+
+            <input
+                id="historySearch"
+                class="search-input"
+                type="search"
+                placeholder="🔎 Tìm giao dịch...">
+
+
+            <div class="history-filter-grid">
+
+                <select id="historyTypeFilter">
+
+                    <option value="all">
+                        Tất cả
+                    </option>
+
+                    <option value="thu">
+                        💚 Thu
+                    </option>
+
+                    <option value="chi">
+                        ❤️ Chi
+                    </option>
+
+                </select>
+
+
+                <select id="historySourceFilter">
+
+                    <option value="all">
+                        Tất cả nguồn
+                    </option>
+
+                    <option value="ShopeeFood">
+                        ShopeeFood
+                    </option>
+
+                    <option value="GrabFood">
+                        GrabFood
+                    </option>
+
+                    <option value="Ngoài sàn">
+                        Ngoài sàn
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div id="historyList">
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         RESTAURANT
+    ========================== -->
+
+    <main id="restaurantPage" class="page">
+
+        <section class="restaurant-hero">
+
+            <span>
+                🍜 BẾP NHÀ DUYÊN
+            </span>
+
+            <h2>
+                Thực đơn
+            </h2>
+
+            <p>
+                Quản lý danh mục và món ăn
+            </p>
+
+        </section>
+
+
+        <section class="card">
+
+            <h2>
+                📁 Thêm danh mục
+            </h2>
+
+            <div class="inline-form">
+
+                <input
+                    id="newCategoryName"
+                    type="text"
+                    placeholder="Tên danh mục">
+
+                <button
+                    class="primary-small-button"
+                    onclick="addCategory()">
+
+                    + Thêm
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <section class="card">
+
+            <h2>
+                🍜 Thêm món
+            </h2>
+
+            <select id="dishCategorySelect">
+                <option value="">
+                    Chọn danh mục
+                </option>
+            </select>
+
+            <input
+                id="newDishName"
+                type="text"
+                placeholder="Tên món">
+
+            <button
+                class="primary-button"
+                onclick="addDish()">
+
+                + Thêm món
+
             </button>
 
-            <button id="navAdd"
-                class="nav-button"
-                onclick="goAdd()">
-                <span class="nav-icon">➕</span>
-                Thêm
+        </section>
+
+
+        <section class="card">
+
+            <div class="section-heading">
+
+                <h2>
+                    Thực đơn của quán
+                </h2>
+
+                <small id="restaurantCount">
+                    0 món
+                </small>
+
+            </div>
+
+            <div id="restaurantMenuList">
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================
+         COD
+    ========================== -->
+
+    <main id="codPage" class="page">
+
+        <section class="cod-hero">
+
+            <span>
+                💰 QUẢN LÝ GIÁ VỐN
+            </span>
+
+            <h2>
+                COD món ăn
+            </h2>
+
+            <p>
+                Theo dõi chi phí từng thành phần
+                của từng món.
+            </p>
+
+        </section>
+
+
+        <!-- CATEGORY -->
+
+        <section
+            id="codCategoryView"
+            class="card">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2>
+                        📁 Danh mục món
+                    </h2>
+
+                    <small>
+                        Chọn danh mục
+                    </small>
+                </div>
+
+            </div>
+
+            <div id="codCategoryList">
+            </div>
+
+        </section>
+
+
+        <!-- DISH -->
+
+        <section
+            id="codDishView"
+            class="card"
+            style="display:none">
+
+            <button
+                class="back-button"
+                onclick="showCODCategories()">
+
+                ← Danh mục
+
             </button>
 
-            <button id="navStatistics"
-                class="nav-button"
-                onclick="goStatistics()">
-                <span class="nav-icon">📊</span>
-                Thống kê
+            <h2 id="codDishTitle">
+                Danh sách món
+            </h2>
+
+            <div id="codDishList">
+            </div>
+
+        </section>
+
+
+        <!-- DETAIL -->
+
+        <section
+            id="codDetailView"
+            class="card"
+            style="display:none">
+
+            <button
+                class="back-button"
+                onclick="showCODDishes()">
+
+                ← Danh sách món
+
             </button>
 
-            <button id="navHistory"
-                class="nav-button"
-                onclick="goHistory()">
-                <span class="nav-icon">📋</span>
-                Lịch sử
+
+            <div class="cod-detail-header">
+
+                <div>
+
+                    <span class="cod-label">
+                        MÓN ĐANG CHỌN
+                    </span>
+
+                    <h2 id="codDishName">
+                        Món
+                    </h2>
+
+                    <small id="codDishCategory">
+                        Danh mục
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <label class="field-label">
+                GIÁ BÁN
+            </label>
+
+            <input
+                id="codSellingPrice"
+                type="number"
+                placeholder="35000"
+                oninput="calculateCOD()">
+
+
+            <div class="cod-summary">
+
+                <div class="cod-summary-box">
+                    <span>
+                        GIÁ VỐN
+                    </span>
+
+                    <strong
+                        id="codTotalCost"
+                        class="red-text">
+                        0 ₫
+                    </strong>
+                </div>
+
+                <div class="cod-summary-box">
+                    <span>
+                        LỢI NHUẬN
+                    </span>
+
+                    <strong
+                        id="codDishProfit"
+                        class="green-text">
+                        0 ₫
+                    </strong>
+                </div>
+
+            </div>
+
+
+            <div class="cod-section-title">
+
+                <strong>
+                    📦 Thành phần
+                </strong>
+
+                <span id="codPartCount">
+                    0 phần
+                </span>
+
+            </div>
+
+
+            <div id="codPartList">
+            </div>
+
+
+            <!-- ADD PART -->
+
+            <div class="cod-add-box">
+
+                <h3>
+                    ➕ Thêm thành phần
+                </h3>
+
+                <input
+                    id="codPartName"
+                    type="text"
+                    placeholder="Ví dụ: Thịt">
+
+
+                <input
+                    id="codPartAmount"
+                    type="number"
+                    placeholder="Giá tiền">
+
+
+                <input
+                    id="codPartNote"
+                    type="text"
+                    placeholder="Ghi chú">
+
+
+                <button
+                    class="cod-primary-button"
+                    onclick="addCODPart()">
+
+                    + Thêm thành phần
+
+                </button>
+
+            </div>
+
+
+            <button
+                class="cod-save-button"
+                onclick="saveCODDish()">
+
+                💾 Lưu giá vốn
+
             </button>
 
-            <button id="navRestaurant"
-                class="nav-button"
-                onclick="goRestaurant()">
-                <span class="nav-icon">🍜</span>
-                Quán
-            </button>
+        </section>
 
-            <button id="navCOD"
-                class="nav-button"
-                onclick="goCOD()">
-                <span class="nav-icon">💰</span>
-                COD
-            </button>
+    </main>
 
-        </div>
+</div>
 
-    </nav>
 
-    <div class="toast" id="toast"></div>
+<!-- =========================
+     BOTTOM NAV
+========================== -->
 
-    <script src="./js/app.js"></script>
+<nav class="bottom-nav">
+
+    <button
+        id="navHome"
+        class="nav-button active"
+        onclick="navigateTo('home')">
+
+        <span>🏠</span>
+        Trang chủ
+
+    </button>
+
+
+    <button
+        id="navStatistics"
+        class="nav-button"
+        onclick="navigateTo('statistics')">
+
+        <span>📊</span>
+        Thống kê
+
+    </button>
+
+
+    <button
+        id="navHistory"
+        class="nav-button"
+        onclick="navigateTo('history')">
+
+        <span>📋</span>
+        Lịch sử
+
+    </button>
+
+
+    <button
+        id="navRestaurant"
+        class="nav-button"
+        onclick="navigateTo('restaurant')">
+
+        <span>🍜</span>
+        Quán
+
+    </button>
+
+
+    <button
+        id="navCOD"
+        class="nav-button"
+        onclick="navigateTo('cod')">
+
+        <span>💰</span>
+        COD
+
+    </button>
+
+</nav>
+
+
+<div
+    id="toast"
+    class="toast">
+</div>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/app.js"></script>
+<script src="js/home.js"></script>
+<script src="js/statistics.js"></script>
+<script src="js/history.js"></script>
+<script src="js/restaurant.js"></script>
+<script src="js/cod.js"></script>
 
 </body>
 </html>
