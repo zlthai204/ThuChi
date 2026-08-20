@@ -1,1 +1,298 @@
+.statistics-hero {
+    padding: 22px;
 
+    margin-bottom: 15px;
+
+    border-radius: 24px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4f46e5,
+            #7c3aed
+        );
+}
+
+.statistics-hero span {
+    font-size: 10px;
+
+    opacity: .75;
+
+    font-weight: 800;
+}
+
+.statistics-hero h2 {
+    margin: 5px 0 0;
+
+    font-size: 26px;
+}
+
+
+/* PERIOD */
+
+.period-tabs {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 5px;
+
+    padding: 5px;
+
+    border-radius: 15px;
+
+    background: #f1f3f7;
+}
+
+.period-tab {
+    border: 0;
+
+    border-radius: 11px;
+
+    padding: 10px;
+
+    background: transparent;
+
+    color: #8b91a1;
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+.period-tab.active {
+    color: #202433;
+
+    background: white;
+
+    box-shadow:
+        0 3px 10px
+        rgba(0,0,0,.05);
+}
+
+
+/* DATE */
+
+.statistics-date-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin: 16px 0;
+}
+
+.statistics-date-row button {
+    width: 35px;
+    height: 35px;
+
+    border: 0;
+
+    border-radius: 11px;
+
+    background: #f1f3f7;
+
+    font-size: 20px;
+}
+
+
+/* PROFIT */
+
+.profit-summary {
+    padding: 20px;
+
+    border-radius: 18px;
+
+    text-align: center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ecfdf5,
+            #f0fdf4
+        );
+}
+
+.profit-summary span {
+    display: block;
+
+    color: #64748b;
+
+    font-size: 10px;
+
+    font-weight: 800;
+}
+
+.profit-summary strong {
+    display: block;
+
+    margin-top: 7px;
+
+    color: var(--green);
+
+    font-size: 28px;
+
+    font-weight: 900;
+}
+
+
+/* BREAKDOWN */
+
+.breakdown-list {
+    margin-top: 15px;
+}
+
+.breakdown-row {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    padding: 12px 0;
+
+    border-bottom:
+        1px solid #f0f1f5;
+}
+
+.breakdown-row span {
+    color: #73798a;
+
+    font-size: 12px;
+}
+
+.breakdown-row strong {
+    font-size: 13px;
+}
+
+
+/* DISH */
+
+.statistics-dish-row {
+    padding: 13px 0;
+
+    border-bottom:
+        1px solid #f0f1f5;
+}
+
+.statistics-dish-top {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.statistics-dish-name {
+    font-size: 13px;
+
+    font-weight: 800;
+}
+
+.statistics-dish-profit {
+    color: var(--green);
+
+    font-size: 13px;
+
+    font-weight: 850;
+}
+
+.statistics-dish-detail {
+    display: flex;
+
+    gap: 8px;
+
+    margin-top: 5px;
+
+    color: var(--muted);
+
+    font-size: 10px;
+}
+
+
+/* SOURCE */
+
+.statistics-source-row {
+    padding: 14px;
+
+    margin-bottom: 8px;
+
+    border-radius: 15px;
+
+    background: #f8fafc;
+}
+
+.statistics-source-row strong {
+    display: block;
+
+    font-size: 13px;
+}
+
+.statistics-source-money {
+    margin-top: 4px;
+
+    font-size: 12px;
+}
+
+body.dark .statistics-source-row {
+    background: #111822;
+}
+
+
+/* CHART */
+
+.statistics-chart {
+    min-height: 200px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 8px;
+
+    overflow-x: auto;
+
+    padding:
+        20px 5px 0;
+}
+
+.statistics-bar-column {
+    min-width: 35px;
+
+    height: 180px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-end;
+
+    align-items: center;
+}
+
+.statistics-bar {
+    width: 22px;
+
+    min-height: 3px;
+
+    border-radius:
+        7px 7px 3px 3px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #6366f1,
+            #2563eb
+        );
+}
+
+.statistics-bar-label {
+    margin-top: 5px;
+
+    color: var(--muted);
+
+    font-size: 8px;
+}
