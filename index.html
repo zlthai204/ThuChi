@@ -2,32 +2,66 @@
 <html lang="vi">
 
 <head>
+
     <meta charset="UTF-8">
 
-    <meta name="viewport"
+    <meta
+        name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 
-    <meta name="theme-color" content="#f5f7fb">
+    <meta
+        name="theme-color"
+        content="#f5f7fb">
 
-    <title>Bếp Nhà Duyên - Quản lý bán hàng</title>
+    <title>
+        Bếp Nhà Duyên - Quản lý bán hàng
+    </title>
 
-    <link rel="stylesheet" href="./css/global.css">
-<link rel="stylesheet" href="./css/home.css">
-<link rel="stylesheet" href="./css/statistics.css">
-<link rel="stylesheet" href="./css/history.css">
-<link rel="stylesheet" href="./css/restaurant.css">
-<link rel="stylesheet" href="./css/cod.css">
+
+    <!-- =========================
+         CSS
+    ========================== -->
+
+    <link
+        rel="stylesheet"
+        href="./css/global.css">
+
+    <link
+        rel="stylesheet"
+        href="./css/home.css">
+
+    <link
+        rel="stylesheet"
+        href="./css/statistics.css">
+
+    <link
+        rel="stylesheet"
+        href="./css/history.css">
+
+    <link
+        rel="stylesheet"
+        href="./css/restaurant.css">
+
+    <link
+        rel="stylesheet"
+        href="./css/cod.css">
+
 </head>
+
 
 <body>
 
 <div class="app">
 
-    <!-- HEADER -->
+
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
     <header class="header">
 
         <div>
+
             <div class="brand-subtitle">
                 QUẢN LÝ BÁN HÀNG
             </div>
@@ -35,22 +69,30 @@
             <h1 id="pageTitle">
                 Bếp Nhà Duyên
             </h1>
+
         </div>
+
 
         <button
             class="header-theme-button"
             onclick="toggleDarkMode()">
+
             🌙
+
         </button>
 
     </header>
 
 
-    <!-- =========================
-         HOME
-    ========================== -->
 
-    <main id="homePage" class="page active-page">
+    <!-- =====================================================
+         HOME
+    ====================================================== -->
+
+    <main
+        id="homePage"
+        class="page active-page">
+
 
         <!-- BALANCE -->
 
@@ -60,50 +102,89 @@
                 LỢI NHUẬN THỰC
             </div>
 
+
             <div
                 id="homeProfit"
                 class="balance-number">
+
                 0 ₫
+
             </div>
+
 
             <div class="balance-grid">
 
-                <div class="balance-item">
-                    <span>Doanh thu</span>
-                    <strong id="homeRevenue">0 ₫</strong>
-                </div>
 
                 <div class="balance-item">
-                    <span>Chi phí</span>
-                    <strong id="homeExpense">0 ₫</strong>
+
+                    <span>
+                        Doanh thu
+                    </span>
+
+                    <strong id="homeRevenue">
+                        0 ₫
+                    </strong>
+
                 </div>
 
+
                 <div class="balance-item">
-                    <span>Đơn hàng</span>
-                    <strong id="homeOrders">0</strong>
+
+                    <span>
+                        Chi phí
+                    </span>
+
+                    <strong id="homeExpense">
+                        0 ₫
+                    </strong>
+
                 </div>
+
+
+                <div class="balance-item">
+
+                    <span>
+                        Đơn hàng
+                    </span>
+
+                    <strong id="homeOrders">
+                        0
+                    </strong>
+
+                </div>
+
 
             </div>
 
         </section>
 
 
-        <!-- ADD TRANSACTION -->
+
+        <!-- =================================================
+             ADD TRANSACTION
+        ================================================== -->
 
         <section class="card">
 
             <div class="section-heading">
 
                 <div>
-                    <h2>Thêm giao dịch</h2>
+
+                    <h2>
+                        Thêm giao dịch
+                    </h2>
 
                     <small>
                         Bếp Nhà Duyên
                     </small>
+
                 </div>
 
             </div>
 
+
+
+            <!-- THU / CHI -->
 
             <div class="transaction-type">
 
@@ -112,20 +193,30 @@
                     class="type-button active"
                     onclick="setTransactionType('thu')">
 
-                    💚 Thu
+                    <span>
+                        💚
+                    </span>
+
+                    Thu
 
                 </button>
+
 
                 <button
                     id="expenseTypeButton"
                     class="type-button"
                     onclick="setTransactionType('chi')">
 
-                    ❤️ Chi
+                    <span>
+                        ❤️
+                    </span>
+
+                    Chi
 
                 </button>
 
             </div>
+
 
 
             <!-- CATEGORY -->
@@ -134,11 +225,15 @@
                 DANH MỤC
             </label>
 
+
             <select id="transactionCategory">
+
                 <option value="">
                     Chọn danh mục
                 </option>
+
             </select>
+
 
 
             <!-- DISH -->
@@ -146,6 +241,7 @@
             <label class="field-label">
                 MÓN / KHOẢN
             </label>
+
 
             <select id="transactionDish">
 
@@ -156,16 +252,19 @@
             </select>
 
 
+
             <!-- CUSTOM NAME -->
 
             <label class="field-label">
                 TÊN KHÁC
             </label>
 
+
             <input
                 id="transactionName"
                 type="text"
                 placeholder="Tên món / khoản chi">
+
 
 
             <!-- SOURCE -->
@@ -176,7 +275,9 @@
                     NGUỒN ĐƠN
                 </label>
 
+
                 <div class="source-grid">
+
 
                     <button
                         id="sourceShopee"
@@ -187,6 +288,7 @@
 
                     </button>
 
+
                     <button
                         id="sourceGrab"
                         class="source-button"
@@ -195,6 +297,7 @@
                         🟢 GrabFood
 
                     </button>
+
 
                     <button
                         id="sourceOutside"
@@ -205,9 +308,11 @@
 
                     </button>
 
+
                 </div>
 
             </div>
+
 
 
             <!-- APP FEE -->
@@ -218,17 +323,23 @@
                     KHẤU TRỪ APP
                 </label>
 
+
                 <input
                     id="appFee"
                     type="number"
                     inputmode="decimal"
                     placeholder="Tự nhập tiền khấu trừ">
 
+
                 <small class="field-help">
-                    Nhập số tiền thực tế bị app khấu trừ cho đơn này.
+
+                    Nhập số tiền thực tế bị app
+                    khấu trừ cho đơn này.
+
                 </small>
 
             </div>
+
 
 
             <!-- AMOUNT -->
@@ -236,6 +347,7 @@
             <label class="field-label">
                 SỐ TIỀN
             </label>
+
 
             <input
                 id="transactionAmount"
@@ -245,15 +357,18 @@
                 placeholder="0">
 
 
+
             <!-- DATE -->
 
             <label class="field-label">
                 NGÀY
             </label>
 
+
             <input
                 id="transactionDate"
                 type="date">
+
 
 
             <!-- NOTE -->
@@ -262,11 +377,15 @@
                 GHI CHÚ
             </label>
 
+
             <input
                 id="transactionNote"
                 type="text"
                 placeholder="Không bắt buộc">
 
+
+
+            <!-- SAVE -->
 
             <button
                 class="primary-button"
@@ -276,6 +395,9 @@
 
             </button>
 
+
+
+            <!-- CANCEL -->
 
             <button
                 id="cancelEditButton"
@@ -290,16 +412,31 @@
         </section>
 
 
-        <!-- QUICK SUMMARY -->
+
+        <!-- =================================================
+             TODAY
+        ================================================== -->
 
         <section class="card">
 
             <div class="section-heading">
-                <h2>Hôm nay</h2>
-                <small id="todayLabel"></small>
+
+                <div>
+
+                    <h2>
+                        Hôm nay
+                    </h2>
+
+                    <small id="todayLabel">
+                    </small>
+
+                </div>
+
             </div>
 
+
             <div class="quick-grid">
+
 
                 <div class="quick-card green-card">
 
@@ -310,10 +447,14 @@
                     <strong
                         id="todayRevenue"
                         class="green-text">
+
                         0 ₫
+
                     </strong>
 
                 </div>
+
+
 
                 <div class="quick-card red-card">
 
@@ -324,10 +465,14 @@
                     <strong
                         id="todayExpense"
                         class="red-text">
+
                         0 ₫
+
                     </strong>
 
                 </div>
+
+
 
                 <div class="quick-card orange-card">
 
@@ -338,10 +483,14 @@
                     <strong
                         id="todayAppFee"
                         class="orange-text">
+
                         0 ₫
+
                     </strong>
 
                 </div>
+
+
 
                 <div class="quick-card blue-card">
 
@@ -352,10 +501,13 @@
                     <strong
                         id="todayCost"
                         class="blue-text">
+
                         0 ₫
+
                     </strong>
 
                 </div>
+
 
             </div>
 
@@ -364,204 +516,701 @@
     </main>
 
 
-    <!-- =========================
-         STATISTICS
-    ========================== -->
 
-    <main id="statisticsPage" class="page">
+    <!-- =====================================================
+         STATISTICS
+    ====================================================== -->
+
+    <main
+        id="statisticsPage"
+        class="page">
+
+
+        <!-- HERO -->
 
         <section class="statistics-hero">
 
             <div>
-                <span>PHÂN TÍCH</span>
+
+                <span class="statistics-eyebrow">
+                    📊 PHÂN TÍCH BÁN HÀNG
+                </span>
+
 
                 <h2>
                     Thống kê
                 </h2>
+
+
+                <p>
+                    Theo dõi thu, chi và lợi nhuận
+                </p>
+
             </div>
 
         </section>
 
 
+
+        <!-- =================================================
+             THU / CHI SWITCH
+        ================================================== -->
+
+        <section class="card statistics-switch-card">
+
+            <div class="statistics-mode-switch">
+
+
+                <button
+                    id="statisticsIncomeButton"
+                    class="statistics-mode-button income-mode active"
+                    onclick="setStatisticsMode('thu')">
+
+
+                    <span class="mode-icon">
+                        💚
+                    </span>
+
+
+                    <span>
+
+                        <strong>
+                            THU
+                        </strong>
+
+                        <small>
+                            Doanh thu
+                        </small>
+
+                    </span>
+
+
+                </button>
+
+
+
+                <button
+                    id="statisticsExpenseButton"
+                    class="statistics-mode-button expense-mode"
+                    onclick="setStatisticsMode('chi')">
+
+
+                    <span class="mode-icon">
+                        ❤️
+                    </span>
+
+
+                    <span>
+
+                        <strong>
+                            CHI
+                        </strong>
+
+                        <small>
+                            Chi phí
+                        </small>
+
+                    </span>
+
+
+                </button>
+
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             PERIOD
+        ================================================== -->
+
         <section class="card">
 
+
             <div class="period-tabs">
+
 
                 <button
                     class="period-tab active"
                     data-period="day"
                     onclick="setStatisticsPeriod('day')">
+
                     Ngày
+
                 </button>
+
 
                 <button
                     class="period-tab"
                     data-period="week"
                     onclick="setStatisticsPeriod('week')">
+
                     Tuần
+
                 </button>
+
 
                 <button
                     class="period-tab"
                     data-period="month"
                     onclick="setStatisticsPeriod('month')">
+
                     Tháng
+
                 </button>
 
+
             </div>
+
 
 
             <div class="statistics-date-row">
 
+
                 <button
+                    class="statistics-arrow"
                     onclick="statisticsPrevious()">
+
                     ‹
+
                 </button>
+
+
 
                 <strong id="statisticsPeriodLabel">
+
                     Hôm nay
+
                 </strong>
 
+
+
                 <button
+                    class="statistics-arrow"
                     onclick="statisticsNext()">
+
                     ›
+
                 </button>
 
+
             </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             THU PANEL
+        ================================================== -->
+
+        <section
+            id="statisticsIncomePanel"
+            class="statistics-panel active-panel">
 
 
             <!-- PROFIT -->
 
-            <div class="profit-summary">
+            <section class="card statistics-profit-card">
 
-                <span>
+
+                <div class="statistics-profit-label">
+
                     LỢI NHUẬN THỰC
-                </span>
 
-                <strong id="statisticsProfit">
+                </div>
+
+
+                <strong
+                    id="statisticsProfit"
+                    class="statistics-profit-number">
+
                     0 ₫
+
                 </strong>
 
-            </div>
+
+                <div class="statistics-profit-note">
+
+                    Doanh thu sau khi trừ chi phí,
+                    giá vốn và phí app
+
+                </div>
+
+
+            </section>
+
 
 
             <!-- BREAKDOWN -->
 
-            <div class="breakdown-list">
+            <section class="card">
 
-                <div class="breakdown-row">
-                    <span>Doanh thu</span>
-                    <strong id="statisticsRevenue">
-                        0 ₫
-                    </strong>
+
+                <div class="statistics-card-title">
+
+                    <div>
+
+                        <span>
+                            💚 THU
+                        </span>
+
+                        <h3>
+                            Tổng quan doanh thu
+                        </h3>
+
+                    </div>
+
                 </div>
 
-                <div class="breakdown-row">
-                    <span>Giá vốn COD</span>
-                    <strong id="statisticsCOD">
-                        0 ₫
-                    </strong>
+
+
+                <div class="breakdown-list">
+
+
+                    <div class="breakdown-row income-row">
+
+                        <div>
+
+                            <span>
+                                💰 Doanh thu
+                            </span>
+
+                            <small>
+                                Tổng tiền bán hàng
+                            </small>
+
+                        </div>
+
+
+                        <strong id="statisticsRevenue">
+
+                            0 ₫
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="breakdown-row cost-row">
+
+                        <div>
+
+                            <span>
+                                📦 Giá vốn COD
+                            </span>
+
+                            <small>
+                                Chi phí nguyên liệu
+                            </small>
+
+                        </div>
+
+
+                        <strong id="statisticsCOD">
+
+                            0 ₫
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="breakdown-row expense-row">
+
+                        <div>
+
+                            <span>
+                                💸 Chi phí
+                            </span>
+
+                            <small>
+                                Các khoản chi
+                            </small>
+
+                        </div>
+
+
+                        <strong id="statisticsExpense">
+
+                            0 ₫
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="breakdown-row shopee-row">
+
+                        <div>
+
+                            <span>
+                                🟠 Phí ShopeeFood
+                            </span>
+
+                            <small>
+                                Khấu trừ từ đơn hàng
+                            </small>
+
+                        </div>
+
+
+                        <strong id="statisticsShopeeFee">
+
+                            0 ₫
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <div class="breakdown-row grab-row">
+
+                        <div>
+
+                            <span>
+                                🟢 Phí GrabFood
+                            </span>
+
+                            <small>
+                                Khấu trừ từ đơn hàng
+                            </small>
+
+                        </div>
+
+
+                        <strong id="statisticsGrabFee">
+
+                            0 ₫
+
+                        </strong>
+
+                    </div>
+
+
                 </div>
 
-                <div class="breakdown-row">
-                    <span>Chi phí</span>
-                    <strong id="statisticsExpense">
-                        0 ₫
-                    </strong>
+            </section>
+
+
+
+            <!-- DISH -->
+
+            <section class="card">
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <h2>
+                            🍜 Chi tiết bán hàng
+                        </h2>
+
+                        <small>
+                            Từng món đã bán
+                        </small>
+
+                    </div>
+
                 </div>
 
-                <div class="breakdown-row">
-                    <span>Khấu trừ ShopeeFood</span>
-                    <strong id="statisticsShopeeFee">
-                        0 ₫
-                    </strong>
+
+                <div id="statisticsDishList">
                 </div>
 
-                <div class="breakdown-row">
-                    <span>Khấu trừ GrabFood</span>
-                    <strong id="statisticsGrabFee">
-                        0 ₫
-                    </strong>
+            </section>
+
+
+
+            <!-- SOURCE -->
+
+            <section class="card">
+
+                <div class="section-heading">
+
+                    <h2>
+                        📊 Theo nguồn đơn
+                    </h2>
+
                 </div>
 
-            </div>
+
+                <div id="statisticsSourceList">
+                </div>
+
+            </section>
+
+
+
+            <!-- CHART -->
+
+            <section class="card">
+
+                <div class="section-heading">
+
+                    <h2>
+                        📈 Biểu đồ doanh thu
+                    </h2>
+
+                </div>
+
+
+                <div
+                    id="statisticsChart"
+                    class="statistics-chart">
+
+                </div>
+
+            </section>
+
 
         </section>
 
 
-        <!-- DETAIL -->
 
-        <section class="card">
+        <!-- =================================================
+             CHI PANEL
+        ================================================== -->
 
-            <div class="section-heading">
+        <section
+            id="statisticsExpensePanel"
+            class="statistics-panel">
 
-                <div>
-                    <h2>Chi tiết bán hàng</h2>
 
-                    <small>
-                        Từng món đã bán
-                    </small>
+            <!-- TOTAL -->
+
+            <section class="card statistics-expense-total-card">
+
+
+                <div class="statistics-expense-label">
+
+                    ❤️ TỔNG CHI PHÍ
+
                 </div>
 
-            </div>
 
-            <div id="statisticsDishList">
-            </div>
+                <strong
+                    id="statisticsExpenseTotal"
+                    class="statistics-expense-number">
+
+                    0 ₫
+
+                </strong>
+
+
+                <div
+                    id="statisticsExpenseCount"
+                    class="statistics-expense-note">
+
+                    0 khoản chi
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- SUMMARY -->
+
+            <section class="card">
+
+
+                <div class="statistics-card-title">
+
+                    <div>
+
+                        <span>
+                            ❤️ CHI PHÍ
+                        </span>
+
+                        <h3>
+                            Tổng quan các khoản chi
+                        </h3>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="expense-summary-grid">
+
+
+                    <div
+                        class="expense-summary-box red-box">
+
+                        <span>
+                            Tổng chi
+                        </span>
+
+
+                        <strong
+                            id="statisticsExpenseAmount">
+
+                            0 ₫
+
+                        </strong>
+
+                    </div>
+
+
+
+                    <div
+                        class="expense-summary-box orange-box">
+
+                        <span>
+                            Số khoản
+                        </span>
+
+
+                        <strong
+                            id="statisticsExpenseOrders">
+
+                            0
+
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+            </section>
+
+
+
+            <!-- EXPENSE LIST -->
+
+            <section class="card">
+
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <h2>
+                            🧾 Chi tiết khoản chi
+                        </h2>
+
+                        <small>
+                            Các khoản chi trong kỳ
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="statisticsExpenseList"
+                    class="statistics-expense-list">
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- CATEGORY -->
+
+            <section class="card">
+
+
+                <div class="section-heading">
+
+                    <div>
+
+                        <h2>
+                            📁 Theo danh mục
+                        </h2>
+
+                        <small>
+                            Tổng chi theo từng nhóm
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    id="statisticsExpenseCategoryList"
+                    class="statistics-expense-category-list">
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- CHART -->
+
+            <section class="card">
+
+
+                <div class="section-heading">
+
+                    <h2>
+                        📉 Biểu đồ chi phí
+                    </h2>
+
+                </div>
+
+
+                <div
+                    id="statisticsExpenseChart"
+                    class="statistics-chart">
+
+                </div>
+
+
+            </section>
+
 
         </section>
 
-
-        <!-- SOURCE -->
-
-        <section class="card">
-
-            <div class="section-heading">
-                <h2>Theo nguồn đơn</h2>
-            </div>
-
-            <div id="statisticsSourceList">
-            </div>
-
-        </section>
-
-
-        <!-- DAILY CHART -->
-
-        <section class="card">
-
-            <div class="section-heading">
-                <h2>Biểu đồ</h2>
-            </div>
-
-            <div
-                id="statisticsChart"
-                class="statistics-chart">
-            </div>
-
-        </section>
 
     </main>
 
 
-    <!-- =========================
-         HISTORY
-    ========================== -->
 
-    <main id="historyPage" class="page">
+    <!-- =====================================================
+         HISTORY
+    ====================================================== -->
+
+    <main
+        id="historyPage"
+        class="page">
+
 
         <section class="card">
+
 
             <div class="section-heading">
 
                 <div>
-                    <h2>Lịch sử giao dịch</h2>
+
+                    <h2>
+                        Lịch sử giao dịch
+                    </h2>
 
                     <small id="historyCount">
                         0 giao dịch
                     </small>
+
                 </div>
 
             </div>
+
 
 
             <input
@@ -571,7 +1220,9 @@
                 placeholder="🔎 Tìm giao dịch...">
 
 
+
             <div class="history-filter-grid">
+
 
                 <select id="historyTypeFilter">
 
@@ -579,9 +1230,11 @@
                         Tất cả
                     </option>
 
+
                     <option value="thu">
                         💚 Thu
                     </option>
+
 
                     <option value="chi">
                         ❤️ Chi
@@ -590,19 +1243,23 @@
                 </select>
 
 
+
                 <select id="historySourceFilter">
 
                     <option value="all">
                         Tất cả nguồn
                     </option>
 
+
                     <option value="ShopeeFood">
                         ShopeeFood
                     </option>
 
+
                     <option value="GrabFood">
                         GrabFood
                     </option>
+
 
                     <option value="Ngoài sàn">
                         Ngoài sàn
@@ -610,22 +1267,30 @@
 
                 </select>
 
+
             </div>
+
 
 
             <div id="historyList">
             </div>
 
+
         </section>
+
 
     </main>
 
 
-    <!-- =========================
-         RESTAURANT
-    ========================== -->
 
-    <main id="restaurantPage" class="page">
+    <!-- =====================================================
+         RESTAURANT
+    ====================================================== -->
+
+    <main
+        id="restaurantPage"
+        class="page">
+
 
         <section class="restaurant-hero">
 
@@ -633,9 +1298,11 @@
                 🍜 BẾP NHÀ DUYÊN
             </span>
 
+
             <h2>
                 Thực đơn
             </h2>
+
 
             <p>
                 Quản lý danh mục và món ăn
@@ -644,18 +1311,24 @@
         </section>
 
 
+
+        <!-- CATEGORY -->
+
         <section class="card">
 
             <h2>
                 📁 Thêm danh mục
             </h2>
 
+
             <div class="inline-form">
+
 
                 <input
                     id="newCategoryName"
                     type="text"
                     placeholder="Tên danh mục">
+
 
                 <button
                     class="primary-small-button"
@@ -665,10 +1338,14 @@
 
                 </button>
 
+
             </div>
 
         </section>
 
+
+
+        <!-- DISH -->
 
         <section class="card">
 
@@ -676,16 +1353,21 @@
                 🍜 Thêm món
             </h2>
 
+
             <select id="dishCategorySelect">
+
                 <option value="">
                     Chọn danh mục
                 </option>
+
             </select>
+
 
             <input
                 id="newDishName"
                 type="text"
                 placeholder="Tên món">
+
 
             <button
                 class="primary-button"
@@ -695,10 +1377,15 @@
 
             </button>
 
+
         </section>
 
 
+
+        <!-- MENU -->
+
         <section class="card">
+
 
             <div class="section-heading">
 
@@ -706,25 +1393,33 @@
                     Thực đơn của quán
                 </h2>
 
+
                 <small id="restaurantCount">
                     0 món
                 </small>
 
             </div>
 
+
             <div id="restaurantMenuList">
             </div>
 
+
         </section>
+
 
     </main>
 
 
-    <!-- =========================
-         COD
-    ========================== -->
 
-    <main id="codPage" class="page">
+    <!-- =====================================================
+         COD
+    ====================================================== -->
+
+    <main
+        id="codPage"
+        class="page">
+
 
         <section class="cod-hero">
 
@@ -732,9 +1427,11 @@
                 💰 QUẢN LÝ GIÁ VỐN
             </span>
 
+
             <h2>
                 COD món ăn
             </h2>
+
 
             <p>
                 Theo dõi chi phí từng thành phần
@@ -744,15 +1441,18 @@
         </section>
 
 
+
         <!-- CATEGORY -->
 
         <section
             id="codCategoryView"
             class="card">
 
+
             <div class="section-heading">
 
                 <div>
+
                     <h2>
                         📁 Danh mục món
                     </h2>
@@ -760,14 +1460,18 @@
                     <small>
                         Chọn danh mục
                     </small>
+
                 </div>
 
             </div>
 
+
             <div id="codCategoryList">
             </div>
 
+
         </section>
+
 
 
         <!-- DISH -->
@@ -777,6 +1481,7 @@
             class="card"
             style="display:none">
 
+
             <button
                 class="back-button"
                 onclick="showCODCategories()">
@@ -785,14 +1490,18 @@
 
             </button>
 
+
             <h2 id="codDishTitle">
                 Danh sách món
             </h2>
 
+
             <div id="codDishList">
             </div>
 
+
         </section>
+
 
 
         <!-- DETAIL -->
@@ -801,6 +1510,7 @@
             id="codDetailView"
             class="card"
             style="display:none">
+
 
             <button
                 class="back-button"
@@ -811,7 +1521,9 @@
             </button>
 
 
+
             <div class="cod-detail-header">
+
 
                 <div>
 
@@ -819,9 +1531,11 @@
                         MÓN ĐANG CHỌN
                     </span>
 
+
                     <h2 id="codDishName">
                         Món
                     </h2>
+
 
                     <small id="codDishCategory">
                         Danh mục
@@ -829,12 +1543,15 @@
 
                 </div>
 
+
             </div>
+
 
 
             <label class="field-label">
                 GIÁ BÁN
             </label>
+
 
             <input
                 id="codSellingPrice"
@@ -843,59 +1560,82 @@
                 oninput="calculateCOD()">
 
 
+
             <div class="cod-summary">
 
+
                 <div class="cod-summary-box">
+
                     <span>
                         GIÁ VỐN
                     </span>
 
+
                     <strong
                         id="codTotalCost"
                         class="red-text">
+
                         0 ₫
+
                     </strong>
+
                 </div>
 
+
+
                 <div class="cod-summary-box">
+
                     <span>
                         LỢI NHUẬN
                     </span>
 
+
                     <strong
                         id="codDishProfit"
                         class="green-text">
+
                         0 ₫
+
                     </strong>
+
                 </div>
+
 
             </div>
 
 
+
             <div class="cod-section-title">
+
 
                 <strong>
                     📦 Thành phần
                 </strong>
 
+
                 <span id="codPartCount">
                     0 phần
                 </span>
 
+
             </div>
+
 
 
             <div id="codPartList">
             </div>
 
 
+
             <!-- ADD PART -->
 
             <div class="cod-add-box">
 
+
                 <h3>
                     ➕ Thêm thành phần
                 </h3>
+
 
                 <input
                     id="codPartName"
@@ -923,7 +1663,9 @@
 
                 </button>
 
+
             </div>
+
 
 
             <button
@@ -934,28 +1676,41 @@
 
             </button>
 
+
         </section>
 
+
     </main>
+
+
 
 </div>
 
 
-<!-- =========================
-     BOTTOM NAV
-========================== -->
+
+<!-- =====================================================
+     BOTTOM NAVIGATION
+====================================================== -->
 
 <nav class="bottom-nav">
+
 
     <button
         id="navHome"
         class="nav-button active"
         onclick="navigateTo('home')">
 
-        <span>🏠</span>
+
+        <span>
+            🏠
+        </span>
+
+
         Trang chủ
 
+
     </button>
+
 
 
     <button
@@ -963,10 +1718,17 @@
         class="nav-button"
         onclick="navigateTo('statistics')">
 
-        <span>📊</span>
+
+        <span>
+            📊
+        </span>
+
+
         Thống kê
 
+
     </button>
+
 
 
     <button
@@ -974,10 +1736,17 @@
         class="nav-button"
         onclick="navigateTo('history')">
 
-        <span>📋</span>
+
+        <span>
+            📋
+        </span>
+
+
         Lịch sử
 
+
     </button>
+
 
 
     <button
@@ -985,10 +1754,17 @@
         class="nav-button"
         onclick="navigateTo('restaurant')">
 
-        <span>🍜</span>
+
+        <span>
+            🍜
+        </span>
+
+
         Quán
 
+
     </button>
+
 
 
     <button
@@ -996,33 +1772,74 @@
         class="nav-button"
         onclick="navigateTo('cod')">
 
-        <span>💰</span>
+
+        <span>
+            💰
+        </span>
+
+
         COD
 
+
     </button>
+
 
 </nav>
 
 
+
+<!-- =====================================================
+     TOAST
+====================================================== -->
+
 <div
     id="toast"
     class="toast">
+
 </div>
 
 
-<!-- SUPABASE -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- =====================================================
+     SUPABASE
+====================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
 
 <!-- APP -->
-<script src="./js/supabase.js"></script>
-<script src="./js/app.js"></script>
+
+<script src="./js/supabase.js">
+</script>
+
+
+<script src="./js/app.js">
+</script>
+
 
 <!-- MODULES -->
-<script src="./js/home.js"></script>
-<script src="./js/statistics.js"></script>
-<script src="./js/history.js"></script>
-<script src="./js/restaurant.js"></script>
-<script src="./js/cod.js"></script>
+
+<script src="./js/home.js">
+</script>
+
+
+<script src="./js/statistics.js">
+</script>
+
+
+<script src="./js/history.js">
+</script>
+
+
+<script src="./js/restaurant.js">
+</script>
+
+
+<script src="./js/cod.js">
+</script>
+
 
 </body>
+
 </html>
