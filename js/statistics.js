@@ -724,3 +724,4 @@ function renderStatisticsChart() {
         chart.appendChild(item);
     });
 }
+}
