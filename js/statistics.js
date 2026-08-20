@@ -1,41 +1,77 @@
 /* =========================================================
-   STATISTICS
-   THỐNG KÊ THU / CHI
-========================================================= */
-
-
-/* =========================================================
-   STATE
-========================================================= */
-
-if (!AppState.statisticsMode) {
-
-    AppState.statisticsMode = "thu";
-
-}
-
-
-/* =========================================================
-   SET MODE
-   thu = doanh thu
-   chi = chi phí
+   STATISTICS STATE
 ========================================================= */
 
 function setStatisticsMode(mode) {
 
-    AppState.statisticsMode = mode;
+    AppState.statisticsMode =
+        mode === "chi"
+            ? "chi"
+            : "thu";
 
 
-    document
-        .querySelectorAll(".statistics-mode-button")
-        .forEach(button => {
+    const incomeTab =
+        document.getElementById(
+            "statisticsIncomeTab"
+        );
 
-            button.classList.toggle(
-                "active",
-                button.dataset.mode === mode
-            );
 
-        });
+    const expenseTab =
+        document.getElementById(
+            "statisticsExpenseTab"
+        );
+
+
+    if (incomeTab) {
+
+        incomeTab.classList.toggle(
+            "active",
+            AppState.statisticsMode === "thu"
+        );
+
+    }
+
+
+    if (expenseTab) {
+
+        expenseTab.classList.toggle(
+            "active",
+            AppState.statisticsMode === "chi"
+        );
+
+    }
+
+
+    const incomeView =
+        document.getElementById(
+            "statisticsIncomeView"
+        );
+
+
+    const expenseView =
+        document.getElementById(
+            "statisticsExpenseView"
+        );
+
+
+    if (incomeView) {
+
+        incomeView.style.display =
+            AppState.statisticsMode === "thu"
+                ? "block"
+                : "none";
+
+    }
+
+
+    if (expenseView) {
+
+        expenseView.style.display =
+            AppState.statisticsMode === "chi"
+                ? "block"
+                : "none";
+
+    }
 
 
     renderStatistics();
@@ -44,7 +80,7 @@ function setStatisticsMode(mode) {
 
 
 /* =========================================================
-   SET PERIOD
+   PERIOD
 ========================================================= */
 
 function setStatisticsPeriod(period) {
@@ -78,7 +114,9 @@ function getStatisticsRange() {
 
     const baseDate =
         AppState.statisticsDate instanceof Date
-            ? new Date(AppState.statisticsDate)
+            ? new Date(
+                AppState.statisticsDate
+            )
             : new Date();
 
 
@@ -86,26 +124,30 @@ function getStatisticsRange() {
     let end;
 
 
-    /* =========================
-       DAY
-    ========================= */
+    /*
+     * NGÀY
+     */
 
     if (
         AppState.statisticsPeriod === "day"
     ) {
 
         start =
-            new Date(baseDate);
+            new Date(
+                baseDate
+            );
 
         end =
-            new Date(baseDate);
+            new Date(
+                baseDate
+            );
 
     }
 
 
-    /* =========================
-       WEEK
-    ========================= */
+    /*
+     * TUẦN
+     */
 
     else if (
         AppState.statisticsPeriod === "week"
@@ -122,7 +164,9 @@ function getStatisticsRange() {
 
 
         start =
-            new Date(baseDate);
+            new Date(
+                baseDate
+            );
 
 
         start.setDate(
@@ -131,7 +175,9 @@ function getStatisticsRange() {
 
 
         end =
-            new Date(start);
+            new Date(
+                start
+            );
 
 
         end.setDate(
@@ -141,9 +187,9 @@ function getStatisticsRange() {
     }
 
 
-    /* =========================
-       MONTH
-    ========================= */
+    /*
+     * THÁNG
+     */
 
     else {
 
@@ -179,7 +225,7 @@ function getStatisticsRange() {
 
 
 /* =========================================================
-   GET TRANSACTIONS IN PERIOD
+   FILTER TRANSACTIONS
 ========================================================= */
 
 function getStatisticsTransactions() {
@@ -188,18 +234,15 @@ function getStatisticsTransactions() {
         getStatisticsRange();
 
 
-    if (
-        !Array.isArray(
+    const transactions =
+        Array.isArray(
             AppState.transactions
         )
-    ) {
-
-        return [];
-
-    }
+            ? AppState.transactions
+            : [];
 
 
-    return AppState.transactions.filter(
+    return transactions.filter(
         transaction => {
 
             if (!transaction.date) {
@@ -212,7 +255,7 @@ function getStatisticsTransactions() {
             const date =
                 String(
                     transaction.date
-                ).substring(
+                ).slice(
                     0,
                     10
                 );
@@ -230,7 +273,7 @@ function getStatisticsTransactions() {
 
 
 /* =========================================================
-   RENDER STATISTICS
+   MAIN RENDER
 ========================================================= */
 
 function renderStatistics() {
@@ -253,183 +296,40 @@ function renderStatistics() {
         );
 
 
-    /* =====================================================
-       INCOME
-    ===================================================== */
+    /*
+     * THU
+     */
 
     const revenue =
         income.reduce(
             (
                 sum,
                 transaction
-            ) => {
-
-                return (
-                    sum +
-                    toNumber(
-                        transaction.amount
-                    )
-                );
-
-            },
+            ) =>
+                sum +
+                toNumber(
+                    transaction.amount
+                ),
             0
         );
 
-
-    const appFee =
-        income.reduce(
-            (
-                sum,
-                transaction
-            ) => {
-
-                return (
-                    sum +
-                    toNumber(
-                        transaction.app_fee
-                    )
-                );
-
-            },
-            0
-        );
-
-
-    const codCost =
-        income.reduce(
-            (
-                sum,
-                transaction
-            ) => {
-
-                return (
-                    sum +
-                    getTransactionDishCost(
-                        transaction
-                    )
-                );
-
-            },
-            0
-        );
-
-
-    /* =====================================================
-       EXPENSE
-    ===================================================== */
 
     const expense =
         expenses.reduce(
             (
                 sum,
                 transaction
-            ) => {
-
-                return (
-                    sum +
-                    toNumber(
-                        transaction.amount
-                    )
-                );
-
-            },
+            ) =>
+                sum +
+                toNumber(
+                    transaction.amount
+                ),
             0
         );
 
 
-    /* =====================================================
-       PROFIT
-    ===================================================== */
-
-    const profit =
-        revenue -
-        appFee -
-        codCost -
-        expense;
-
-
-    /* =====================================================
-       MODE
-    ===================================================== */
-
-    if (
-        AppState.statisticsMode === "chi"
-    ) {
-
-        renderExpenseStatistics(
-            expenses
-        );
-
-    }
-
-    else {
-
-        renderIncomeStatistics(
-            income,
-            revenue,
-            appFee,
-            codCost,
-            profit
-        );
-
-    }
-
-
-    /* =====================================================
-       COMMON
-    ===================================================== */
-
-    renderStatisticsPeriodLabel();
-
-    renderStatisticsChart(
-        transactions
-    );
-
-}
-
-
-/* =========================================================
-   INCOME STATISTICS
-========================================================= */
-
-function renderIncomeStatistics(
-    transactions,
-    revenue,
-    appFee,
-    codCost,
-    profit
-) {
-
-    setText(
-        "statisticsProfit",
-        formatMoney(profit)
-    );
-
-
-    setText(
-        "statisticsRevenue",
-        formatMoney(revenue)
-    );
-
-
-    setText(
-        "statisticsCOD",
-        formatMoney(codCost)
-    );
-
-
-    setText(
-        "statisticsExpense",
-        formatMoney(
-            transactions.length
-                ? 0
-                : 0
-        )
-    );
-
-
     const shopeeFee =
-        transactions
+        income
             .filter(
                 transaction =>
                     transaction.source ===
@@ -449,7 +349,7 @@ function renderIncomeStatistics(
 
 
     const grabFee =
-        transactions
+        income
             .filter(
                 transaction =>
                     transaction.source ===
@@ -468,293 +368,155 @@ function renderIncomeStatistics(
             );
 
 
-    setText(
-        "statisticsShopeeFee",
-        formatMoney(shopeeFee)
-    );
-
-
-    setText(
-        "statisticsGrabFee",
-        formatMoney(grabFee)
-    );
-
-
-    renderStatisticsDishes(
-        transactions
-    );
-
-
-    renderStatisticsSources(
-        transactions
-    );
-
-}
-
-
-/* =========================================================
-   EXPENSE STATISTICS
-========================================================= */
-
-function renderExpenseStatistics(
-    transactions
-) {
-
-    const totalExpense =
-        transactions.reduce(
-            (
-                sum,
-                transaction
-            ) =>
-                sum +
-                toNumber(
-                    transaction.amount
-                ),
-            0
+    const codCost =
+        calculatePeriodCODCost(
+            income
         );
 
 
-    const expenseCount =
-        transactions.length;
+    const profit =
+        revenue -
+        codCost -
+        expense -
+        shopeeFee -
+        grabFee;
 
 
-    /* =====================================================
-       HEADER
-    ===================================================== */
+    /*
+     * THU UI
+     */
 
     setText(
-        "statisticsProfit",
+        "statisticsRevenue",
         formatMoney(
-            -totalExpense
+            revenue
         )
     );
 
 
     setText(
-        "statisticsRevenue",
-        formatMoney(0)
-    );
-
-
-    setText(
         "statisticsCOD",
-        formatMoney(0)
+        formatMoney(
+            codCost
+        )
     );
 
 
     setText(
         "statisticsExpense",
         formatMoney(
-            totalExpense
+            expense
         )
     );
 
 
     setText(
         "statisticsShopeeFee",
-        formatMoney(0)
+        formatMoney(
+            shopeeFee
+        )
     );
 
 
     setText(
         "statisticsGrabFee",
-        formatMoney(0)
+        formatMoney(
+            grabFee
+        )
     );
 
 
-    /* =====================================================
-       CHI TIẾT KHOẢN CHI
-    ===================================================== */
+    setText(
+        "statisticsProfit",
+        formatMoney(
+            profit
+        )
+    );
 
-    renderExpenseDetails(
+
+    /*
+     * CHI UI
+     */
+
+    renderStatisticsExpenses(
+        expenses
+    );
+
+
+    /*
+     * CHI TIẾT THU
+     */
+
+    renderStatisticsDishes(
+        income
+    );
+
+
+    renderStatisticsSources(
+        income
+    );
+
+
+    /*
+     * BIỂU ĐỒ
+     */
+
+    renderStatisticsChart(
         transactions
     );
 
 
-    /* =====================================================
-       THEO NGUỒN
-       Không áp dụng cho chi
-    ===================================================== */
+    /*
+     * LABEL
+     */
 
-    renderExpenseSources(
-        transactions
+    setText(
+        "statisticsPeriodLabel",
+        getPeriodLabel()
+    );
+
+
+    /*
+     * Đảm bảo tab đúng
+     */
+
+    setStatisticsMode(
+        AppState.statisticsMode || "thu"
     );
 
 }
 
 
 /* =========================================================
-   EXPENSE DETAILS
+   COD COST
 ========================================================= */
 
-function renderExpenseDetails(
+function calculatePeriodCODCost(
     transactions
 ) {
 
-    const container =
-        document.getElementById(
-            "statisticsDishList"
-        );
-
-
-    if (!container) {
-
-        return;
-
-    }
-
-
-    container.innerHTML = "";
-
-
-    if (!transactions.length) {
-
-        container.innerHTML = `
-            <div class="statistics-empty">
-                Chưa có khoản chi trong thời gian này.
-            </div>
-        `;
-
-        return;
-
-    }
-
-
-    const map = {};
+    let total = 0;
 
 
     transactions.forEach(
         transaction => {
 
-            const name =
-                transaction.dish_name ||
-                transaction.category_name ||
-                transaction.note ||
-                "Khoản chi";
-
-
-            if (!map[name]) {
-
-                map[name] = {
-
-                    quantity: 0,
-
-                    amount: 0,
-
-                    category:
-                        transaction.category_name ||
-                        "",
-
-                    note:
-                        transaction.note ||
-                        ""
-
-                };
-
-            }
-
-
-            map[name].quantity += 1;
-
-
-            map[name].amount +=
-                toNumber(
-                    transaction.amount
+            total +=
+                getTransactionDishCost(
+                    transaction
                 );
 
         }
     );
 
 
-    Object.entries(map)
-        .sort(
-            (
-                [, a],
-                [, b]
-            ) =>
-                b.amount -
-                a.amount
-        )
-        .forEach(
-            (
-                [name, item]
-            ) => {
-
-                container.innerHTML += `
-
-                    <div class="statistics-dish-row expense-stat-row">
-
-                        <div class="statistics-dish-top">
-
-                            <span class="statistics-dish-name">
-
-                                🔴
-                                ${escapeHTML(name)}
-
-                            </span>
-
-                            <strong
-                                class="
-                                    statistics-dish-profit
-                                    red-text
-                                ">
-
-                                -${formatMoney(
-                                    item.amount
-                                )}
-
-                            </strong>
-
-                        </div>
-
-
-                        <div class="statistics-dish-detail">
-
-                            <span>
-                                ${item.quantity} khoản
-                            </span>
-
-
-                            ${
-                                item.category
-                                    ? `
-                                    <span>
-                                        Danh mục:
-                                        ${escapeHTML(
-                                            item.category
-                                        )}
-                                    </span>
-                                    `
-                                    : ""
-                            }
-
-
-                            ${
-                                item.note
-                                    ? `
-                                    <span>
-                                        ${escapeHTML(
-                                            item.note
-                                        )}
-                                    </span>
-                                    `
-                                    : ""
-                            }
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-        );
+    return total;
 
 }
 
 
 /* =========================================================
-   INCOME DISHES
+   THU - DISH
 ========================================================= */
 
 function renderStatisticsDishes(
@@ -767,27 +529,7 @@ function renderStatisticsDishes(
         );
 
 
-    if (!container) {
-
-        return;
-
-    }
-
-
-    container.innerHTML = "";
-
-
-    if (!transactions.length) {
-
-        container.innerHTML = `
-            <div class="statistics-empty">
-                Chưa có đơn hàng trong thời gian này.
-            </div>
-        `;
-
-        return;
-
-    }
+    if (!container) return;
 
 
     const map = {};
@@ -818,7 +560,7 @@ function renderStatisticsDishes(
             }
 
 
-            map[name].quantity += 1;
+            map[name].quantity++;
 
 
             map[name].revenue +=
@@ -842,99 +584,90 @@ function renderStatisticsDishes(
     );
 
 
-    Object.entries(map)
-        .sort(
-            (
-                [, a],
-                [, b]
-            ) =>
-                b.revenue -
-                a.revenue
-        )
-        .forEach(
-            (
-                [name, item]
-            ) => {
-
-                const itemProfit =
-                    item.revenue -
-                    item.fee -
-                    item.cost;
+    container.innerHTML = "";
 
 
-                container.innerHTML += `
-
-                    <div class="statistics-dish-row">
-
-                        <div class="statistics-dish-top">
-
-                            <span class="statistics-dish-name">
-
-                                🟢
-                                ${escapeHTML(name)}
-
-                            </span>
+    const entries =
+        Object.entries(
+            map
+        );
 
 
-                            <strong
-                                class="
-                                    statistics-dish-profit
-                                    green-text
-                                ">
+    if (!entries.length) {
 
-                                ${formatMoney(
-                                    itemProfit
-                                )}
+        container.innerHTML = `
+            <div class="statistics-empty">
+                Chưa có đơn bán trong kỳ.
+            </div>
+        `;
 
-                            </strong>
+        return;
 
-                        </div>
+    }
 
 
-                        <div class="statistics-dish-detail">
+    entries.forEach(
+        ([name, item]) => {
 
-                            <span>
-                                ${item.quantity} đơn
-                            </span>
-
-
-                            <span>
-                                Doanh thu:
-                                ${formatMoney(
-                                    item.revenue
-                                )}
-                            </span>
+            const profit =
+                item.revenue -
+                item.fee -
+                item.cost;
 
 
-                            <span>
-                                Vốn:
-                                ${formatMoney(
-                                    item.cost
-                                )}
-                            </span>
+            container.innerHTML += `
 
+                <div class="statistics-dish-row">
 
-                            <span>
-                                App:
-                                ${formatMoney(
-                                    item.fee
-                                )}
-                            </span>
+                    <div class="statistics-dish-top">
 
-                        </div>
+                        <span class="statistics-dish-name">
+                            🍜
+                            ${escapeHTML(name)}
+                        </span>
+
+                        <strong class="statistics-dish-profit">
+                            ${formatMoney(profit)}
+                        </strong>
 
                     </div>
 
-                `;
 
-            }
-        );
+                    <div class="statistics-dish-detail">
+
+                        <span>
+                            ${item.quantity} đơn
+                        </span>
+
+                        <span>
+                            Doanh thu:
+                            ${formatMoney(item.revenue)}
+                        </span>
+
+                        <span>
+                            Vốn:
+                            ${formatMoney(item.cost)}
+                        </span>
+
+                        <span>
+                            App:
+                            ${formatMoney(item.fee)}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
 
 }
 
 
 /* =========================================================
-   SOURCE - INCOME
+   THU - SOURCE
 ========================================================= */
 
 function renderStatisticsSources(
@@ -947,17 +680,17 @@ function renderStatisticsSources(
         );
 
 
-    if (!container) {
-
-        return;
-
-    }
+    if (!container) return;
 
 
     const sources = [
+
         "ShopeeFood",
+
         "GrabFood",
+
         "Ngoài sàn"
+
     ];
 
 
@@ -1011,7 +744,6 @@ function renderStatisticsSources(
                         ${escapeHTML(source)}
                     </strong>
 
-
                     <div class="statistics-source-money">
 
                         Doanh thu:
@@ -1035,46 +767,96 @@ function renderStatisticsSources(
 
 
 /* =========================================================
-   SOURCE - EXPENSE
+   CHI - MAIN
 ========================================================= */
 
-function renderExpenseSources(
-    transactions
+function renderStatisticsExpenses(
+    expenses
+) {
+
+    const total =
+        expenses.reduce(
+            (
+                sum,
+                transaction
+            ) =>
+                sum +
+                toNumber(
+                    transaction.amount
+                ),
+            0
+        );
+
+
+    const count =
+        expenses.length;
+
+
+    const average =
+        count
+            ? total / count
+            : 0;
+
+
+    setText(
+        "statisticsTotalExpense",
+        formatMoney(total)
+    );
+
+
+    setText(
+        "statisticsExpenseAmount",
+        formatMoney(total)
+    );
+
+
+    setText(
+        "statisticsExpenseCount",
+        count
+    );
+
+
+    setText(
+        "statisticsExpenseAverage",
+        formatMoney(average)
+    );
+
+
+    renderStatisticsExpenseCategories(
+        expenses,
+        total
+    );
+
+
+    renderStatisticsExpenseList(
+        expenses
+    );
+
+}
+
+
+/* =========================================================
+   CHI - CATEGORY
+========================================================= */
+
+function renderStatisticsExpenseCategories(
+    expenses,
+    total
 ) {
 
     const container =
         document.getElementById(
-            "statisticsSourceList"
+            "statisticsExpenseCategoryList"
         );
 
 
-    if (!container) {
-
-        return;
-
-    }
-
-
-    container.innerHTML = "";
-
-
-    if (!transactions.length) {
-
-        container.innerHTML = `
-            <div class="statistics-empty">
-                Chưa có khoản chi.
-            </div>
-        `;
-
-        return;
-
-    }
+    if (!container) return;
 
 
     const map = {};
 
 
-    transactions.forEach(
+    expenses.forEach(
         transaction => {
 
             const category =
@@ -1084,80 +866,247 @@ function renderExpenseSources(
 
             if (!map[category]) {
 
-                map[category] = {
-
-                    amount: 0,
-
-                    count: 0
-
-                };
+                map[category] = 0;
 
             }
 
 
-            map[category].amount +=
+            map[category] +=
                 toNumber(
                     transaction.amount
                 );
-
-
-            map[category].count += 1;
 
         }
     );
 
 
-    Object.entries(map)
-        .sort(
-            (
-                [, a],
-                [, b]
-            ) =>
-                b.amount -
-                a.amount
+    const entries =
+        Object.entries(
+            map
         )
-        .forEach(
-            (
-                [category, item]
-            ) => {
+            .sort(
+                (
+                    a,
+                    b
+                ) =>
+                    b[1] - a[1]
+            );
 
-                container.innerHTML += `
 
-                    <div class="statistics-source-row">
+    container.innerHTML = "";
 
-                        <strong>
 
-                            🔴
-                            ${escapeHTML(
-                                category
-                            )}
+    if (!entries.length) {
 
+        container.innerHTML = `
+            <div class="statistics-empty">
+                Chưa có khoản chi trong kỳ.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    entries.forEach(
+        ([name, amount]) => {
+
+            const percent =
+                total > 0
+                    ? (
+                        amount /
+                        total
+                    ) *
+                    100
+                    : 0;
+
+
+            container.innerHTML += `
+
+                <div class="
+                    statistics-expense-category-row
+                ">
+
+                    <div class="
+                        statistics-expense-category-top
+                    ">
+
+                        <span class="
+                            statistics-expense-category-name
+                        ">
+                            📁
+                            ${escapeHTML(name)}
+                        </span>
+
+                        <strong class="
+                            statistics-expense-category-money
+                        ">
+                            ${formatMoney(amount)}
                         </strong>
 
+                    </div>
 
-                        <div
-                            class="
-                                statistics-source-money
-                                red-text
+
+                    <div class="
+                        statistics-expense-category-bar
+                    ">
+
+                        <span
+                            style="
+                                width:${Math.max(
+                                    percent,
+                                    1
+                                )}%
                             ">
+                        </span>
 
-                            ${item.count} khoản
+                    </div>
 
-                            <br>
 
-                            Tổng chi:
-                            ${formatMoney(
-                                item.amount
+                    <div class="
+                        statistics-expense-category-percent
+                    ">
+
+                        ${percent.toFixed(1)}%
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CHI - DETAIL
+========================================================= */
+
+function renderStatisticsExpenseList(
+    expenses
+) {
+
+    const container =
+        document.getElementById(
+            "statisticsExpenseList"
+        );
+
+
+    if (!container) return;
+
+
+    container.innerHTML = "";
+
+
+    if (!expenses.length) {
+
+        container.innerHTML = `
+            <div class="statistics-empty">
+                Chưa có khoản chi trong kỳ.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    /*
+     * Mới nhất lên đầu
+     */
+
+    const sorted =
+        [...expenses].sort(
+            (
+                a,
+                b
+            ) =>
+                String(
+                    b.date || ""
+                ).localeCompare(
+                    String(
+                        a.date || ""
+                    )
+                )
+        );
+
+
+    sorted.forEach(
+        transaction => {
+
+            const name =
+                transaction.dish_name ||
+                "Khoản chi";
+
+
+            const category =
+                transaction.category_name ||
+                "Khác";
+
+
+            container.innerHTML += `
+
+                <div class="
+                    statistics-expense-row
+                ">
+
+                    <div class="
+                        statistics-expense-icon
+                    ">
+                        ↓
+                    </div>
+
+
+                    <div class="
+                        statistics-expense-info
+                    ">
+
+                        <div class="
+                            statistics-expense-name
+                        ">
+                            ${escapeHTML(name)}
+                        </div>
+
+
+                        <div class="
+                            statistics-expense-category
+                        ">
+                            ${escapeHTML(category)}
+                        </div>
+
+
+                        <div class="
+                            statistics-expense-date
+                        ">
+                            ${formatVietnameseDate(
+                                transaction.date
                             )}
-
                         </div>
 
                     </div>
 
-                `;
 
-            }
-        );
+                    <div class="
+                        statistics-expense-money
+                    ">
+
+                        -
+                        ${formatMoney(
+                            transaction.amount
+                        )}
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+    );
 
 }
 
@@ -1256,20 +1205,6 @@ function statisticsNext() {
    PERIOD LABEL
 ========================================================= */
 
-function renderStatisticsPeriodLabel() {
-
-    const label =
-        getPeriodLabel();
-
-
-    setText(
-        "statisticsPeriodLabel",
-        label
-    );
-
-}
-
-
 function getPeriodLabel() {
 
     const range =
@@ -1315,11 +1250,7 @@ function renderStatisticsChart(
         );
 
 
-    if (!chart) {
-
-        return;
-
-    }
+    if (!chart) return;
 
 
     chart.innerHTML = "";
@@ -1354,7 +1285,7 @@ function renderStatisticsChart(
             const date =
                 String(
                     transaction.date
-                ).substring(
+                ).slice(
                     0,
                     10
                 );
@@ -1390,7 +1321,7 @@ function renderStatisticsChart(
             }
 
 
-            if (
+            else if (
                 transaction.type ===
                 "chi"
             ) {
@@ -1423,17 +1354,14 @@ function renderStatisticsChart(
     }
 
 
-    const mode =
-        AppState.statisticsMode;
-
-
     const maxValue =
         Math.max(
             ...dates.map(
                 date =>
-                    mode === "thu"
-                        ? daily[date].thu
-                        : daily[date].chi
+                    Math.max(
+                        daily[date].thu,
+                        daily[date].chi
+                    )
             ),
             1
         );
@@ -1446,17 +1374,20 @@ function renderStatisticsChart(
                 daily[date];
 
 
-            const value =
-                mode === "thu"
-                    ? data.thu
-                    : data.chi;
-
-
-            const percent =
+            const thuPercent =
                 (
-                    value /
+                    data.thu /
                     maxValue
-                ) * 100;
+                ) *
+                100;
+
+
+            const chiPercent =
+                (
+                    data.chi /
+                    maxValue
+                ) *
+                100;
 
 
             const dateObject =
@@ -1490,26 +1421,30 @@ function renderStatisticsChart(
                 <div class="chart-bars">
 
                     <div
-                        class="
-                            chart-bar
-                            ${
-                                mode === "thu"
-                                    ? "income"
-                                    : "expense"
-                            }
-                        "
+                        class="chart-bar income"
                         style="
                             height:${Math.max(
-                                percent,
-                                3
-                            )}%;
+                                thuPercent,
+                                2
+                            )}%
                         "
-                        title="${
-                            mode === "thu"
-                                ? "Thu"
-                                : "Chi"
-                        }: ${formatMoney(value)}">
+                        title="Thu: ${formatMoney(
+                            data.thu
+                        )}">
+                    </div>
 
+
+                    <div
+                        class="chart-bar expense"
+                        style="
+                            height:${Math.max(
+                                chiPercent,
+                                2
+                            )}%
+                        "
+                        title="Chi: ${formatMoney(
+                            data.chi
+                        )}">
                     </div>
 
                 </div>
@@ -1530,46 +1465,3 @@ function renderStatisticsChart(
     );
 
 }
-
-
-/* =========================================================
-   REFRESH AFTER TRANSACTION
-========================================================= */
-
-function refreshStatistics() {
-
-    renderStatistics();
-
-}
-
-
-/* =========================================================
-   INITIAL MODE
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        AppState.statisticsMode =
-            "thu";
-
-
-        document
-            .querySelectorAll(
-                ".statistics-mode-button"
-            )
-            .forEach(
-                button => {
-
-                    button.classList.toggle(
-                        "active",
-                        button.dataset.mode ===
-                        "thu"
-                    );
-
-                }
-            );
-
-    }
-);
