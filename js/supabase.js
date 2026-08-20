@@ -1,78 +1,248 @@
-const SUPABASE_URL = "https://fwamplkwgsxotcykqxhd.supabase.co";
+/* =========================================================
+   SUPABASE
+========================================================= */
 
-const SUPABASE_ANON_KEY = "sb_publishable_l7M95el4HZhbXCj4rzq9pg_-1MoyZoQ";
-
-const db = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
+const SUPABASE_URL =
+    "https://fwamplkwgsxotcykqxhd.supabase.co";
 
 
-/* =========================
-   GENERIC HELPERS
-========================= */
+const SUPABASE_ANON_KEY =
+    "sb_publishable_l7M95el4HZhbXCj4rzq9pg_-1MoyZoQ";
 
-async function dbGet(table, options = {}) {
 
-    let query = db
-        .from(table)
-        .select(options.select || "*");
+const db =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
 
-    if (options.eq) {
 
-        for (const [key, value] of Object.entries(options.eq)) {
+/* =========================================================
+   GET
+========================================================= */
 
-            query = query.eq(key, value);
+async function dbGet(
+    table,
+    options = {}
+) {
+
+    try {
+
+        let query =
+            db
+                .from(table)
+                .select(
+                    options.select || "*"
+                );
+
+
+        /*
+         * FILTER
+         */
+
+        if (options.eq) {
+
+            for (
+                const [
+                    key,
+                    value
+                ]
+                of Object.entries(
+                    options.eq
+                )
+            ) {
+
+                if (
+                    value === null ||
+                    value === undefined
+                ) {
+
+                    query =
+                        query.is(
+                            key,
+                            null
+                        );
+
+                } else {
+
+                    query =
+                        query.eq(
+                            key,
+                            value
+                        );
+
+                }
+
+            }
 
         }
-    }
 
-    if (options.order) {
 
-        query = query.order(
-            options.order.column,
-            {
-                ascending:
-                    options.order.ascending ?? false
-            }
+        /*
+         * ORDER
+         *
+         * Chỉ order nếu caller
+         * yêu cầu.
+         */
+
+        if (options.order) {
+
+            query =
+                query.order(
+                    options.order.column,
+                    {
+                        ascending:
+                            options.order.ascending ??
+                            false
+                    }
+                );
+
+        }
+
+
+        const {
+            data,
+            error
+        } =
+            await query;
+
+
+        if (error) {
+
+            console.error(
+                `DB GET ERROR [${table}]`,
+                {
+                    code:
+                        error.code,
+
+                    message:
+                        error.message,
+
+                    details:
+                        error.details,
+
+                    hint:
+                        error.hint
+                }
+            );
+
+
+            showToast(
+                `Lỗi ${table}: ${error.message}`
+            );
+
+
+            throw error;
+
+        }
+
+
+        console.log(
+            `DB GET OK [${table}]`,
+            data
         );
-    }
 
-    const { data, error } = await query;
 
-    if (error) {
+        return data || [];
 
-        console.error(error);
+    } catch (error) {
 
-        showToast(error.message);
+        console.error(
+            `DB GET EXCEPTION [${table}]`,
+            error
+        );
 
         throw error;
+
     }
 
-    return data || [];
 }
 
 
-async function dbInsert(table, payload) {
+/* =========================================================
+   INSERT
+========================================================= */
 
-    const { data, error } =
-        await db
-            .from(table)
-            .insert(payload)
-            .select();
+async function dbInsert(
+    table,
+    payload
+) {
 
-    if (error) {
+    try {
 
-        console.error(error);
+        console.log(
+            `DB INSERT [${table}]`,
+            payload
+        );
 
-        showToast(error.message);
+
+        const {
+            data,
+            error
+        } =
+            await db
+                .from(table)
+                .insert(payload)
+                .select();
+
+
+        if (error) {
+
+            console.error(
+                `DB INSERT ERROR [${table}]`,
+                {
+                    code:
+                        error.code,
+
+                    message:
+                        error.message,
+
+                    details:
+                        error.details,
+
+                    hint:
+                        error.hint,
+
+                    payload
+                }
+            );
+
+
+            showToast(
+                `Lỗi ${table}: ${error.message}`
+            );
+
+
+            throw error;
+
+        }
+
+
+        console.log(
+            `DB INSERT OK [${table}]`,
+            data
+        );
+
+
+        return data || [];
+
+    } catch (error) {
+
+        console.error(
+            `DB INSERT EXCEPTION [${table}]`,
+            error
+        );
 
         throw error;
+
     }
 
-    return data;
 }
 
+
+/* =========================================================
+   UPDATE
+========================================================= */
 
 async function dbUpdate(
     table,
@@ -80,45 +250,132 @@ async function dbUpdate(
     payload
 ) {
 
-    const { data, error } =
-        await db
-            .from(table)
-            .update(payload)
-            .eq("id", id)
-            .select();
+    try {
 
-    if (error) {
+        const {
+            data,
+            error
+        } =
+            await db
+                .from(table)
+                .update(payload)
+                .eq(
+                    "id",
+                    id
+                )
+                .select();
 
-        console.error(error);
 
-        showToast(error.message);
+        if (error) {
+
+            console.error(
+                `DB UPDATE ERROR [${table}]`,
+                {
+                    code:
+                        error.code,
+
+                    message:
+                        error.message,
+
+                    details:
+                        error.details,
+
+                    hint:
+                        error.hint
+                }
+            );
+
+
+            showToast(
+                `Lỗi ${table}: ${error.message}`
+            );
+
+
+            throw error;
+
+        }
+
+
+        return data || [];
+
+    } catch (error) {
+
+        console.error(
+            `DB UPDATE EXCEPTION [${table}]`,
+            error
+        );
 
         throw error;
+
     }
 
-    return data;
 }
 
+
+/* =========================================================
+   DELETE
+========================================================= */
 
 async function dbDelete(
     table,
     id
 ) {
 
-    const { error } =
-        await db
-            .from(table)
-            .delete()
-            .eq("id", id);
+    try {
 
-    if (error) {
+        const {
+            error
+        } =
+            await db
+                .from(table)
+                .delete()
+                .eq(
+                    "id",
+                    id
+                );
 
-        console.error(error);
 
-        showToast(error.message);
+        if (error) {
+
+            console.error(
+                `DB DELETE ERROR [${table}]`,
+                {
+                    code:
+                        error.code,
+
+                    message:
+                        error.message,
+
+                    details:
+                        error.details,
+
+                    hint:
+                        error.hint
+                }
+            );
+
+
+            showToast(
+                `Lỗi ${table}: ${error.message}`
+            );
+
+
+            throw error;
+
+        }
+
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            `DB DELETE EXCEPTION [${table}]`,
+            error
+        );
 
         throw error;
+
     }
 
-    return true;
 }
