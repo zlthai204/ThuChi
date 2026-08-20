@@ -1,37 +1,105 @@
 /* =========================================================
    STATISTICS
    PREMIUM MOBILE UI
+   FULL VERSION
+========================================================= */
+
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+.statistics-page,
+#statisticsPage {
+
+    --stats-blue: #4776e6;
+    --stats-blue-dark: #294b9b;
+
+    --stats-income: #14b878;
+    --stats-income-light: #52e0a0;
+
+    --stats-expense: #ef5662;
+    --stats-expense-light: #ff8a91;
+
+    --stats-profit: #7657e8;
+    --stats-profit-dark: #5032bd;
+
+    --stats-purple: #8b5cf6;
+    --stats-orange: #f59e0b;
+
+    --stats-text: #26324a;
+    --stats-muted: #8992a4;
+    --stats-border: #edf0f5;
+
+}
+
+
+/* =========================================================
+   HERO
 ========================================================= */
 
 .statistics-hero {
+
     position: relative;
+
     overflow: hidden;
 
     margin-bottom: 16px;
+
     padding: 24px;
 
     border-radius: 26px;
 
-    color: white;
+    color: #fff;
 
     background:
         radial-gradient(
             circle at 90% 10%,
-            rgba(255,255,255,.22),
+            rgba(255,255,255,.24),
             transparent 30%
+        ),
+        radial-gradient(
+            circle at 10% 100%,
+            rgba(83,121,255,.35),
+            transparent 35%
         ),
         linear-gradient(
             135deg,
             #182848,
-            #2f4f8f 55%,
+            #304f98 55%,
             #4776e6
         );
 
     box-shadow:
         0 18px 40px rgba(39,70,130,.22);
+
+}
+
+.statistics-hero::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    right: -70px;
+    top: -80px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid rgba(255,255,255,.10);
+
+    box-shadow:
+        0 0 0 25px rgba(255,255,255,.035),
+        0 0 0 50px rgba(255,255,255,.025);
+
 }
 
 .statistics-hero::after {
+
     content: "";
 
     position: absolute;
@@ -44,31 +112,45 @@
 
     border-radius: 50%;
 
-    background: rgba(255,255,255,.08);
+    background:
+        rgba(255,255,255,.08);
+
+}
+
+.statistics-hero > * {
+
+    position: relative;
+
+    z-index: 2;
+
 }
 
 .statistics-hero span {
-    position: relative;
-    z-index: 2;
+
+    display: block;
 
     font-size: 11px;
-    font-weight: 800;
+
+    font-weight: 900;
 
     letter-spacing: 1.8px;
 
-    opacity: .8;
+    opacity: .78;
+
 }
 
 .statistics-hero h2 {
-    position: relative;
-    z-index: 2;
 
     margin: 5px 0 0;
 
     font-size: 28px;
+
+    line-height: 1.15;
+
     font-weight: 900;
 
-    letter-spacing: -.5px;
+    letter-spacing: -.6px;
+
 }
 
 
@@ -77,6 +159,7 @@
 ========================================================= */
 
 .period-tabs {
+
     display: grid;
 
     grid-template-columns:
@@ -88,12 +171,15 @@
 
     margin-bottom: 18px;
 
-    border-radius: 16px;
+    border-radius: 17px;
 
-    background: #f1f3f8;
+    background:
+        #f1f3f8;
+
 }
 
 .period-tab {
+
     border: 0;
 
     min-height: 42px;
@@ -105,15 +191,33 @@
     color: #697386;
 
     font-size: 14px;
+
     font-weight: 800;
 
     cursor: pointer;
 
     transition:
-        .2s ease;
+        transform .2s ease,
+        background .2s ease,
+        color .2s ease,
+        box-shadow .2s ease;
+
+}
+
+.period-tab:hover {
+
+    color: #3857a8;
+
+}
+
+.period-tab:active {
+
+    transform: scale(.96);
+
 }
 
 .period-tab.active {
+
     color: #fff;
 
     background:
@@ -126,14 +230,16 @@
     box-shadow:
         0 7px 18px
         rgba(55,89,180,.24);
+
 }
 
 
 /* =========================================================
-   DATE
+   DATE NAVIGATION
 ========================================================= */
 
 .statistics-date-row {
+
     display: grid;
 
     grid-template-columns:
@@ -144,9 +250,11 @@
     gap: 10px;
 
     margin-bottom: 18px;
+
 }
 
 .statistics-date-row button {
+
     width: 42px;
     height: 42px;
 
@@ -162,90 +270,173 @@
 
     cursor: pointer;
 
-    transition: .2s ease;
+    transition:
+        transform .2s ease,
+        background .2s ease;
+
+}
+
+.statistics-date-row button:hover {
+
+    background: #e9edf5;
+
 }
 
 .statistics-date-row button:active {
-    transform: scale(.94);
+
+    transform: scale(.92);
+
 }
 
 .statistics-date-row strong {
+
     text-align: center;
+
+    color: #25304a;
 
     font-size: 15px;
 
-    color: #25304a;
+    font-weight: 900;
+
 }
 
 
 /* =========================================================
-   PROFIT
+   PROFIT SUMMARY
+   LỢI NHUẬN THỰC - MÀU RIÊNG
 ========================================================= */
 
 .profit-summary {
+
     position: relative;
 
     overflow: hidden;
 
-    padding: 22px;
+    padding: 23px;
 
-    margin-bottom: 16px;
+    margin-bottom: 17px;
 
-    border-radius: 22px;
+    border-radius: 24px;
 
     color: #fff;
 
+    /*
+       KHÔNG dùng màu xanh Thu.
+       Lợi nhuận = tím / indigo riêng.
+    */
+
     background:
+        radial-gradient(
+            circle at 88% 18%,
+            rgba(255,255,255,.18),
+            transparent 27%
+        ),
+        radial-gradient(
+            circle at 5% 100%,
+            rgba(139,92,246,.35),
+            transparent 35%
+        ),
         linear-gradient(
             135deg,
-            #11998e,
-            #38ef7d
+            #3d2b91 0%,
+            #6242c4 48%,
+            #8b5cf6 100%
         );
 
     box-shadow:
-        0 14px 30px
-        rgba(17,153,142,.20);
+        0 17px 36px
+        rgba(91,63,190,.28);
+
 }
 
-.profit-summary::after {
-    content: "₫";
+.profit-summary::before {
+
+    content: "";
 
     position: absolute;
 
-    right: 16px;
-    bottom: -25px;
+    width: 125px;
+    height: 125px;
 
-    font-size: 100px;
+    right: -35px;
+    top: -55px;
+
+    border-radius: 50%;
+
+    border:
+        1px solid
+        rgba(255,255,255,.13);
+
+    box-shadow:
+        0 0 0 20px
+        rgba(255,255,255,.035),
+        0 0 0 40px
+        rgba(255,255,255,.025);
+
+}
+
+.profit-summary::after {
+
+    content: "✦";
+
+    position: absolute;
+
+    right: 20px;
+    bottom: -24px;
+
+    color: #fff;
+
+    font-size: 92px;
 
     font-weight: 900;
 
+    line-height: 1;
+
     opacity: .08;
+
+}
+
+.profit-summary > * {
+
+    position: relative;
+
+    z-index: 2;
+
 }
 
 .profit-summary span {
-    position: relative;
-    z-index: 2;
 
     display: block;
 
+    color: rgba(255,255,255,.78);
+
     font-size: 11px;
+
     font-weight: 900;
 
-    letter-spacing: 1.5px;
+    letter-spacing: 1.6px;
 
-    opacity: .8;
 }
 
 .profit-summary strong {
-    position: relative;
-    z-index: 2;
 
     display: block;
 
-    margin-top: 6px;
+    margin-top: 7px;
 
-    font-size: 30px;
-    font-weight: 900;
+    color: #fff;
+
+    font-size: 31px;
+
+    line-height: 1.15;
+
+    font-weight: 950;
+
+    letter-spacing: -.6px;
+
+    text-shadow:
+        0 3px 12px rgba(40,20,100,.18);
+
 }
 
 
@@ -254,66 +445,104 @@
 ========================================================= */
 
 .breakdown-list {
+
     display: flex;
 
     flex-direction: column;
 
-    gap: 3px;
+    gap: 0;
+
 }
 
 .breakdown-row {
+
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
-    padding: 14px 4px;
+    gap: 12px;
+
+    min-height: 50px;
+
+    padding: 12px 4px;
 
     border-bottom:
         1px solid #edf0f5;
+
 }
 
 .breakdown-row:last-child {
+
     border-bottom: 0;
+
 }
 
 .breakdown-row span {
+
     color: #6f788a;
 
     font-size: 13px;
-    font-weight: 600;
+
+    font-weight: 650;
+
 }
 
 .breakdown-row strong {
+
     color: #26324a;
 
     font-size: 14px;
+
     font-weight: 900;
+
 }
+
+
+/* Thu */
 
 .breakdown-row:nth-child(1) strong {
-    color: #16a36d;
+
+    color: #13a96f;
+
 }
+
+
+/* Chi */
 
 .breakdown-row:nth-child(2) strong {
+
     color: #eb5b65;
+
 }
 
+
+/* COD */
+
 .breakdown-row:nth-child(3) strong {
-    color: #eb5b65;
+
+    color: #e95d68;
+
 }
+
+
+/* App fee */
 
 .breakdown-row:nth-child(4) strong,
 .breakdown-row:nth-child(5) strong {
+
     color: #f09a38;
+
 }
 
 
 /* =========================================================
-   SECTION
+   EMPTY
 ========================================================= */
 
 .statistics-empty {
+
     display: flex;
 
     flex-direction: column;
@@ -325,12 +554,16 @@
 
     min-height: 150px;
 
+    padding: 20px;
+
     color: #8b94a6;
 
     text-align: center;
+
 }
 
 .statistics-empty-icon {
+
     display: grid;
 
     place-items: center;
@@ -342,19 +575,31 @@
 
     border-radius: 18px;
 
-    background: #f3f5f9;
+    background:
+        linear-gradient(
+            145deg,
+            #f3f5f9,
+            #eef1f6
+        );
 
     font-size: 25px;
+
 }
 
 .statistics-empty strong {
+
     color: #475166;
 
     font-size: 14px;
+
 }
 
 .statistics-empty span {
+
+    color: #929aaa;
+
     font-size: 12px;
+
 }
 
 
@@ -363,26 +608,36 @@
 ========================================================= */
 
 .statistics-dish-row {
-    padding: 15px 0;
+
+    padding: 16px 0;
 
     border-bottom:
         1px solid #edf0f5;
+
+    transition:
+        background .2s ease;
+
 }
 
 .statistics-dish-row:last-child {
+
     border-bottom: 0;
+
 }
 
 .statistics-dish-top {
+
     display: flex;
 
     align-items: center;
     justify-content: space-between;
 
     gap: 10px;
+
 }
 
 .statistics-dish-name {
+
     display: flex;
 
     align-items: center;
@@ -392,49 +647,75 @@
     color: #26324a;
 
     font-size: 14px;
-    font-weight: 800;
+
+    font-weight: 850;
+
 }
 
 .statistics-dish-icon {
+
     display: grid;
 
     place-items: center;
 
     flex: 0 0 auto;
 
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
 
     margin-right: 10px;
 
-    border-radius: 13px;
+    border-radius: 14px;
 
-    background: #fff3e8;
+    background:
+        linear-gradient(
+            145deg,
+            #fff4e9,
+            #ffead5
+        );
+
+    box-shadow:
+        0 5px 12px
+        rgba(240,145,65,.10);
 
     font-size: 18px;
+
 }
 
 .statistics-dish-profit {
+
     flex: 0 0 auto;
 
-    color: #11a46d;
+    padding: 5px 9px;
 
-    font-size: 14px;
+    border-radius: 9px;
+
+    color: #7046d8;
+
+    background: #f3efff;
+
+    font-size: 13px;
+
+    font-weight: 950;
+
 }
 
 .statistics-dish-detail {
+
     display: flex;
 
     flex-wrap: wrap;
 
     gap: 7px;
 
-    margin-top: 9px;
+    margin-top: 10px;
 
-    padding-left: 48px;
+    padding-left: 50px;
+
 }
 
 .statistics-dish-detail span {
+
     padding: 5px 8px;
 
     border-radius: 8px;
@@ -444,7 +725,9 @@
     background: #f6f7fa;
 
     font-size: 10px;
-    font-weight: 700;
+
+    font-weight: 750;
+
 }
 
 
@@ -453,6 +736,7 @@
 ========================================================= */
 
 .statistics-source-row {
+
     display: flex;
 
     align-items: center;
@@ -464,13 +748,17 @@
 
     border-bottom:
         1px solid #edf0f5;
+
 }
 
 .statistics-source-row:last-child {
+
     border-bottom: 0;
+
 }
 
 .statistics-source-left {
+
     display: flex;
 
     align-items: center;
@@ -478,9 +766,11 @@
     gap: 10px;
 
     min-width: 0;
+
 }
 
 .statistics-source-icon {
+
     display: grid;
 
     place-items: center;
@@ -495,17 +785,21 @@
     background: #f5f7fb;
 
     font-size: 20px;
+
 }
 
 .statistics-source-left strong {
+
     display: block;
 
     color: #29344b;
 
     font-size: 13px;
+
 }
 
 .statistics-source-left small {
+
     display: block;
 
     margin-top: 3px;
@@ -513,21 +807,27 @@
     color: #929aaa;
 
     font-size: 11px;
+
 }
 
 .statistics-source-money {
+
     text-align: right;
+
 }
 
 .statistics-source-money strong {
+
     display: block;
 
     color: #18a36d;
 
     font-size: 13px;
+
 }
 
 .statistics-source-money small {
+
     display: block;
 
     margin-top: 4px;
@@ -535,6 +835,7 @@
     color: #ee9b3b;
 
     font-size: 10px;
+
 }
 
 
@@ -543,51 +844,70 @@
 ========================================================= */
 
 .statistics-expense-category-row {
-    padding: 15px 0;
+
+    padding: 16px 0;
 
     border-bottom:
         1px solid #edf0f5;
+
 }
 
 .statistics-expense-category-row:last-child {
+
     border-bottom: 0;
+
 }
 
 .statistics-expense-category-top {
+
     display: flex;
 
     align-items: center;
     justify-content: space-between;
 
     gap: 10px;
+
 }
 
 .statistics-expense-category-name {
+
+    min-width: 0;
+
     color: #364056;
 
     font-size: 13px;
-    font-weight: 800;
+
+    font-weight: 850;
+
 }
 
 .statistics-expense-category-money {
+
     color: #eb5c67;
 
     font-size: 13px;
+
+    font-weight: 900;
+
 }
 
 .statistics-expense-category-bar {
+
     overflow: hidden;
 
-    height: 7px;
+    height: 8px;
 
     margin-top: 10px;
 
     border-radius: 99px;
 
-    background: #f0f2f6;
+    background:
+        #f0f2f6;
+
 }
 
 .statistics-expense-category-bar span {
+
     display: block;
 
     height: 100%;
@@ -601,19 +921,27 @@
             #ee4266
         );
 
+    box-shadow:
+        0 2px 7px
+        rgba(238,66,102,.18);
+
     transition:
         width .5s ease;
+
 }
 
 .statistics-expense-category-percent {
+
     margin-top: 5px;
 
     color: #9aa2b1;
 
     font-size: 10px;
-    font-weight: 700;
+
+    font-weight: 750;
 
     text-align: right;
+
 }
 
 
@@ -622,6 +950,7 @@
 ========================================================= */
 
 .statistics-expense-row {
+
     display: flex;
 
     align-items: center;
@@ -632,13 +961,17 @@
 
     border-bottom:
         1px solid #edf0f5;
+
 }
 
 .statistics-expense-row:last-child {
+
     border-bottom: 0;
+
 }
 
 .statistics-expense-icon {
+
     display: grid;
 
     place-items: center;
@@ -652,53 +985,73 @@
 
     color: #e84e5b;
 
-    background: #fff0f1;
+    background:
+        linear-gradient(
+            145deg,
+            #fff0f1,
+            #ffe7e9
+        );
 
     font-size: 18px;
+
     font-weight: 900;
+
 }
 
 .statistics-expense-info {
+
     min-width: 0;
 
     flex: 1;
+
 }
 
 .statistics-expense-name {
+
     overflow: hidden;
 
     color: #2e394f;
 
     font-size: 13px;
+
     font-weight: 800;
 
     white-space: nowrap;
+
     text-overflow: ellipsis;
+
 }
 
 .statistics-expense-category {
+
     margin-top: 3px;
 
     color: #8c95a5;
 
     font-size: 10px;
+
 }
 
 .statistics-expense-date {
+
     margin-top: 3px;
 
     color: #a0a7b4;
 
     font-size: 10px;
+
 }
 
 .statistics-expense-money {
+
     flex: 0 0 auto;
 
     color: #e74f5c;
 
     font-size: 13px;
+
     font-weight: 900;
+
 }
 
 
@@ -707,28 +1060,37 @@
 ========================================================= */
 
 .statistics-chart {
+
     overflow-x: auto;
 
-    padding: 5px 0 0;
+    padding: 7px 0 2px;
 
     scrollbar-width: none;
+
+    border-radius: 18px;
+
 }
 
 .statistics-chart::-webkit-scrollbar {
+
     display: none;
+
 }
 
 .statistics-chart-legend {
+
     display: flex;
 
     justify-content: center;
 
-    gap: 22px;
+    gap: 24px;
 
     margin-bottom: 18px;
+
 }
 
 .statistics-chart-legend span {
+
     display: flex;
 
     align-items: center;
@@ -738,25 +1100,40 @@
     color: #747e91;
 
     font-size: 11px;
-    font-weight: 800;
+
+    font-weight: 850;
+
 }
 
 .legend-dot {
+
     width: 9px;
     height: 9px;
 
     border-radius: 50%;
+
+    box-shadow:
+        0 2px 6px
+        rgba(0,0,0,.12);
+
 }
 
 .legend-dot.income {
-    background: #20bd7b;
+
+    background:
+        #20bd7b;
+
 }
 
 .legend-dot.expense {
-    background: #f05c67;
+
+    background:
+        #f05c67;
+
 }
 
 .statistics-chart-body {
+
     display: flex;
 
     align-items: flex-end;
@@ -768,9 +1145,11 @@
     min-height: 190px;
 
     padding: 0 8px;
+
 }
 
 .chart-day {
+
     display: flex;
 
     flex-direction: column;
@@ -782,9 +1161,11 @@
     width: 30px;
 
     min-height: 180px;
+
 }
 
 .chart-bars {
+
     display: flex;
 
     align-items: flex-end;
@@ -794,10 +1175,13 @@
     gap: 4px;
 
     width: 100%;
+
     height: 150px;
+
 }
 
 .chart-bar {
+
     width: 10px;
 
     min-height: 0;
@@ -809,37 +1193,47 @@
         height .4s ease;
 
     box-shadow:
-        0 4px 8px rgba(0,0,0,.08);
+        0 4px 8px
+        rgba(0,0,0,.08);
+
 }
 
 .chart-bar.income {
+
     background:
         linear-gradient(
             180deg,
             #38d996,
             #10a86c
         );
+
 }
 
 .chart-bar.expense {
+
     background:
         linear-gradient(
             180deg,
             #ff7a80,
             #e64d5a
         );
+
 }
 
 .chart-date {
+
     margin-top: 9px;
 
     color: #9099aa;
 
     font-size: 10px;
+
     font-weight: 700;
+
 }
 
 .empty-chart {
+
     display: flex;
 
     flex-direction: column;
@@ -855,24 +1249,51 @@
     gap: 8px;
 
     font-size: 12px;
+
 }
 
 .empty-chart span {
+
     font-size: 30px;
+
 }
 
 
 /* =========================================================
-   DONUT / BÁNH XE
+   DONUT SECTION
 ========================================================= */
 
 .statistics-percent-section {
+
+    position: relative;
+
     margin-top: 18px;
 
     overflow: hidden;
+
+    padding: 20px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #f8f9fc
+        );
+
+    border:
+        1px solid
+        rgba(35,48,75,.05);
+
+    box-shadow:
+        0 12px 30px
+        rgba(32,47,80,.07);
+
 }
 
 .statistics-wheel-heading {
+
     display: flex;
 
     align-items: flex-start;
@@ -881,75 +1302,108 @@
     gap: 15px;
 
     margin-bottom: 22px;
+
 }
 
 .statistics-wheel-heading span {
+
+    display: block;
+
     color: #9aa2b1;
 
     font-size: 10px;
+
     font-weight: 900;
 
     letter-spacing: 1.4px;
+
 }
 
 .statistics-wheel-heading h2 {
+
     margin: 3px 0 0;
 
     color: #26324a;
 
     font-size: 20px;
-    font-weight: 900;
+
+    font-weight: 950;
+
 }
 
 .statistics-wheel-heading > small {
-    color: #7e8798;
 
-    font-size: 11px;
-    font-weight: 700;
+    padding: 6px 9px;
+
+    border-radius: 9px;
+
+    color: #737d90;
+
+    background: #f1f3f7;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
 }
 
 .statistics-wheel-grid {
+
     display: grid;
 
     grid-template-columns:
         repeat(2, 1fr);
 
     gap: 12px;
+
 }
 
 .statistics-wheel-card {
+
+    position: relative;
+
     display: flex;
 
     flex-direction: column;
 
     align-items: center;
 
-    padding: 17px 8px;
+    padding: 18px 8px;
 
-    border-radius: 20px;
+    border-radius: 21px;
+
+    border:
+        1px solid
+        rgba(35,48,75,.045);
 
     background: #f8f9fb;
+
 }
 
 .statistics-wheel-card.income {
+
     background:
         linear-gradient(
             145deg,
-            #f0fff8,
+            #edfff7,
             #f8fffb
         );
+
 }
 
 .statistics-wheel-card.expense {
+
     background:
         linear-gradient(
             145deg,
-            #fff3f4,
+            #fff2f4,
             #fff9f9
         );
+
 }
 
 .statistics-donut {
+
     position: relative;
 
     display: grid;
@@ -966,9 +1420,11 @@
     box-shadow:
         0 10px 24px
         rgba(30,40,70,.10);
+
 }
 
 .statistics-donut::before {
+
     content: "";
 
     position: absolute;
@@ -982,9 +1438,11 @@
     box-shadow:
         inset 0 0 0 1px
         rgba(30,40,70,.04);
+
 }
 
 .income-donut {
+
     background:
         conic-gradient(
             #13b879 0deg,
@@ -994,9 +1452,11 @@
             calc(var(--percent) * 3.6deg),
             #dff5eb 360deg
         );
+
 }
 
 .expense-donut {
+
     background:
         conic-gradient(
             #ef5661 0deg,
@@ -1006,10 +1466,13 @@
             calc(var(--percent) * 3.6deg),
             #fbe0e2 360deg
         );
+
 }
 
 .statistics-donut-inner {
+
     position: relative;
+
     z-index: 2;
 
     display: flex;
@@ -1024,25 +1487,33 @@
     height: 100%;
 
     transform: rotate(90deg);
+
 }
 
 .statistics-donut-inner strong {
+
     color: #26324a;
 
     font-size: 25px;
-    font-weight: 900;
+
+    font-weight: 950;
+
 }
 
 .statistics-donut-inner span {
+
     margin-top: 2px;
 
     color: #8b94a5;
 
     font-size: 11px;
-    font-weight: 700;
+
+    font-weight: 750;
+
 }
 
 .statistics-wheel-info {
+
     display: flex;
 
     flex-direction: column;
@@ -1050,29 +1521,347 @@
     align-items: center;
 
     margin-top: 12px;
+
 }
 
 .statistics-wheel-info strong {
+
     color: #303a50;
 
     font-size: 13px;
+
 }
 
 .statistics-wheel-info span {
+
     margin-top: 3px;
 
     font-size: 11px;
-    font-weight: 800;
+
+    font-weight: 850;
+
 }
+
+
+/* FIX selector */
 
 .statistics-wheel-card.income
 .statistics-wheel-info span {
+
     color: #12a66d;
+
 }
 
 .statistics-wheel-card.expense
 .statistics-wheel-info span {
+
     color: #e65360;
+
+}
+
+
+/* =========================================================
+   DISH PERCENT WHEEL
+   BÁNH XE TỪNG MÓN THU
+========================================================= */
+
+.statistics-dish-percent-section {
+
+    margin-top: 18px;
+
+    padding: 20px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #fafbff
+        );
+
+    border:
+        1px solid
+        rgba(50,70,120,.06);
+
+    box-shadow:
+        0 12px 30px
+        rgba(32,47,80,.07);
+
+}
+
+.statistics-dish-percent-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0,1fr));
+
+    gap: 12px;
+
+}
+
+.statistics-dish-percent-card {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    padding: 15px 8px;
+
+    border-radius: 20px;
+
+    background:
+        #f8f9fc;
+
+}
+
+.statistics-dish-percent-wheel {
+
+    position: relative;
+
+    display: grid;
+
+    place-items: center;
+
+    width: 92px;
+    height: 92px;
+
+    border-radius: 50%;
+
+    background:
+        conic-gradient(
+            #7c5ce5
+            calc(var(--dish-percent) * 1%),
+            #e9e4fb 0
+        );
+
+}
+
+.statistics-dish-percent-wheel::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 8px;
+
+    border-radius: 50%;
+
+    background: #fff;
+
+}
+
+.statistics-dish-percent-wheel > span {
+
+    position: relative;
+
+    z-index: 2;
+
+    color: #5b3fc2;
+
+    font-size: 18px;
+
+    font-weight: 950;
+
+}
+
+.statistics-dish-percent-name {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    overflow: hidden;
+
+    color: #303a50;
+
+    font-size: 12px;
+
+    font-weight: 850;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+}
+
+.statistics-dish-percent-money {
+
+    margin-top: 4px;
+
+    color: #7657e8;
+
+    font-size: 11px;
+
+    font-weight: 850;
+
+}
+
+
+/* =========================================================
+   EXPENSE PERCENT WHEEL
+   BÁNH XE TỪNG NHÓM CHI
+========================================================= */
+
+.statistics-expense-wheel-section {
+
+    margin-top: 18px;
+
+    padding: 20px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #fffafa
+        );
+
+    border:
+        1px solid
+        rgba(230,80,95,.06);
+
+    box-shadow:
+        0 12px 30px
+        rgba(60,35,45,.06);
+
+}
+
+.statistics-expense-wheel-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0,1fr));
+
+    gap: 12px;
+
+}
+
+.statistics-expense-wheel-card {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    padding: 15px 8px;
+
+    border-radius: 20px;
+
+    background:
+        #fff6f7;
+
+}
+
+.statistics-expense-wheel {
+
+    position: relative;
+
+    display: grid;
+
+    place-items: center;
+
+    width: 92px;
+    height: 92px;
+
+    border-radius: 50%;
+
+    background:
+        conic-gradient(
+            #ef5662
+            calc(var(--expense-percent) * 1%),
+            #f9e2e4 0
+        );
+
+}
+
+.statistics-expense-wheel::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 8px;
+
+    border-radius: 50%;
+
+    background: #fff;
+
+}
+
+.statistics-expense-wheel > span {
+
+    position: relative;
+
+    z-index: 2;
+
+    color: #dc4653;
+
+    font-size: 18px;
+
+    font-weight: 950;
+
+}
+
+.statistics-expense-wheel-name {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    overflow: hidden;
+
+    color: #3a3540;
+
+    font-size: 12px;
+
+    font-weight: 850;
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+}
+
+.statistics-expense-wheel-money {
+
+    margin-top: 4px;
+
+    color: #e65360;
+
+    font-size: 11px;
+
+    font-weight: 850;
+
+}
+
+
+/* =========================================================
+   GENERAL CARD POLISH
+========================================================= */
+
+#statisticsPage .card {
+
+    border-radius: 22px;
+
+    border:
+        1px solid
+        rgba(35,48,75,.045);
+
+    box-shadow:
+        0 8px 24px
+        rgba(30,45,80,.055);
+
 }
 
 
@@ -1081,90 +1870,193 @@
 ========================================================= */
 
 body.dark .statistics-hero {
+
     box-shadow:
-        0 18px 40px rgba(0,0,0,.25);
+        0 18px 40px
+        rgba(0,0,0,.25);
+
 }
 
 body.dark .period-tabs {
+
     background: #202632;
+
 }
 
 body.dark .period-tab {
+
     color: #9da6b8;
+
 }
 
 body.dark .period-tab.active {
+
     color: #fff;
+
 }
 
 body.dark .statistics-date-row button {
+
     color: #e7ebf3;
+
     background: #202632;
+
 }
 
 body.dark .statistics-date-row strong {
+
     color: #e7ebf3;
+
 }
 
 body.dark .breakdown-row {
+
     border-color: #2c3442;
+
 }
 
 body.dark .breakdown-row span {
+
     color: #9ba4b5;
+
 }
 
 body.dark .breakdown-row strong {
+
     color: #e7ebf3;
+
 }
 
 body.dark .statistics-dish-row,
 body.dark .statistics-source-row,
 body.dark .statistics-expense-row,
 body.dark .statistics-expense-category-row {
+
     border-color: #2c3442;
+
 }
 
 body.dark .statistics-dish-name,
 body.dark .statistics-source-left strong,
 body.dark .statistics-expense-name,
 body.dark .statistics-wheel-heading h2 {
+
     color: #e8ecf4;
+
+}
+
+body.dark .statistics-dish-profit {
+
+    color: #b79cff;
+
+    background: #302750;
+
 }
 
 body.dark .statistics-dish-detail span {
+
     color: #a7afbd;
+
     background: #242b38;
+
 }
 
 body.dark .statistics-dish-icon,
 body.dark .statistics-source-icon,
 body.dark .statistics-empty-icon {
+
     background: #252c39;
+
 }
 
 body.dark .statistics-wheel-card {
+
     background: #202632;
+
 }
 
 body.dark .statistics-wheel-card.income {
+
     background: #192b26;
+
 }
 
 body.dark .statistics-wheel-card.expense {
+
     background: #302124;
+
 }
 
 body.dark .statistics-donut::before {
+
     background: #202632;
+
 }
 
 body.dark .statistics-donut-inner strong {
+
     color: #eef2f7;
+
 }
 
 body.dark .statistics-wheel-info strong {
+
     color: #e8ecf4;
+
+}
+
+body.dark .statistics-percent-section,
+body.dark .statistics-dish-percent-section,
+body.dark .statistics-expense-wheel-section {
+
+    background:
+        linear-gradient(
+            145deg,
+            #1c222d,
+            #202632
+        );
+
+    border-color: #2c3442;
+
+}
+
+body.dark .statistics-dish-percent-card {
+
+    background: #252b37;
+
+}
+
+body.dark .statistics-dish-percent-wheel::before,
+body.dark .statistics-expense-wheel::before {
+
+    background: #202632;
+
+}
+
+body.dark .statistics-dish-percent-name {
+
+    color: #e8ecf4;
+
+}
+
+body.dark .statistics-expense-wheel-card {
+
+    background: #302124;
+
+}
+
+body.dark .statistics-expense-wheel-name {
+
+    color: #ece8ea;
+
+}
+
+body.dark .statistics-wheel-heading > small {
+
+    color: #aab2c0;
+
+    background: #292f3b;
+
 }
 
 
@@ -1172,36 +2064,87 @@ body.dark .statistics-wheel-info strong {
    MOBILE
 ========================================================= */
 
-@media (max-width: 420px) {
+@media (max-width: 520px) {
 
     .statistics-hero {
+
         padding: 21px;
-        border-radius: 22px;
+
+        border-radius: 23px;
+
     }
 
     .statistics-hero h2 {
+
         font-size: 25px;
+
     }
 
     .profit-summary {
-        padding: 19px;
+
+        padding: 20px;
+
+        border-radius: 21px;
+
     }
 
     .profit-summary strong {
-        font-size: 27px;
+
+        font-size: 28px;
+
+    }
+
+    .statistics-percent-section,
+    .statistics-dish-percent-section,
+    .statistics-expense-wheel-section {
+
+        padding: 16px;
+
+        border-radius: 21px;
+
     }
 
     .statistics-donut {
+
         width: 112px;
         height: 112px;
+
     }
 
     .statistics-donut-inner strong {
+
         font-size: 22px;
+
     }
 
-    .statistics-wheel-card {
-        padding: 14px 5px;
+}
+
+@media (max-width: 360px) {
+
+    .statistics-wheel-grid {
+
+        gap: 8px;
+
+    }
+
+    .statistics-dish-percent-grid,
+    .statistics-expense-wheel-grid {
+
+        gap: 8px;
+
+    }
+
+    .statistics-donut {
+
+        width: 100px;
+        height: 100px;
+
+    }
+
+    .statistics-donut-inner strong {
+
+        font-size: 20px;
+
     }
 
 }
