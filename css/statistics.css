@@ -1,7 +1,18 @@
+/* =========================================================
+   STATISTICS
+========================================================= */
+
 .statistics-hero {
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
     padding: 22px;
 
-    margin-bottom: 15px;
+    margin-bottom: 16px;
 
     border-radius: 24px;
 
@@ -10,242 +21,1057 @@
     background:
         linear-gradient(
             135deg,
-            #4f46e5,
-            #7c3aed
+            #667eea 0%,
+            #764ba2 100%
         );
+
+    box-shadow:
+        0 12px 30px
+        rgba(102, 126, 234, .25);
+
+    overflow: hidden;
+
 }
+
+
+.statistics-hero::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 140px;
+    height: 140px;
+
+    right: -45px;
+    top: -55px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.12);
+
+}
+
+
+.statistics-hero-icon {
+
+    width: 54px;
+    height: 54px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,.18);
+
+    font-size: 28px;
+
+    flex-shrink: 0;
+
+}
+
 
 .statistics-hero span {
-    font-size: 10px;
 
-    opacity: .75;
+    display: block;
+
+    font-size: 11px;
 
     font-weight: 800;
+
+    letter-spacing: 1.4px;
+
+    opacity: .8;
+
 }
+
 
 .statistics-hero h2 {
-    margin: 5px 0 0;
 
-    font-size: 26px;
+    margin: 3px 0 0;
+
+    font-size: 27px;
+
+    font-weight: 900;
+
 }
 
 
-/* PERIOD */
+.statistics-hero p {
+
+    margin: 4px 0 0;
+
+    font-size: 12px;
+
+    opacity: .8;
+
+}
+
+
+/* =========================================================
+   THU / CHI SWITCH
+========================================================= */
+
+.statistics-switch-card {
+
+    padding: 8px;
+
+}
+
+
+.statistics-switch {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+
+}
+
+
+.statistics-switch-button {
+
+    min-height: 72px;
+
+    border: 0;
+
+    border-radius: 18px;
+
+    background: #f3f5f9;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    cursor: pointer;
+
+    color: #667085;
+
+    transition:
+        .2s ease;
+
+}
+
+
+.statistics-switch-button:hover {
+
+    transform: translateY(-1px);
+
+}
+
+
+.statistics-switch-button .switch-icon {
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 14px;
+
+    background: white;
+
+    font-size: 20px;
+
+}
+
+
+.statistics-switch-button span:last-child {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 2px;
+
+}
+
+
+.statistics-switch-button strong {
+
+    font-size: 16px;
+
+    font-weight: 900;
+
+}
+
+
+.statistics-switch-button small {
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    opacity: .7;
+
+}
+
+
+/* THU ACTIVE */
+
+.statistics-switch-button.income.active {
+
+    color: #087443;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e9fff4,
+            #d9faea
+        );
+
+    box-shadow:
+        inset 0 0 0 2px
+        rgba(16,185,129,.22),
+
+        0 8px 18px
+        rgba(16,185,129,.10);
+
+}
+
+
+.statistics-switch-button.income.active
+.switch-icon {
+
+    background: #10b981;
+
+    color: white;
+
+}
+
+
+/* CHI ACTIVE */
+
+.statistics-switch-button.expense.active {
+
+    color: #b42318;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff0f0,
+            #ffe4e4
+        );
+
+    box-shadow:
+        inset 0 0 0 2px
+        rgba(239,68,68,.20),
+
+        0 8px 18px
+        rgba(239,68,68,.10);
+
+}
+
+
+.statistics-switch-button.expense.active
+.switch-icon {
+
+    background: #ef4444;
+
+    color: white;
+
+}
+
+
+/* =========================================================
+   PERIOD
+========================================================= */
 
 .period-tabs {
+
     display: grid;
 
     grid-template-columns:
         repeat(3, 1fr);
 
-    gap: 5px;
+    gap: 6px;
 
     padding: 5px;
 
-    border-radius: 15px;
+    border-radius: 14px;
 
-    background: #f1f3f7;
+    background: #f3f5f9;
+
 }
 
+
 .period-tab {
+
     border: 0;
-
-    border-radius: 11px;
-
-    padding: 10px;
 
     background: transparent;
 
-    color: #8b91a1;
+    border-radius: 11px;
 
-    font-size: 12px;
+    padding: 11px 8px;
 
-    font-weight: 800;
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #667085;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+
 }
 
+
 .period-tab.active {
-    color: #202433;
+
+    color: #4f46e5;
 
     background: white;
 
     box-shadow:
         0 3px 10px
-        rgba(0,0,0,.05);
+        rgba(0,0,0,.07);
+
 }
 
 
-/* DATE */
-
 .statistics-date-row {
+
     display: flex;
 
     align-items: center;
+
     justify-content: space-between;
 
-    margin: 16px 0;
+    gap: 12px;
+
+    margin-top: 16px;
+
 }
 
-.statistics-date-row button {
-    width: 35px;
-    height: 35px;
+
+.statistics-date-row strong {
+
+    flex: 1;
+
+    text-align: center;
+
+    font-size: 14px;
+
+}
+
+
+.statistics-date-button {
+
+    width: 38px;
+    height: 38px;
 
     border: 0;
 
-    border-radius: 11px;
+    border-radius: 12px;
 
-    background: #f1f3f7;
+    background: #f3f5f9;
 
-    font-size: 20px;
+    font-size: 25px;
+
+    color: #344054;
+
+    cursor: pointer;
+
 }
 
 
-/* PROFIT */
+.statistics-date-button:active {
 
-.profit-summary {
-    padding: 20px;
+    transform: scale(.94);
 
-    border-radius: 18px;
+}
 
-    text-align: center;
+
+/* =========================================================
+   PROFIT
+========================================================= */
+
+.statistics-profit-card {
 
     background:
         linear-gradient(
             135deg,
             #ecfdf5,
-            #f0fdf4
+            #d1fae5
         );
+
+    border:
+        1px solid
+        rgba(16,185,129,.15);
+
 }
 
-.profit-summary span {
-    display: block;
 
-    color: #64748b;
+.profit-summary {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    text-align: center;
+
+    padding: 10px 0;
+
+}
+
+
+.profit-summary span {
 
     font-size: 10px;
 
-    font-weight: 800;
+    font-weight: 900;
+
+    letter-spacing: 1.2px;
+
+    color: #047857;
+
 }
+
 
 .profit-summary strong {
-    display: block;
-
-    margin-top: 7px;
-
-    color: var(--green);
-
-    font-size: 28px;
-
-    font-weight: 900;
-}
-
-
-/* BREAKDOWN */
-
-.breakdown-list {
-    margin-top: 15px;
-}
-
-.breakdown-row {
-    display: flex;
-
-    justify-content: space-between;
-
-    gap: 10px;
-
-    padding: 12px 0;
-
-    border-bottom:
-        1px solid #f0f1f5;
-}
-
-.breakdown-row span {
-    color: #73798a;
-
-    font-size: 12px;
-}
-
-.breakdown-row strong {
-    font-size: 13px;
-}
-
-
-/* DISH */
-
-.statistics-dish-row {
-    padding: 13px 0;
-
-    border-bottom:
-        1px solid #f0f1f5;
-}
-
-.statistics-dish-top {
-    display: flex;
-
-    justify-content: space-between;
-
-    gap: 10px;
-}
-
-.statistics-dish-name {
-    font-size: 13px;
-
-    font-weight: 800;
-}
-
-.statistics-dish-profit {
-    color: var(--green);
-
-    font-size: 13px;
-
-    font-weight: 850;
-}
-
-.statistics-dish-detail {
-    display: flex;
-
-    gap: 8px;
 
     margin-top: 5px;
 
-    color: var(--muted);
+    font-size: 31px;
 
-    font-size: 10px;
+    font-weight: 900;
+
+    color: #047857;
+
 }
 
 
-/* SOURCE */
+.statistics-profit-note {
+
+    text-align: center;
+
+    margin-top: 3px;
+
+    font-size: 11px;
+
+    color: #667085;
+
+}
+
+
+/* =========================================================
+   BREAKDOWN
+========================================================= */
+
+.breakdown-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0;
+
+}
+
+
+.breakdown-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 14px 0;
+
+    border-bottom:
+        1px solid #edf0f4;
+
+}
+
+
+.breakdown-row:last-child {
+
+    border-bottom: 0;
+
+}
+
+
+.breakdown-row > div {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+}
+
+
+.breakdown-row span {
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    color: #344054;
+
+}
+
+
+.breakdown-row small {
+
+    font-size: 10px;
+
+    color: #98a2b3;
+
+}
+
+
+.breakdown-row strong {
+
+    font-size: 13px;
+
+    font-weight: 900;
+
+    color: #344054;
+
+    white-space: nowrap;
+
+}
+
+
+.breakdown-row.income-row strong {
+
+    color: #059669;
+
+}
+
+
+/* =========================================================
+   DISH
+========================================================= */
+
+.statistics-dish-row {
+
+    padding: 15px 0;
+
+    border-bottom:
+        1px solid #edf0f4;
+
+}
+
+
+.statistics-dish-row:last-child {
+
+    border-bottom: 0;
+
+}
+
+
+.statistics-dish-top {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+}
+
+
+.statistics-dish-name {
+
+    font-size: 14px;
+
+    font-weight: 800;
+
+    color: #1d2939;
+
+}
+
+
+.statistics-dish-profit {
+
+    font-size: 14px;
+
+    color: #059669;
+
+}
+
+
+.statistics-dish-detail {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px 12px;
+
+    margin-top: 8px;
+
+}
+
+
+.statistics-dish-detail span {
+
+    font-size: 10px;
+
+    color: #667085;
+
+}
+
+
+/* =========================================================
+   SOURCE
+========================================================= */
 
 .statistics-source-row {
-    padding: 14px;
 
-    margin-bottom: 8px;
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+
+    padding: 15px 0;
+
+    border-bottom:
+        1px solid #edf0f4;
+
+}
+
+
+.statistics-source-row:last-child {
+
+    border-bottom: 0;
+
+}
+
+
+.statistics-source-row strong {
+
+    font-size: 13px;
+
+}
+
+
+.statistics-source-money {
+
+    text-align: right;
+
+    font-size: 11px;
+
+    line-height: 1.7;
+
+    color: #667085;
+
+}
+
+
+/* =========================================================
+   EXPENSE SUMMARY
+========================================================= */
+
+.statistics-expense-summary {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    padding: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff1f2,
+            #ffe4e6
+        );
+
+    border:
+        1px solid
+        rgba(239,68,68,.15);
+
+}
+
+
+.expense-summary-icon {
+
+    width: 56px;
+    height: 56px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 18px;
+
+    background: #ef4444;
+
+    color: white;
+
+    font-size: 25px;
+
+    box-shadow:
+        0 8px 20px
+        rgba(239,68,68,.20);
+
+}
+
+
+.statistics-expense-summary > div:last-child {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+}
+
+
+.statistics-expense-summary span {
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    color: #b42318;
+
+}
+
+
+.statistics-expense-summary strong {
+
+    font-size: 27px;
+
+    font-weight: 900;
+
+    color: #b42318;
+
+}
+
+
+/* =========================================================
+   EXPENSE OVERVIEW
+========================================================= */
+
+.expense-overview-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 8px;
+
+}
+
+
+.expense-overview-box {
+
+    padding: 14px 8px;
+
+    text-align: center;
 
     border-radius: 15px;
 
-    background: #f8fafc;
+    background: #fff6f6;
+
+    border:
+        1px solid #fee2e2;
+
 }
 
-.statistics-source-row strong {
+
+.expense-overview-box span {
+
     display: block;
 
-    font-size: 13px;
+    font-size: 9px;
+
+    font-weight: 800;
+
+    color: #98a2b3;
+
 }
 
-.statistics-source-money {
-    margin-top: 4px;
+
+.expense-overview-box strong {
+
+    display: block;
+
+    margin-top: 6px;
+
+    font-size: 14px;
+
+    font-weight: 900;
+
+    color: #344054;
+
+}
+
+
+.expense-overview-box:first-child strong {
+
+    color: #dc2626;
+
+}
+
+
+/* =========================================================
+   EXPENSE CATEGORY
+========================================================= */
+
+.statistics-expense-category-row {
+
+    padding: 14px 0;
+
+    border-bottom:
+        1px solid #edf0f4;
+
+}
+
+
+.statistics-expense-category-row:last-child {
+
+    border-bottom: 0;
+
+}
+
+
+.statistics-expense-category-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+}
+
+
+.statistics-expense-category-name {
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    color: #344054;
+
+}
+
+
+.statistics-expense-category-money {
+
+    font-size: 13px;
+
+    font-weight: 900;
+
+    color: #dc2626;
+
+}
+
+
+.statistics-expense-category-bar {
+
+    height: 7px;
+
+    margin-top: 8px;
+
+    border-radius: 99px;
+
+    overflow: hidden;
+
+    background: #f1f3f5;
+
+}
+
+
+.statistics-expense-category-bar span {
+
+    display: block;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ef4444,
+            #fb7185
+        );
+
+}
+
+
+.statistics-expense-category-percent {
+
+    margin-top: 5px;
+
+    font-size: 10px;
+
+    color: #98a2b3;
+
+}
+
+
+/* =========================================================
+   EXPENSE LIST
+========================================================= */
+
+.statistics-expense-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 14px 0;
+
+    border-bottom:
+        1px solid #edf0f4;
+
+}
+
+
+.statistics-expense-row:last-child {
+
+    border-bottom: 0;
+
+}
+
+
+.statistics-expense-icon {
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 13px;
+
+    background: #fff0f0;
+
+    color: #ef4444;
+
+}
+
+
+.statistics-expense-info {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.statistics-expense-name {
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    color: #344054;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+.statistics-expense-category {
+
+    margin-top: 3px;
+
+    font-size: 10px;
+
+    color: #98a2b3;
+
+}
+
+
+.statistics-expense-date {
+
+    margin-top: 2px;
+
+    font-size: 10px;
+
+    color: #98a2b3;
+
+}
+
+
+.statistics-expense-money {
+
+    font-size: 13px;
+
+    font-weight: 900;
+
+    color: #dc2626;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.statistics-empty {
+
+    padding: 30px 10px;
+
+    text-align: center;
+
+    color: #98a2b3;
 
     font-size: 12px;
-}
 
-body.dark .statistics-source-row {
-    background: #111822;
 }
 
 
-/* CHART */
+/* =========================================================
+   CHART
+========================================================= */
 
 .statistics-chart {
-    min-height: 200px;
 
     display: flex;
 
@@ -253,16 +1079,20 @@ body.dark .statistics-source-row {
 
     gap: 8px;
 
+    min-height: 190px;
+
+    padding: 15px 5px 5px;
+
     overflow-x: auto;
 
-    padding:
-        20px 5px 0;
 }
 
-.statistics-bar-column {
-    min-width: 35px;
 
-    height: 180px;
+.chart-day {
+
+    min-width: 30px;
+
+    flex: 1;
 
     display: flex;
 
@@ -271,28 +1101,322 @@ body.dark .statistics-source-row {
     justify-content: flex-end;
 
     align-items: center;
+
+    gap: 7px;
+
 }
 
-.statistics-bar {
-    width: 22px;
 
-    min-height: 3px;
+.chart-bars {
+
+    width: 100%;
+
+    height: 150px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    gap: 3px;
+
+}
+
+
+.chart-bar {
+
+    width: 9px;
+
+    min-height: 2px;
 
     border-radius:
-        7px 7px 3px 3px;
+        5px 5px 2px 2px;
+
+    transition:
+        height .35s ease;
+
+}
+
+
+.chart-bar.income {
 
     background:
         linear-gradient(
             180deg,
-            #6366f1,
-            #2563eb
+            #34d399,
+            #059669
         );
+
 }
 
-.statistics-bar-label {
-    margin-top: 5px;
 
-    color: var(--muted);
+.chart-bar.expense {
 
-    font-size: 8px;
+    background:
+        linear-gradient(
+            180deg,
+            #fb7185,
+            #dc2626
+        );
+
+}
+
+
+.chart-date {
+
+    font-size: 9px;
+
+    color: #98a2b3;
+
+    white-space: nowrap;
+
+}
+
+
+.empty-chart {
+
+    width: 100%;
+
+    min-height: 150px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    color: #98a2b3;
+
+    font-size: 12px;
+
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark .statistics-switch-button {
+
+    background: #202936;
+
+    color: #98a2b3;
+
+}
+
+
+body.dark .statistics-switch-button .switch-icon {
+
+    background: #293241;
+
+}
+
+
+body.dark .statistics-switch-button.income.active {
+
+    background:
+        rgba(16,185,129,.15);
+
+    color: #6ee7b7;
+
+}
+
+
+body.dark .statistics-switch-button.expense.active {
+
+    background:
+        rgba(239,68,68,.15);
+
+    color: #fda4af;
+
+}
+
+
+body.dark .period-tabs {
+
+    background: #202936;
+
+}
+
+
+body.dark .period-tab {
+
+    color: #98a2b3;
+
+}
+
+
+body.dark .period-tab.active {
+
+    background: #293241;
+
+    color: #a5b4fc;
+
+}
+
+
+body.dark .statistics-date-button {
+
+    background: #202936;
+
+    color: #f2f4f7;
+
+}
+
+
+body.dark .statistics-profit-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #102d23,
+            #123b2d
+        );
+
+}
+
+
+body.dark .profit-summary span,
+body.dark .profit-summary strong {
+
+    color: #6ee7b7;
+
+}
+
+
+body.dark .breakdown-row {
+
+    border-color: #293241;
+
+}
+
+
+body.dark .breakdown-row span,
+body.dark .statistics-dish-name,
+body.dark .statistics-source-row strong,
+body.dark .statistics-expense-category-name,
+body.dark .statistics-expense-name {
+
+    color: #f2f4f7;
+
+}
+
+
+body.dark .statistics-expense-summary {
+
+    background:
+        linear-gradient(
+            135deg,
+            #35181b,
+            #421b20
+        );
+
+}
+
+
+body.dark .statistics-expense-summary span,
+body.dark .statistics-expense-summary strong {
+
+    color: #fda4af;
+
+}
+
+
+body.dark .expense-overview-box {
+
+    background: #2b1c20;
+
+    border-color: #4a252b;
+
+}
+
+
+body.dark .expense-overview-box strong {
+
+    color: #f2f4f7;
+
+}
+
+
+body.dark .statistics-dish-row,
+body.dark .statistics-source-row,
+body.dark .statistics-expense-row,
+body.dark .statistics-expense-category-row {
+
+    border-color: #293241;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .statistics-hero {
+
+        padding: 18px;
+
+        border-radius: 20px;
+
+    }
+
+
+    .statistics-hero h2 {
+
+        font-size: 24px;
+
+    }
+
+
+    .statistics-switch-button {
+
+        min-height: 66px;
+
+    }
+
+
+    .statistics-switch-button strong {
+
+        font-size: 14px;
+
+    }
+
+
+    .statistics-switch-button small {
+
+        font-size: 9px;
+
+    }
+
+
+    .profit-summary strong {
+
+        font-size: 27px;
+
+    }
+
+
+    .statistics-expense-summary strong {
+
+        font-size: 23px;
+
+    }
+
+
+    .expense-overview-box {
+
+        padding: 12px 5px;
+
+    }
+
+
+    .expense-overview-box strong {
+
+        font-size: 12px;
+
+    }
+
 }
