@@ -1,314 +1,415 @@
 /* =========================================================
-   HOME
-   LỢI NHUẬN THỰC - PREMIUM
-   MÀU RIÊNG, KHÔNG TRÙNG MÀU THU
+   HOME.CSS
+   PREMIUM MOBILE UI
+   VERSION: 2026
 ========================================================= */
 
 
 /* =========================================================
-   PROFIT CARD
+   HOME PAGE
 ========================================================= */
 
-.profit-card,
-.home-profit-card,
-.real-profit-card,
-#realProfitCard {
+.home-page,
+#homePage {
+    width: 100%;
+    min-height: 100%;
+}
 
+
+/* =========================================================
+   HOME HEADER
+========================================================= */
+
+.home-header {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+
+.home-header-left {
+    min-width: 0;
+}
+
+
+.home-header-title {
+    margin: 0;
+
+    color: #202b43;
+
+    font-size: 24px;
+    font-weight: 900;
+
+    line-height: 1.15;
+
+    letter-spacing: -.6px;
+}
+
+
+.home-header-subtitle {
+    margin-top: 5px;
+
+    color: #8a94a7;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   HOME HEADER BUTTON
+========================================================= */
+
+.home-header-action {
+    display: grid;
+
+    place-items: center;
+
+    flex: 0 0 auto;
+
+    width: 42px;
+    height: 42px;
+
+    border: 0;
+
+    border-radius: 14px;
+
+    color: #34415d;
+
+    background: #f3f5f9;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+.home-header-action:hover {
+    background: #e9edf5;
+
+    box-shadow:
+        0 8px 18px
+        rgba(37,50,80,.10);
+}
+
+.home-header-action:active {
+    transform: scale(.93);
+}
+
+
+/* =========================================================
+   HOME DATE
+========================================================= */
+
+.home-date-card {
     position: relative;
 
     overflow: hidden;
 
-    color: #fff;
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 14px;
+
+    padding: 16px 18px;
+
+    margin-bottom: 16px;
+
+    border-radius: 20px;
 
     background:
-        radial-gradient(
-            circle at 88% 15%,
-            rgba(255,255,255,.20),
-            transparent 27%
-        ),
-        radial-gradient(
-            circle at 10% 100%,
-            rgba(139,92,246,.30),
-            transparent 36%
-        ),
         linear-gradient(
             135deg,
-            #392582 0%,
-            #5940b7 48%,
-            #8060e8 100%
-        ) !important;
+            #ffffff,
+            #f7f9fd
+        );
 
     border:
         1px solid
-        rgba(139,92,246,.20);
+        rgba(31,45,75,.05);
 
     box-shadow:
-        0 15px 35px
-        rgba(83,58,174,.25);
-
+        0 10px 28px
+        rgba(35,49,82,.07);
 }
 
 
-/* =========================================================
-   DECORATION
-========================================================= */
-
-.profit-card::before,
-.home-profit-card::before,
-.real-profit-card::before,
-#realProfitCard::before {
-
+.home-date-card::after {
     content: "";
 
     position: absolute;
 
-    width: 145px;
-    height: 145px;
+    width: 90px;
+    height: 90px;
 
-    right: -48px;
-    top: -65px;
+    right: -35px;
+    top: -45px;
 
     border-radius: 50%;
 
-    border:
-        1px solid
-        rgba(255,255,255,.13);
-
-    box-shadow:
-        0 0 0 22px
-        rgba(255,255,255,.035),
-        0 0 0 44px
-        rgba(255,255,255,.025);
-
-    pointer-events: none;
-
+    background:
+        rgba(71,118,230,.06);
 }
 
-.profit-card::after,
-.home-profit-card::after,
-.real-profit-card::after,
-#realProfitCard::after {
 
-    content: "✦";
+.home-date-left {
+    position: relative;
+    z-index: 2;
 
-    position: absolute;
+    display: flex;
 
-    right: 15px;
-    bottom: -25px;
+    align-items: center;
 
-    color: #fff;
+    gap: 11px;
 
-    font-size: 92px;
+    min-width: 0;
+}
 
+
+.home-date-icon {
+    display: grid;
+
+    place-items: center;
+
+    flex: 0 0 auto;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 14px;
+
+    color: #4776e6;
+
+    background:
+        linear-gradient(
+            145deg,
+            #edf3ff,
+            #f5f8ff
+        );
+
+    font-size: 19px;
+}
+
+
+.home-date-info strong {
+    display: block;
+
+    color: #2d3952;
+
+    font-size: 13px;
+    font-weight: 900;
+}
+
+
+.home-date-info span {
+    display: block;
+
+    margin-top: 3px;
+
+    color: #919aab;
+
+    font-size: 10px;
+    font-weight: 600;
+}
+
+
+.home-date-value {
+    position: relative;
+    z-index: 2;
+
+    color: #4776e6;
+
+    font-size: 13px;
     font-weight: 900;
 
-    line-height: 1;
-
-    opacity: .08;
-
-    pointer-events: none;
-
+    text-align: right;
 }
 
 
 /* =========================================================
-   TITLE
-========================================================= */
-
-.profit-card .label,
-.profit-card span,
-.home-profit-card .label,
-.home-profit-card span,
-.real-profit-card .label,
-.real-profit-card span,
-#realProfitCard .label,
-#realProfitCard span {
-
-    position: relative;
-
-    z-index: 2;
-
-    color:
-        rgba(255,255,255,.78);
-
-    font-size: 11px;
-
-    font-weight: 900;
-
-    letter-spacing: 1.4px;
-
-}
-
-
-/* =========================================================
-   MONEY
-========================================================= */
-
-.profit-card strong,
-.home-profit-card strong,
-.real-profit-card strong,
-#realProfitCard strong {
-
-    position: relative;
-
-    z-index: 2;
-
-    color: #fff !important;
-
-    font-size: 27px;
-
-    font-weight: 950;
-
-    text-shadow:
-        0 3px 12px
-        rgba(35,20,90,.18);
-
-}
-
-
-/* =========================================================
-   PROFIT ICON
-========================================================= */
-
-.profit-card .icon,
-.home-profit-card .icon,
-.real-profit-card .icon,
-#realProfitCard .icon {
-
-    position: relative;
-
-    z-index: 2;
-
-    color: #fff;
-
-    background:
-        rgba(255,255,255,.13);
-
-    border:
-        1px solid
-        rgba(255,255,255,.12);
-
-    box-shadow:
-        0 7px 18px
-        rgba(30,20,80,.12);
-
-}
-
-
-/* =========================================================
-   KHÔNG CHO MÀU THU GHI ĐÈ
-========================================================= */
-
-.profit-card.income,
-.home-profit-card.income,
-.real-profit-card.income {
-
-    background:
-        radial-gradient(
-            circle at 88% 15%,
-            rgba(255,255,255,.20),
-            transparent 27%
-        ),
-        linear-gradient(
-            135deg,
-            #392582,
-            #8060e8
-        ) !important;
-
-}
-
-
-/* =========================================================
-   PROFIT POSITIVE
-========================================================= */
-
-.profit-card.positive,
-.home-profit-card.positive,
-.real-profit-card.positive,
-#realProfitCard.positive {
-
-    background:
-        radial-gradient(
-            circle at 90% 10%,
-            rgba(255,255,255,.20),
-            transparent 28%
-        ),
-        linear-gradient(
-            135deg,
-            #392582,
-            #8060e8
-        ) !important;
-
-}
-
-
-/* =========================================================
-   PROFIT NEGATIVE
-========================================================= */
-
-.profit-card.negative,
-.home-profit-card.negative,
-.real-profit-card.negative,
-#realProfitCard.negative {
-
-    background:
-        radial-gradient(
-            circle at 90% 10%,
-            rgba(255,255,255,.18),
-            transparent 28%
-        ),
-        linear-gradient(
-            135deg,
-            #70243d,
-            #c13c62
-        ) !important;
-
-    border-color:
-        rgba(255,100,130,.20);
-
-    box-shadow:
-        0 15px 35px
-        rgba(180,45,85,.22);
-
-}
-
-
-/* =========================================================
-   HOME DASHBOARD
+   SUMMARY GRID
 ========================================================= */
 
 .home-summary-grid {
-
     display: grid;
 
     grid-template-columns:
-        repeat(2, minmax(0,1fr));
+        repeat(2, 1fr);
 
-    gap: 10px;
+    gap: 11px;
 
+    margin-bottom: 16px;
+}
+
+
+/* =========================================================
+   SUMMARY CARD
+========================================================= */
+
+.home-summary-card {
+    position: relative;
+
+    overflow: hidden;
+
+    min-width: 0;
+
+    padding: 17px;
+
+    border-radius: 21px;
+
+    background: #fff;
+
+    border:
+        1px solid
+        rgba(30,43,70,.05);
+
+    box-shadow:
+        0 10px 28px
+        rgba(35,49,82,.07);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.home-summary-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 14px 32px
+        rgba(35,49,82,.10);
+}
+
+
+.home-summary-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 80px;
+    height: 80px;
+
+    right: -35px;
+    bottom: -40px;
+
+    border-radius: 50%;
+
+    opacity: .65;
+}
+
+
+.home-summary-label {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color: #8791a4;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: .7px;
+
+    text-transform: uppercase;
+}
+
+
+.home-summary-icon {
+    display: grid;
+
+    place-items: center;
+
+    width: 27px;
+    height: 27px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+}
+
+
+.home-summary-value {
+    position: relative;
+    z-index: 2;
+
+    display: block;
+
+    margin-top: 10px;
+
+    overflow: hidden;
+
+    color: #27334b;
+
+    font-size: 20px;
+    font-weight: 900;
+
+    line-height: 1.15;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 
 /* =========================================================
    THU
-   GIỮ MÀU XANH RIÊNG
 ========================================================= */
 
-.income-card,
-.home-income-card,
-.revenue-card {
-
+.home-summary-card.income,
+.home-summary-card.thu,
+.home-income-card {
     background:
         linear-gradient(
-            135deg,
-            #0e9f6e,
-            #25c98b
-        ) !important;
+            145deg,
+            #ffffff 0%,
+            #f5fffa 100%
+        );
+}
 
-    box-shadow:
-        0 12px 28px
-        rgba(14,159,110,.18);
 
+.home-summary-card.income::after,
+.home-summary-card.thu::after,
+.home-income-card::after {
+    background:
+        rgba(24,170,112,.10);
+}
+
+
+.home-summary-card.income
+.home-summary-icon,
+.home-summary-card.thu
+.home-summary-icon,
+.home-income-card
+.home-summary-icon {
+    color: #0da56b;
+
+    background:
+        #e8faf2;
+}
+
+
+.home-summary-card.income
+.home-summary-value,
+.home-summary-card.thu
+.home-summary-value,
+.home-income-card
+.home-summary-value {
+    color: #0da56b;
 }
 
 
@@ -316,41 +417,1390 @@
    CHI
 ========================================================= */
 
-.expense-card,
+.home-summary-card.expense,
+.home-summary-card.chi,
 .home-expense-card {
-
     background:
         linear-gradient(
-            135deg,
-            #d9485f,
-            #f36b78
-        ) !important;
+            145deg,
+            #ffffff 0%,
+            #fff7f7 100%
+        );
+}
 
-    box-shadow:
-        0 12px 28px
-        rgba(217,72,95,.18);
 
+.home-summary-card.expense::after,
+.home-summary-card.chi::after,
+.home-expense-card::after {
+    background:
+        rgba(235,84,97,.10);
+}
+
+
+.home-summary-card.expense
+.home-summary-icon,
+.home-summary-card.chi
+.home-summary-icon,
+.home-expense-card
+.home-summary-icon {
+    color: #e65360;
+
+    background:
+        #ffedef;
+}
+
+
+.home-summary-card.expense
+.home-summary-value,
+.home-summary-card.chi
+.home-summary-value,
+.home-expense-card
+.home-summary-value {
+    color: #e65360;
 }
 
 
 /* =========================================================
-   PROFIT LABEL
+   LỢI NHUẬN THỰC
+   MÀU RIÊNG - KHÔNG TRÙNG THU
 ========================================================= */
 
-.profit-card small,
-.home-profit-card small,
-.real-profit-card small,
-#realProfitCard small {
+.home-summary-card.profit,
+.home-summary-card.real-profit,
+.home-profit-card,
+.home-net-profit-card {
+
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff 0%,
+            #f5f2ff 48%,
+            #f8f6ff 100%
+        );
+
+    border:
+        1px solid
+        rgba(111,78,210,.12);
+
+    box-shadow:
+        0 12px 30px
+        rgba(91,68,180,.10);
+}
+
+
+.home-summary-card.profit::after,
+.home-summary-card.real-profit::after,
+.home-profit-card::after,
+.home-net-profit-card::after {
+
+    background:
+        rgba(112,82,220,.13);
+}
+
+
+.home-summary-card.profit
+.home-summary-icon,
+.home-summary-card.real-profit
+.home-summary-icon,
+.home-profit-card
+.home-summary-icon,
+.home-net-profit-card
+.home-summary-icon {
+
+    color: #7656d8;
+
+    background:
+        linear-gradient(
+            145deg,
+            #eee9ff,
+            #f5f2ff
+        );
+}
+
+
+.home-summary-card.profit
+.home-summary-value,
+.home-summary-card.real-profit
+.home-summary-value,
+.home-profit-card
+.home-summary-value,
+.home-net-profit-card
+.home-summary-value {
+
+    color: #7252d4;
+}
+
+
+/* =========================================================
+   PROFIT CARD EXTRA GLOW
+========================================================= */
+
+.home-summary-card.profit::before,
+.home-summary-card.real-profit::before,
+.home-profit-card::before,
+.home-net-profit-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 4px;
+    height: 100%;
+
+    border-radius:
+        21px 0 0 21px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #8d70ef,
+            #5e42c5
+        );
+}
+
+
+/* =========================================================
+   FULL WIDTH PROFIT
+========================================================= */
+
+.home-summary-card.profit-full,
+.home-profit-full {
+
+    grid-column:
+        1 / -1;
+}
+
+
+/* =========================================================
+   PROFIT PERCENT
+========================================================= */
+
+.home-profit-percent {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-top: 9px;
+
+    padding: 5px 8px;
+
+    border-radius: 9px;
+
+    color: #6f50ce;
+
+    background:
+        #eeeaff;
+
+    font-size: 10px;
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   HOME MAIN PROFIT BANNER
+========================================================= */
+
+.home-profit-banner {
 
     position: relative;
 
+    overflow: hidden;
+
+    padding: 22px;
+
+    margin-bottom: 16px;
+
+    border-radius: 24px;
+
+    color: #fff;
+
+    background:
+        radial-gradient(
+            circle at 85% 20%,
+            rgba(255,255,255,.18),
+            transparent 28%
+        ),
+        linear-gradient(
+            135deg,
+            #40318f,
+            #6950d5 55%,
+            #8168eb
+        );
+
+    box-shadow:
+        0 18px 38px
+        rgba(91,68,190,.22);
+}
+
+
+.home-profit-banner::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 170px;
+    height: 170px;
+
+    right: -65px;
+    top: -75px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.08);
+}
+
+
+.home-profit-banner::after {
+
+    content: "✦";
+
+    position: absolute;
+
+    right: 20px;
+    bottom: -17px;
+
+    color: #fff;
+
+    font-size: 90px;
+    font-weight: 900;
+
+    opacity: .07;
+}
+
+
+.home-profit-banner-label {
+
+    position: relative;
+    z-index: 2;
+
+    display: block;
+
+    color: rgba(255,255,255,.72);
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: 1.5px;
+
+    text-transform: uppercase;
+}
+
+
+.home-profit-banner-value {
+
+    position: relative;
+    z-index: 2;
+
+    display: block;
+
+    margin-top: 7px;
+
+    font-size: 30px;
+    font-weight: 900;
+
+    letter-spacing: -.6px;
+}
+
+
+.home-profit-banner-note {
+
+    position: relative;
+    z-index: 2;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    margin-top: 10px;
+
+    padding: 6px 9px;
+
+    border-radius: 9px;
+
+    color: #eeeaff;
+
+    background:
+        rgba(255,255,255,.12);
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   MONEY SUMMARY
+========================================================= */
+
+.home-money-section {
+
+    margin-bottom: 16px;
+
+    padding: 18px;
+
+    border-radius: 22px;
+
+    background: #fff;
+
+    border:
+        1px solid
+        rgba(30,43,70,.05);
+
+    box-shadow:
+        0 10px 28px
+        rgba(35,49,82,.06);
+}
+
+
+.home-section-title {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 13px;
+}
+
+
+.home-section-title-left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.home-section-title-icon {
+
+    display: grid;
+
+    place-items: center;
+
+    width: 34px;
+    height: 34px;
+
+    border-radius: 11px;
+
+    background: #f3f5fa;
+
+    font-size: 16px;
+}
+
+
+.home-section-title strong {
+
+    color: #29354d;
+
+    font-size: 14px;
+    font-weight: 900;
+}
+
+
+.home-section-title small {
+
+    color: #9aa3b3;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   BREAKDOWN
+========================================================= */
+
+.home-breakdown-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0;
+}
+
+
+.home-breakdown-row {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    min-height: 48px;
+
+    border-bottom:
+        1px solid #edf0f5;
+}
+
+
+.home-breakdown-row:last-child {
+    border-bottom: 0;
+}
+
+
+.home-breakdown-label {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    color: #747e91;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.home-breakdown-dot {
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #b7bfcc;
+}
+
+
+.home-breakdown-value {
+
+    color: #2c374e;
+
+    font-size: 13px;
+    font-weight: 900;
+}
+
+
+/* THU */
+
+.home-breakdown-row.income
+.home-breakdown-dot {
+
+    background:
+        #16b879;
+}
+
+
+.home-breakdown-row.income
+.home-breakdown-value {
+
+    color:
+        #10a46d;
+}
+
+
+/* CHI */
+
+.home-breakdown-row.expense
+.home-breakdown-dot {
+
+    background:
+        #ed5964;
+}
+
+
+.home-breakdown-row.expense
+.home-breakdown-value {
+
+    color:
+        #e34f5b;
+}
+
+
+/* LỢI NHUẬN */
+
+.home-breakdown-row.profit
+.home-breakdown-dot {
+
+    background:
+        #7656d8;
+}
+
+
+.home-breakdown-row.profit
+.home-breakdown-value {
+
+    color:
+        #7252d4;
+}
+
+
+/* =========================================================
+   RECENT TRANSACTIONS
+========================================================= */
+
+.home-transactions-section {
+
+    margin-bottom: 18px;
+
+    padding: 18px;
+
+    border-radius: 22px;
+
+    background: #fff;
+
+    border:
+        1px solid
+        rgba(30,43,70,.05);
+
+    box-shadow:
+        0 10px 28px
+        rgba(35,49,82,.06);
+}
+
+
+.home-transaction-list {
+
+    display: flex;
+
+    flex-direction: column;
+}
+
+
+.home-transaction-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 13px 0;
+
+    border-bottom:
+        1px solid #edf0f5;
+}
+
+
+.home-transaction-row:last-child {
+    border-bottom: 0;
+}
+
+
+.home-transaction-icon {
+
+    display: grid;
+
+    place-items: center;
+
+    flex: 0 0 auto;
+
+    width: 40px;
+    height: 40px;
+
+    border-radius: 13px;
+
+    background: #f4f6fa;
+
+    font-size: 17px;
+}
+
+
+.home-transaction-info {
+
+    min-width: 0;
+
+    flex: 1;
+}
+
+
+.home-transaction-name {
+
+    overflow: hidden;
+
+    color: #2c374d;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+.home-transaction-date {
+
+    margin-top: 3px;
+
+    color: #9aa2b1;
+
+    font-size: 10px;
+}
+
+
+.home-transaction-money {
+
+    flex: 0 0 auto;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    text-align: right;
+}
+
+
+.home-transaction-money.income {
+    color: #11a66c;
+}
+
+
+.home-transaction-money.expense {
+    color: #e65360;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.home-empty {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 150px;
+
+    padding: 20px;
+
+    text-align: center;
+
+    color: #969faf;
+}
+
+
+.home-empty-icon {
+
+    display: grid;
+
+    place-items: center;
+
+    width: 54px;
+    height: 54px;
+
+    margin-bottom: 9px;
+
+    border-radius: 18px;
+
+    background: #f3f5f9;
+
+    font-size: 24px;
+}
+
+
+.home-empty strong {
+
+    color: #4b566b;
+
+    font-size: 13px;
+}
+
+
+.home-empty span {
+
+    margin-top: 4px;
+
+    color: #9aa3b1;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+========================================================= */
+
+.home-quick-actions {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 11px;
+
+    margin-bottom: 18px;
+}
+
+
+.home-quick-action {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    min-width: 0;
+
+    padding: 14px;
+
+    border: 0;
+
+    border-radius: 18px;
+
+    color: #344058;
+
+    background: #fff;
+
+    border:
+        1px solid
+        rgba(30,43,70,.05);
+
+    box-shadow:
+        0 8px 22px
+        rgba(35,49,82,.06);
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.home-quick-action:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 28px
+        rgba(35,49,82,.10);
+}
+
+
+.home-quick-action:active {
+
+    transform:
+        translateY(0)
+        scale(.98);
+}
+
+
+.home-quick-action-icon {
+
+    display: grid;
+
+    place-items: center;
+
+    flex: 0 0 auto;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 12px;
+
+    background: #f3f5fa;
+
+    font-size: 17px;
+}
+
+
+.home-quick-action span {
+
+    overflow: hidden;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ADD INCOME
+========================================================= */
+
+.home-quick-action.income
+.home-quick-action-icon {
+
+    color: #10a66c;
+
+    background: #e9faf3;
+}
+
+
+/* =========================================================
+   ADD EXPENSE
+========================================================= */
+
+.home-quick-action.expense
+.home-quick-action-icon {
+
+    color: #e65360;
+
+    background: #fff0f1;
+}
+
+
+/* =========================================================
+   ADD ORDER
+========================================================= */
+
+.home-quick-action.order
+.home-quick-action-icon {
+
+    color: #4776e6;
+
+    background: #edf3ff;
+}
+
+
+/* =========================================================
+   STATISTICS LINK
+========================================================= */
+
+.home-statistics-link {
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+
+    width: 100%;
+
+    padding: 16px 17px;
+
+    border: 0;
+
+    border-radius: 18px;
+
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4776e6,
+            #3559b7
+        );
+
+    box-shadow:
+        0 12px 28px
+        rgba(55,89,180,.20);
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.home-statistics-link:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 16px 32px
+        rgba(55,89,180,.25);
+}
+
+
+.home-statistics-link:active {
+
+    transform: scale(.985);
+}
+
+
+.home-statistics-link-left {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.home-statistics-link-icon {
+
+    display: grid;
+
+    place-items: center;
+
+    width: 38px;
+    height: 38px;
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,.14);
+
+    font-size: 17px;
+}
+
+
+.home-statistics-link strong {
+
+    display: block;
+
+    font-size: 13px;
+    font-weight: 900;
+}
+
+
+.home-statistics-link small {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color:
+        rgba(255,255,255,.72);
+
+    font-size: 10px;
+}
+
+
+.home-statistics-link-arrow {
+
+    font-size: 22px;
+
+    opacity: .8;
+}
+
+
+/* =========================================================
+   BALANCE
+========================================================= */
+
+.home-balance-card {
+
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 20px;
+
+    margin-bottom: 16px;
+
+    border-radius: 22px;
+
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #27344e,
+            #3b4c6c
+        );
+
+    box-shadow:
+        0 14px 32px
+        rgba(38,52,78,.18);
+}
+
+
+.home-balance-card::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 130px;
+    height: 130px;
+
+    right: -50px;
+    bottom: -60px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.07);
+}
+
+
+.home-balance-label {
+
+    position: relative;
     z-index: 2;
 
     color:
-        rgba(255,255,255,.68);
+        rgba(255,255,255,.65);
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: 1.3px;
+
+    text-transform: uppercase;
+}
+
+
+.home-balance-value {
+
+    position: relative;
+    z-index: 2;
+
+    display: block;
+
+    margin-top: 7px;
+
+    font-size: 27px;
+    font-weight: 900;
+}
+
+
+/* =========================================================
+   NEGATIVE BALANCE
+========================================================= */
+
+.home-balance-card.negative {
+
+    background:
+        linear-gradient(
+            135deg,
+            #703640,
+            #a44e5a
+        );
+
+    box-shadow:
+        0 14px 32px
+        rgba(164,78,90,.18);
+}
+
+
+/* =========================================================
+   HOME FOOTER
+========================================================= */
+
+.home-footer {
+
+    padding: 16px 0 30px;
+
+    color: #a0a8b7;
 
     font-size: 10px;
 
+    text-align: center;
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark .home-header-title {
+    color: #eef2f7;
+}
+
+
+body.dark .home-header-subtitle {
+    color: #9ca6b7;
+}
+
+
+body.dark .home-header-action {
+    color: #e6ebf3;
+
+    background: #202733;
+}
+
+
+body.dark .home-date-card,
+body.dark .home-money-section,
+body.dark .home-transactions-section,
+body.dark .home-summary-card,
+body.dark .home-quick-action {
+
+    background:
+        #1d2430;
+
+    border-color:
+        rgba(255,255,255,.05);
+
+    box-shadow:
+        0 10px 28px
+        rgba(0,0,0,.18);
+}
+
+
+body.dark .home-date-info strong,
+body.dark .home-section-title strong,
+body.dark .home-transaction-name {
+
+    color: #e9edf4;
+}
+
+
+body.dark .home-date-info span,
+body.dark .home-section-title small,
+body.dark .home-transaction-date {
+
+    color: #929cac;
+}
+
+
+body.dark .home-date-icon {
+
+    color: #7fa3ff;
+
+    background:
+        #222d43;
+}
+
+
+body.dark .home-summary-label {
+
+    color: #939daf;
+}
+
+
+body.dark .home-summary-value {
+
+    color: #edf1f6;
+}
+
+
+/* DARK THU */
+
+body.dark .home-summary-card.income,
+body.dark .home-summary-card.thu,
+body.dark .home-income-card {
+
+    background:
+        linear-gradient(
+            145deg,
+            #1b2925,
+            #1d3029
+        );
+}
+
+
+body.dark .home-summary-card.income
+.home-summary-value,
+body.dark .home-summary-card.thu
+.home-summary-value,
+body.dark .home-income-card
+.home-summary-value {
+
+    color: #35d99a;
+}
+
+
+body.dark .home-summary-card.income
+.home-summary-icon,
+body.dark .home-summary-card.thu
+.home-summary-icon,
+body.dark .home-income-card
+.home-summary-icon {
+
+    background:
+        #203a30;
+}
+
+
+/* DARK CHI */
+
+body.dark .home-summary-card.expense,
+body.dark .home-summary-card.chi,
+body.dark .home-expense-card {
+
+    background:
+        linear-gradient(
+            145deg,
+            #302125,
+            #362326
+        );
+}
+
+
+body.dark .home-summary-card.expense
+.home-summary-value,
+body.dark .home-summary-card.chi
+.home-summary-value,
+body.dark .home-expense-card
+.home-summary-value {
+
+    color: #ff7b84;
+}
+
+
+body.dark .home-summary-card.expense
+.home-summary-icon,
+body.dark .home-summary-card.chi
+.home-summary-icon,
+body.dark .home-expense-card
+.home-summary-icon {
+
+    background:
+        #43292d;
+}
+
+
+/* DARK LỢI NHUẬN */
+
+body.dark .home-summary-card.profit,
+body.dark .home-summary-card.real-profit,
+body.dark .home-profit-card,
+body.dark .home-net-profit-card {
+
+    background:
+        linear-gradient(
+            145deg,
+            #29243c,
+            #302949
+        );
+
+    border-color:
+        rgba(142,116,235,.16);
+
+    box-shadow:
+        0 12px 30px
+        rgba(0,0,0,.20);
+}
+
+
+body.dark .home-summary-card.profit
+.home-summary-value,
+body.dark .home-summary-card.real-profit
+.home-summary-value,
+body.dark .home-profit-card
+.home-summary-value,
+body.dark .home-net-profit-card
+.home-summary-value {
+
+    color:
+        #a991ff;
+}
+
+
+body.dark .home-summary-card.profit
+.home-summary-icon,
+body.dark .home-summary-card.real-profit
+.home-summary-icon,
+body.dark .home-profit-card
+.home-summary-icon,
+body.dark .home-net-profit-card
+.home-summary-icon {
+
+    color:
+        #a991ff;
+
+    background:
+        #383052;
+}
+
+
+body.dark .home-profit-percent {
+
+    color:
+        #b5a1ff;
+
+    background:
+        #383052;
+}
+
+
+body.dark .home-breakdown-row,
+body.dark .home-transaction-row {
+
+    border-color:
+        #2b3340;
+}
+
+
+body.dark .home-breakdown-label {
+
+    color:
+        #9da6b6;
+}
+
+
+body.dark .home-breakdown-value {
+
+    color:
+        #e9edf4;
+}
+
+
+body.dark .home-breakdown-row.income
+.home-breakdown-value {
+
+    color:
+        #35d99a;
+}
+
+
+body.dark .home-breakdown-row.expense
+.home-breakdown-value {
+
+    color:
+        #ff7b84;
+}
+
+
+body.dark .home-breakdown-row.profit
+.home-breakdown-value {
+
+    color:
+        #a991ff;
+}
+
+
+body.dark .home-transaction-icon {
+
+    background:
+        #252c38;
+}
+
+
+body.dark .home-quick-action {
+
+    color:
+        #e9edf4;
+}
+
+
+body.dark .home-quick-action-icon {
+
+    background:
+        #252c38;
+}
+
+
+body.dark .home-empty {
+
+    color:
+        #929cac;
+}
+
+
+body.dark .home-empty-icon {
+
+    background:
+        #252c38;
+}
+
+
+body.dark .home-empty strong {
+
+    color:
+        #dce2eb;
 }
 
 
@@ -358,24 +1808,189 @@
    MOBILE
 ========================================================= */
 
-@media (max-width: 420px) {
+@media (max-width: 600px) {
 
-    .profit-card,
-    .home-profit-card,
-    .real-profit-card,
-    #realProfitCard {
-
-        border-radius: 20px;
-
+    .home-header {
+        margin-bottom: 15px;
     }
 
-    .profit-card strong,
-    .home-profit-card strong,
-    .real-profit-card strong,
-    #realProfitCard strong {
 
-        font-size: 25px;
+    .home-header-title {
+        font-size: 22px;
+    }
 
+
+    .home-summary-grid {
+        gap: 9px;
+    }
+
+
+    .home-summary-card {
+        padding: 15px;
+        border-radius: 18px;
+    }
+
+
+    .home-summary-value {
+        font-size: 18px;
+    }
+
+
+    .home-summary-icon {
+        width: 25px;
+        height: 25px;
+    }
+
+
+    .home-profit-banner {
+        padding: 20px;
+        border-radius: 21px;
+    }
+
+
+    .home-profit-banner-value {
+        font-size: 27px;
+    }
+
+
+    .home-money-section,
+    .home-transactions-section {
+        padding: 16px;
+        border-radius: 20px;
+    }
+
+
+    .home-quick-actions {
+        gap: 9px;
+    }
+
+
+    .home-quick-action {
+        padding: 12px;
+    }
+
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 420px) {
+
+    .home-header-title {
+        font-size: 20px;
+    }
+
+
+    .home-summary-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .home-summary-card {
+        padding: 14px;
+        border-radius: 17px;
+    }
+
+
+    .home-summary-value {
+        font-size: 16px;
+    }
+
+
+    .home-summary-label {
+        font-size: 9px;
+    }
+
+
+    .home-profit-banner {
+        padding: 18px;
+
+        border-radius: 20px;
+    }
+
+
+    .home-profit-banner-value {
+        font-size: 24px;
+    }
+
+
+    .home-profit-banner::after {
+        font-size: 75px;
+    }
+
+
+    .home-date-card {
+        padding: 14px;
+        border-radius: 18px;
+    }
+
+
+    .home-date-icon {
+        width: 38px;
+        height: 38px;
+
+        border-radius: 12px;
+    }
+
+
+    .home-date-info strong {
+        font-size: 12px;
+    }
+
+
+    .home-date-value {
+        font-size: 11px;
+    }
+
+
+    .home-quick-action-icon {
+        width: 35px;
+        height: 35px;
+    }
+
+
+    .home-quick-action span {
+        font-size: 10px;
+    }
+
+}
+
+
+/* =========================================================
+   EXTRA SMALL
+========================================================= */
+
+@media (max-width: 350px) {
+
+    .home-summary-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .home-summary-card.profit-full,
+    .home-profit-full {
+        grid-column:
+            auto;
+    }
+
+
+    .home-quick-actions {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .home-date-card {
+        align-items: flex-start;
+    }
+
+
+    .home-date-value {
+        max-width: 100px;
     }
 
 }
