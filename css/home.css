@@ -1,6 +1,7 @@
 /* =========================================================
    BẾP NHÀ DUYÊN
    HOME.CSS - PREMIUM MOBILE UI
+   FIX: LỢI NHUẬN THỰC KHÁC MÀU THU
 ========================================================= */
 
 
@@ -47,9 +48,6 @@
     isolation: isolate;
 }
 
-
-/* background circles */
-
 .balance-card::before {
     content: "";
 
@@ -70,7 +68,6 @@
 
     z-index: -1;
 }
-
 
 .balance-card::after {
     content: "";
@@ -111,7 +108,6 @@
         rgba(255,255,255,0.82);
 }
 
-
 .balance-number {
     position: relative;
 
@@ -148,7 +144,6 @@
     margin-top: 23px;
 }
 
-
 .balance-item {
     min-width: 0;
 
@@ -167,7 +162,6 @@
     -webkit-backdrop-filter: blur(8px);
 }
 
-
 .balance-item span {
     display: block;
 
@@ -182,7 +176,6 @@
     color:
         rgba(255,255,255,0.72);
 }
-
 
 .balance-item strong {
     display: block;
@@ -245,7 +238,6 @@
     margin-bottom: 18px;
 }
 
-
 #homePage .section-heading h2 {
     margin: 0;
 
@@ -259,7 +251,6 @@
 
     letter-spacing: -.25px;
 }
-
 
 #homePage .section-heading small {
     display: block;
@@ -354,13 +345,7 @@
         transparent !important;
 }
 
-
-/* =========================================================
-   TYPE HOVER
-========================================================= */
-
-.transaction-type
-.type-button:hover {
+.transaction-type .type-button:hover {
     background:
         #e8ebef !important;
 
@@ -368,24 +353,18 @@
         #374151 !important;
 }
 
-
-/* =========================================================
-   TYPE PRESS
-========================================================= */
-
-.transaction-type
-.type-button:active {
+.transaction-type .type-button:active {
     transform:
         scale(.965) !important;
 }
 
 
 /* =========================================================
-   THU ACTIVE
+   THU
+   XANH LÁ
 ========================================================= */
 
-.transaction-type
-#incomeTypeButton.active {
+.transaction-type #incomeTypeButton.active {
 
     background:
         linear-gradient(
@@ -407,11 +386,11 @@
 
 
 /* =========================================================
-   CHI ACTIVE
+   CHI
+   ĐỎ
 ========================================================= */
 
-.transaction-type
-#expenseTypeButton.active {
+.transaction-type #expenseTypeButton.active {
 
     background:
         linear-gradient(
@@ -494,11 +473,9 @@
         background .2s ease;
 }
 
-
 #homePage input::placeholder {
     color: #a3acb9;
 }
-
 
 #homePage input:focus,
 #homePage select:focus {
@@ -544,11 +521,9 @@
     letter-spacing: -.5px;
 }
 
-
 #homePage .amount-input::placeholder {
     color: #c1c7d0;
 }
-
 
 #homePage .amount-input:focus {
     background:
@@ -571,7 +546,6 @@
     margin-top: 1px;
 }
 
-
 .source-grid {
     display: grid;
 
@@ -580,7 +554,6 @@
 
     gap: 7px;
 }
-
 
 .source-button {
     min-width: 0;
@@ -615,12 +588,10 @@
         all .18s ease;
 }
 
-
 .source-button:hover {
     background:
         #f8fafc;
 }
-
 
 .source-button:active {
     transform:
@@ -628,7 +599,9 @@
 }
 
 
-/* Shopee */
+/* =========================================================
+   SHOPEE
+========================================================= */
 
 #sourceShopee.active {
     background:
@@ -646,7 +619,9 @@
 }
 
 
-/* Grab */
+/* =========================================================
+   GRAB
+========================================================= */
 
 #sourceGrab.active {
     background:
@@ -664,7 +639,9 @@
 }
 
 
-/* Outside */
+/* =========================================================
+   OUTSIDE
+========================================================= */
 
 #sourceOutside.active {
     background:
@@ -689,7 +666,6 @@
 #appFeeBox {
     margin-top: 2px;
 }
-
 
 #homePage .field-help {
     display: block;
@@ -759,7 +735,6 @@
         filter .2s ease;
 }
 
-
 #homePage .primary-button:hover {
     filter:
         brightness(1.03);
@@ -771,7 +746,6 @@
     transform:
         translateY(-1px);
 }
-
 
 #homePage .primary-button:active {
     transform:
@@ -822,7 +796,6 @@
         background .2s ease,
         border .2s ease;
 }
-
 
 #homePage .secondary-button:hover {
     background:
@@ -880,12 +853,10 @@
         transform .2s ease;
 }
 
-
 #homePage .quick-card:hover {
     transform:
         translateY(-2px);
 }
-
 
 #homePage .quick-card span {
     position: relative;
@@ -901,7 +872,6 @@
 
     letter-spacing: .65px;
 }
-
 
 #homePage .quick-card strong {
     position: relative;
@@ -942,7 +912,7 @@
 
 
 /* =========================================================
-   GREEN CARD
+   THU - GREEN
 ========================================================= */
 
 #homePage .green-card {
@@ -957,12 +927,10 @@
         #d1fae5;
 }
 
-
 #homePage .green-card::after {
     background:
         #6ee7b7;
 }
-
 
 #homePage .green-card .green-text {
     color:
@@ -971,7 +939,7 @@
 
 
 /* =========================================================
-   RED CARD
+   CHI - RED
 ========================================================= */
 
 #homePage .red-card {
@@ -986,16 +954,72 @@
         #ffe0e5;
 }
 
-
 #homePage .red-card::after {
     background:
         #fda4af;
 }
 
-
 #homePage .red-card .red-text {
     color:
         #e11d48;
+}
+
+
+/* =========================================================
+   LỢI NHUẬN THỰC
+   MÀU RIÊNG - XANH DƯƠNG / TÍM
+   KHÔNG DÙNG MÀU XANH CỦA THU
+========================================================= */
+
+#homePage .profit-card {
+    background:
+        linear-gradient(
+            135deg,
+            #eef2ff 0%,
+            #f0f9ff 52%,
+            #f5f3ff 100%
+        );
+
+    border-color:
+        #dbe4ff;
+}
+
+#homePage .profit-card::after {
+    background:
+        #818cf8;
+}
+
+#homePage .profit-card .profit-text {
+    color:
+        #4f46e5;
+}
+
+
+/* =========================================================
+   LỢI NHUẬN THỰC - TRƯỜNG HỢP HTML ĐANG DÙNG
+   .blue-card + .blue-text
+========================================================= */
+
+#homePage .blue-card {
+    background:
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #eff6ff
+        );
+
+    border-color:
+        #dbeafe;
+}
+
+#homePage .blue-card::after {
+    background:
+        #818cf8;
+}
+
+#homePage .blue-card .blue-text {
+    color:
+        #4f46e5;
 }
 
 
@@ -1015,45 +1039,14 @@
         #fed7aa;
 }
 
-
 #homePage .orange-card::after {
     background:
         #fdba74;
 }
 
-
 #homePage .orange-card .orange-text {
     color:
         #ea580c;
-}
-
-
-/* =========================================================
-   BLUE CARD
-========================================================= */
-
-#homePage .blue-card {
-    background:
-        linear-gradient(
-            135deg,
-            #eff6ff,
-            #f0f9ff
-        );
-
-    border-color:
-        #dbeafe;
-}
-
-
-#homePage .blue-card::after {
-    background:
-        #93c5fd;
-}
-
-
-#homePage .blue-card .blue-text {
-    color:
-        #2563eb;
 }
 
 
@@ -1066,12 +1059,10 @@
         #059669;
 }
 
-
 .red-text {
     color:
         #e11d48;
 }
-
 
 .orange-text {
     color:
@@ -1079,9 +1070,31 @@
 }
 
 
+/*
+   QUAN TRỌNG:
+   Không để .profit-text dùng chung màu .green-text
+*/
+
+.profit-text {
+    color:
+        #4f46e5;
+}
+
 .blue-text {
     color:
-        #2563eb;
+        #4f46e5;
+}
+
+
+/* =========================================================
+   NẾU HTML GỌI "LỢI NHUẬN THỰC"
+   BẰNG CLASS RIÊNG
+========================================================= */
+
+#homePage .profit-card strong,
+#homePage .profit-text {
+    color:
+        #4f46e5;
 }
 
 
@@ -1101,12 +1114,10 @@ body.dark #homePage .card {
         rgba(0,0,0,.18);
 }
 
-
 body.dark #homePage .section-heading h2 {
     color:
         #f9fafb;
 }
-
 
 body.dark #homePage .section-heading small {
     color:
@@ -1126,18 +1137,12 @@ body.dark .transaction-type {
         #303b4d !important;
 }
 
-
-body.dark
-.transaction-type
-.type-button {
+body.dark .transaction-type .type-button {
     color:
         #9ca3af !important;
 }
 
-
-body.dark
-.transaction-type
-.type-button:hover {
+body.dark .transaction-type .type-button:hover {
     background:
         #273244 !important;
 
@@ -1146,9 +1151,9 @@ body.dark
 }
 
 
-body.dark
-.transaction-type
-#incomeTypeButton.active {
+/* THU DARK */
+
+body.dark .transaction-type #incomeTypeButton.active {
     background:
         linear-gradient(
             135deg,
@@ -1161,9 +1166,9 @@ body.dark
 }
 
 
-body.dark
-.transaction-type
-#expenseTypeButton.active {
+/* CHI DARK */
+
+body.dark .transaction-type #expenseTypeButton.active {
     background:
         linear-gradient(
             135deg,
@@ -1192,12 +1197,10 @@ body.dark #homePage select {
         #f9fafb;
 }
 
-
 body.dark #homePage input::placeholder {
     color:
         #697586;
 }
-
 
 body.dark #homePage input:focus,
 body.dark #homePage select:focus {
@@ -1211,7 +1214,6 @@ body.dark #homePage select:focus {
         0 0 0 4px
         rgba(16,185,129,.10);
 }
-
 
 body.dark #homePage .amount-input {
     background:
@@ -1240,12 +1242,10 @@ body.dark .source-button {
         #9ca3af;
 }
 
-
 body.dark .source-button:hover {
     background:
         #273244;
 }
-
 
 body.dark #sourceShopee.active {
     background:
@@ -1258,7 +1258,6 @@ body.dark #sourceShopee.active {
         #fb923c;
 }
 
-
 body.dark #sourceGrab.active {
     background:
         #102a1c;
@@ -1269,7 +1268,6 @@ body.dark #sourceGrab.active {
     color:
         #86efac;
 }
-
 
 body.dark #sourceOutside.active {
     background:
@@ -1298,7 +1296,6 @@ body.dark #homePage .secondary-button {
         #d1d5db;
 }
 
-
 body.dark #homePage .secondary-button:hover {
     background:
         #273244;
@@ -1321,7 +1318,6 @@ body.dark #homePage .green-card {
         #1b4b32;
 }
 
-
 body.dark #homePage .red-card {
     background:
         linear-gradient(
@@ -1335,6 +1331,43 @@ body.dark #homePage .red-card {
 }
 
 
+/* =========================================================
+   DARK LỢI NHUẬN THỰC
+   XANH INDIGO RIÊNG
+========================================================= */
+
+body.dark #homePage .profit-card,
+body.dark #homePage .blue-card {
+    background:
+        linear-gradient(
+            135deg,
+            #151b35,
+            #17233d
+        );
+
+    border-color:
+        #29376b;
+}
+
+body.dark #homePage .profit-card::after,
+body.dark #homePage .blue-card::after {
+    background:
+        #6366f1;
+}
+
+body.dark #homePage .profit-card .profit-text,
+body.dark #homePage .blue-card .blue-text,
+body.dark #homePage .profit-text,
+body.dark #homePage .blue-text {
+    color:
+        #818cf8;
+}
+
+
+/* =========================================================
+   DARK ORANGE
+========================================================= */
+
 body.dark #homePage .orange-card {
     background:
         linear-gradient(
@@ -1347,47 +1380,24 @@ body.dark #homePage .orange-card {
         #594319;
 }
 
-
-body.dark #homePage .blue-card {
-    background:
-        linear-gradient(
-            135deg,
-            #101e34,
-            #132640
-        );
-
-    border-color:
-        #203b60;
-}
-
-
 body.dark #homePage .quick-card span {
     color:
         #9ca3af;
 }
-
 
 body.dark #homePage .green-card .green-text {
     color:
         #34d399;
 }
 
-
 body.dark #homePage .red-card .red-text {
     color:
         #fb7185;
 }
 
-
 body.dark #homePage .orange-card .orange-text {
     color:
         #fb923c;
-}
-
-
-body.dark #homePage .blue-card .blue-text {
-    color:
-        #60a5fa;
 }
 
 
@@ -1398,26 +1408,24 @@ body.dark #homePage .blue-card .blue-text {
 @media (min-width: 600px) {
 
     #homePage {
-        padding-bottom: 120px;
+        padding-bottom:
+            120px;
     }
-
 
     .balance-card {
         padding:
             30px 27px 24px;
     }
 
-
     .balance-number {
-        font-size: 40px;
+        font-size:
+            40px;
     }
-
 
     #homePage .card {
         padding:
             23px;
     }
-
 
     #homePage .quick-card {
         min-height:
@@ -1426,7 +1434,6 @@ body.dark #homePage .blue-card .blue-text {
         padding:
             17px;
     }
-
 
     #homePage .quick-card strong {
         font-size:
@@ -1447,7 +1454,6 @@ body.dark #homePage .blue-card .blue-text {
             105px;
     }
 
-
     .balance-card {
         padding:
             21px 16px 17px;
@@ -1456,12 +1462,10 @@ body.dark #homePage .blue-card .blue-text {
             22px;
     }
 
-
     .balance-number {
         font-size:
             29px;
     }
-
 
     .balance-grid {
         gap:
@@ -1471,7 +1475,6 @@ body.dark #homePage .blue-card .blue-text {
             19px;
     }
 
-
     .balance-item {
         padding:
             10px 7px;
@@ -1480,18 +1483,15 @@ body.dark #homePage .blue-card .blue-text {
             12px;
     }
 
-
     .balance-item span {
         font-size:
             8px;
     }
 
-
     .balance-item strong {
         font-size:
             11px;
     }
-
 
     #homePage .card {
         margin-top:
@@ -1504,18 +1504,15 @@ body.dark #homePage .blue-card .blue-text {
             18px;
     }
 
-
     #homePage .section-heading {
         margin-bottom:
             15px;
     }
 
-
     #homePage .section-heading h2 {
         font-size:
             18px;
     }
-
 
     .transaction-type {
         gap:
@@ -1528,9 +1525,7 @@ body.dark #homePage .blue-card .blue-text {
             15px !important;
     }
 
-
-    .transaction-type
-    .type-button {
+    .transaction-type .type-button {
         min-height:
             50px !important;
 
@@ -1541,12 +1536,10 @@ body.dark #homePage .blue-card .blue-text {
             11px !important;
     }
 
-
     #homePage .field-label {
         margin-top:
             15px;
     }
-
 
     #homePage input,
     #homePage select {
@@ -1557,7 +1550,6 @@ body.dark #homePage .blue-card .blue-text {
             14px;
     }
 
-
     #homePage .amount-input {
         min-height:
             58px;
@@ -1566,12 +1558,10 @@ body.dark #homePage .blue-card .blue-text {
             23px;
     }
 
-
     .source-grid {
         gap:
             5px;
     }
-
 
     .source-button {
         min-height:
@@ -1584,12 +1574,10 @@ body.dark #homePage .blue-card .blue-text {
             10px;
     }
 
-
     #homePage .quick-grid {
         gap:
             8px;
     }
-
 
     #homePage .quick-card {
         min-height:
@@ -1601,7 +1589,6 @@ body.dark #homePage .blue-card .blue-text {
         border-radius:
             14px;
     }
-
 
     #homePage .quick-card strong {
         font-size:
@@ -1622,18 +1609,15 @@ body.dark #homePage .blue-card .blue-text {
             repeat(2, 1fr);
     }
 
-
     .balance-item:last-child {
         grid-column:
             1 / -1;
     }
 
-
     .source-grid {
         grid-template-columns:
             1fr;
     }
-
 
     .source-button {
         min-height:
@@ -1642,7 +1626,6 @@ body.dark #homePage .blue-card .blue-text {
         font-size:
             11px;
     }
-
 
     #homePage .quick-card strong {
         font-size:
