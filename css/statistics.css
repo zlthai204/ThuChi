@@ -1,400 +1,180 @@
 /* =========================================================
    STATISTICS
+   PREMIUM MOBILE UI
 ========================================================= */
 
 .statistics-hero {
-
     position: relative;
-
-    display: flex;
-    align-items: center;
-    gap: 14px;
-
-    padding: 22px;
+    overflow: hidden;
 
     margin-bottom: 16px;
+    padding: 24px;
 
-    border-radius: 24px;
+    border-radius: 26px;
 
     color: white;
 
     background:
+        radial-gradient(
+            circle at 90% 10%,
+            rgba(255,255,255,.22),
+            transparent 30%
+        ),
         linear-gradient(
             135deg,
-            #667eea 0%,
-            #764ba2 100%
+            #182848,
+            #2f4f8f 55%,
+            #4776e6
         );
 
     box-shadow:
-        0 12px 30px
-        rgba(102, 126, 234, .25);
-
-    overflow: hidden;
-
+        0 18px 40px rgba(39,70,130,.22);
 }
 
-
 .statistics-hero::after {
-
     content: "";
 
     position: absolute;
 
-    width: 140px;
-    height: 140px;
+    width: 150px;
+    height: 150px;
 
-    right: -45px;
-    top: -55px;
+    right: -55px;
+    bottom: -70px;
 
     border-radius: 50%;
 
-    background:
-        rgba(255,255,255,.12);
-
+    background: rgba(255,255,255,.08);
 }
-
-
-.statistics-hero-icon {
-
-    width: 54px;
-    height: 54px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 18px;
-
-    background:
-        rgba(255,255,255,.18);
-
-    font-size: 28px;
-
-    flex-shrink: 0;
-
-}
-
 
 .statistics-hero span {
-
-    display: block;
+    position: relative;
+    z-index: 2;
 
     font-size: 11px;
-
     font-weight: 800;
 
-    letter-spacing: 1.4px;
+    letter-spacing: 1.8px;
 
     opacity: .8;
-
 }
-
 
 .statistics-hero h2 {
+    position: relative;
+    z-index: 2;
 
-    margin: 3px 0 0;
+    margin: 5px 0 0;
 
-    font-size: 27px;
-
+    font-size: 28px;
     font-weight: 900;
 
-}
-
-
-.statistics-hero p {
-
-    margin: 4px 0 0;
-
-    font-size: 12px;
-
-    opacity: .8;
-
+    letter-spacing: -.5px;
 }
 
 
 /* =========================================================
-   THU / CHI SWITCH
-========================================================= */
-
-.statistics-switch-card {
-
-    padding: 8px;
-
-}
-
-
-.statistics-switch {
-
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-
-    gap: 8px;
-
-}
-
-
-.statistics-switch-button {
-
-    min-height: 72px;
-
-    border: 0;
-
-    border-radius: 18px;
-
-    background: #f3f5f9;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 10px;
-
-    cursor: pointer;
-
-    color: #667085;
-
-    transition:
-        .2s ease;
-
-}
-
-
-.statistics-switch-button:hover {
-
-    transform: translateY(-1px);
-
-}
-
-
-.statistics-switch-button .switch-icon {
-
-    width: 42px;
-    height: 42px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 14px;
-
-    background: white;
-
-    font-size: 20px;
-
-}
-
-
-.statistics-switch-button span:last-child {
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: flex-start;
-
-    gap: 2px;
-
-}
-
-
-.statistics-switch-button strong {
-
-    font-size: 16px;
-
-    font-weight: 900;
-
-}
-
-
-.statistics-switch-button small {
-
-    font-size: 10px;
-
-    font-weight: 600;
-
-    opacity: .7;
-
-}
-
-
-/* THU ACTIVE */
-
-.statistics-switch-button.income.active {
-
-    color: #087443;
-
-    background:
-        linear-gradient(
-            135deg,
-            #e9fff4,
-            #d9faea
-        );
-
-    box-shadow:
-        inset 0 0 0 2px
-        rgba(16,185,129,.22),
-
-        0 8px 18px
-        rgba(16,185,129,.10);
-
-}
-
-
-.statistics-switch-button.income.active
-.switch-icon {
-
-    background: #10b981;
-
-    color: white;
-
-}
-
-
-/* CHI ACTIVE */
-
-.statistics-switch-button.expense.active {
-
-    color: #b42318;
-
-    background:
-        linear-gradient(
-            135deg,
-            #fff0f0,
-            #ffe4e4
-        );
-
-    box-shadow:
-        inset 0 0 0 2px
-        rgba(239,68,68,.20),
-
-        0 8px 18px
-        rgba(239,68,68,.10);
-
-}
-
-
-.statistics-switch-button.expense.active
-.switch-icon {
-
-    background: #ef4444;
-
-    color: white;
-
-}
-
-
-/* =========================================================
-   PERIOD
+   PERIOD TABS
 ========================================================= */
 
 .period-tabs {
-
     display: grid;
 
     grid-template-columns:
         repeat(3, 1fr);
 
-    gap: 6px;
+    gap: 7px;
 
     padding: 5px;
 
-    border-radius: 14px;
+    margin-bottom: 18px;
 
-    background: #f3f5f9;
+    border-radius: 16px;
 
+    background: #f1f3f8;
 }
 
-
 .period-tab {
-
     border: 0;
+
+    min-height: 42px;
+
+    border-radius: 12px;
 
     background: transparent;
 
-    border-radius: 11px;
+    color: #697386;
 
-    padding: 11px 8px;
+    font-size: 14px;
+    font-weight: 800;
 
-    font-size: 13px;
+    cursor: pointer;
 
-    font-weight: 700;
+    transition:
+        .2s ease;
+}
 
-    color: #667085;
+.period-tab.active {
+    color: #fff;
+
+    background:
+        linear-gradient(
+            135deg,
+            #4776e6,
+            #3559b7
+        );
+
+    box-shadow:
+        0 7px 18px
+        rgba(55,89,180,.24);
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+.statistics-date-row {
+    display: grid;
+
+    grid-template-columns:
+        42px 1fr 42px;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+.statistics-date-row button {
+    width: 42px;
+    height: 42px;
+
+    border: 0;
+
+    border-radius: 14px;
+
+    background: #f4f6fa;
+
+    color: #26334d;
+
+    font-size: 26px;
 
     cursor: pointer;
 
     transition: .2s ease;
-
 }
 
-
-.period-tab.active {
-
-    color: #4f46e5;
-
-    background: white;
-
-    box-shadow:
-        0 3px 10px
-        rgba(0,0,0,.07);
-
+.statistics-date-row button:active {
+    transform: scale(.94);
 }
-
-
-.statistics-date-row {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    gap: 12px;
-
-    margin-top: 16px;
-
-}
-
 
 .statistics-date-row strong {
-
-    flex: 1;
-
     text-align: center;
 
-    font-size: 14px;
+    font-size: 15px;
 
-}
-
-
-.statistics-date-button {
-
-    width: 38px;
-    height: 38px;
-
-    border: 0;
-
-    border-radius: 12px;
-
-    background: #f3f5f9;
-
-    font-size: 25px;
-
-    color: #344054;
-
-    cursor: pointer;
-
-}
-
-
-.statistics-date-button:active {
-
-    transform: scale(.94);
-
+    color: #25304a;
 }
 
 
@@ -402,73 +182,70 @@
    PROFIT
 ========================================================= */
 
-.statistics-profit-card {
+.profit-summary {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 22px;
+
+    margin-bottom: 16px;
+
+    border-radius: 22px;
+
+    color: #fff;
 
     background:
         linear-gradient(
             135deg,
-            #ecfdf5,
-            #d1fae5
+            #11998e,
+            #38ef7d
         );
 
-    border:
-        1px solid
-        rgba(16,185,129,.15);
-
+    box-shadow:
+        0 14px 30px
+        rgba(17,153,142,.20);
 }
 
+.profit-summary::after {
+    content: "₫";
 
-.profit-summary {
+    position: absolute;
 
-    display: flex;
+    right: 16px;
+    bottom: -25px;
 
-    flex-direction: column;
+    font-size: 100px;
 
-    align-items: center;
+    font-weight: 900;
 
-    text-align: center;
-
-    padding: 10px 0;
-
+    opacity: .08;
 }
-
 
 .profit-summary span {
+    position: relative;
+    z-index: 2;
 
-    font-size: 10px;
-
-    font-weight: 900;
-
-    letter-spacing: 1.2px;
-
-    color: #047857;
-
-}
-
-
-.profit-summary strong {
-
-    margin-top: 5px;
-
-    font-size: 31px;
-
-    font-weight: 900;
-
-    color: #047857;
-
-}
-
-
-.statistics-profit-note {
-
-    text-align: center;
-
-    margin-top: 3px;
+    display: block;
 
     font-size: 11px;
+    font-weight: 900;
 
-    color: #667085;
+    letter-spacing: 1.5px;
 
+    opacity: .8;
+}
+
+.profit-summary strong {
+    position: relative;
+    z-index: 2;
+
+    display: block;
+
+    margin-top: 6px;
+
+    font-size: 30px;
+    font-weight: 900;
 }
 
 
@@ -477,89 +254,107 @@
 ========================================================= */
 
 .breakdown-list {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 0;
-
-}
-
-
-.breakdown-row {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    gap: 12px;
-
-    padding: 14px 0;
-
-    border-bottom:
-        1px solid #edf0f4;
-
-}
-
-
-.breakdown-row:last-child {
-
-    border-bottom: 0;
-
-}
-
-
-.breakdown-row > div {
-
     display: flex;
 
     flex-direction: column;
 
     gap: 3px;
-
 }
 
+.breakdown-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 4px;
+
+    border-bottom:
+        1px solid #edf0f5;
+}
+
+.breakdown-row:last-child {
+    border-bottom: 0;
+}
 
 .breakdown-row span {
+    color: #6f788a;
 
     font-size: 13px;
-
-    font-weight: 700;
-
-    color: #344054;
-
+    font-weight: 600;
 }
-
-
-.breakdown-row small {
-
-    font-size: 10px;
-
-    color: #98a2b3;
-
-}
-
 
 .breakdown-row strong {
+    color: #26324a;
 
-    font-size: 13px;
-
+    font-size: 14px;
     font-weight: 900;
+}
 
-    color: #344054;
+.breakdown-row:nth-child(1) strong {
+    color: #16a36d;
+}
 
-    white-space: nowrap;
+.breakdown-row:nth-child(2) strong {
+    color: #eb5b65;
+}
 
+.breakdown-row:nth-child(3) strong {
+    color: #eb5b65;
+}
+
+.breakdown-row:nth-child(4) strong,
+.breakdown-row:nth-child(5) strong {
+    color: #f09a38;
 }
 
 
-.breakdown-row.income-row strong {
+/* =========================================================
+   SECTION
+========================================================= */
 
-    color: #059669;
+.statistics-empty {
+    display: flex;
 
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    min-height: 150px;
+
+    color: #8b94a6;
+
+    text-align: center;
+}
+
+.statistics-empty-icon {
+    display: grid;
+
+    place-items: center;
+
+    width: 54px;
+    height: 54px;
+
+    margin-bottom: 5px;
+
+    border-radius: 18px;
+
+    background: #f3f5f9;
+
+    font-size: 25px;
+}
+
+.statistics-empty strong {
+    color: #475166;
+
+    font-size: 14px;
+}
+
+.statistics-empty span {
+    font-size: 12px;
 }
 
 
@@ -568,74 +363,88 @@
 ========================================================= */
 
 .statistics-dish-row {
-
     padding: 15px 0;
 
     border-bottom:
-        1px solid #edf0f4;
-
+        1px solid #edf0f5;
 }
-
 
 .statistics-dish-row:last-child {
-
     border-bottom: 0;
-
 }
 
-
 .statistics-dish-top {
+    display: flex;
 
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+.statistics-dish-name {
     display: flex;
 
     align-items: center;
 
-    justify-content: space-between;
+    min-width: 0;
 
-    gap: 10px;
-
-}
-
-
-.statistics-dish-name {
+    color: #26324a;
 
     font-size: 14px;
-
     font-weight: 800;
-
-    color: #1d2939;
-
 }
 
+.statistics-dish-icon {
+    display: grid;
+
+    place-items: center;
+
+    flex: 0 0 auto;
+
+    width: 38px;
+    height: 38px;
+
+    margin-right: 10px;
+
+    border-radius: 13px;
+
+    background: #fff3e8;
+
+    font-size: 18px;
+}
 
 .statistics-dish-profit {
+    flex: 0 0 auto;
+
+    color: #11a46d;
 
     font-size: 14px;
-
-    color: #059669;
-
 }
 
-
 .statistics-dish-detail {
-
     display: flex;
 
     flex-wrap: wrap;
 
-    gap: 6px 12px;
+    gap: 7px;
 
-    margin-top: 8px;
+    margin-top: 9px;
 
+    padding-left: 48px;
 }
 
-
 .statistics-dish-detail span {
+    padding: 5px 8px;
+
+    border-radius: 8px;
+
+    color: #7a8497;
+
+    background: #f6f7fa;
 
     font-size: 10px;
-
-    color: #667085;
-
+    font-weight: 700;
 }
 
 
@@ -644,11 +453,9 @@
 ========================================================= */
 
 .statistics-source-row {
-
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
     gap: 12px;
@@ -656,190 +463,78 @@
     padding: 15px 0;
 
     border-bottom:
-        1px solid #edf0f4;
-
+        1px solid #edf0f5;
 }
-
 
 .statistics-source-row:last-child {
-
     border-bottom: 0;
-
 }
 
-
-.statistics-source-row strong {
-
-    font-size: 13px;
-
-}
-
-
-.statistics-source-money {
-
-    text-align: right;
-
-    font-size: 11px;
-
-    line-height: 1.7;
-
-    color: #667085;
-
-}
-
-
-/* =========================================================
-   EXPENSE SUMMARY
-========================================================= */
-
-.statistics-expense-summary {
-
+.statistics-source-left {
     display: flex;
 
     align-items: center;
 
-    gap: 15px;
+    gap: 10px;
 
-    padding: 20px;
-
-    background:
-        linear-gradient(
-            135deg,
-            #fff1f2,
-            #ffe4e6
-        );
-
-    border:
-        1px solid
-        rgba(239,68,68,.15);
-
+    min-width: 0;
 }
 
-
-.expense-summary-icon {
-
-    width: 56px;
-    height: 56px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 18px;
-
-    background: #ef4444;
-
-    color: white;
-
-    font-size: 25px;
-
-    box-shadow:
-        0 8px 20px
-        rgba(239,68,68,.20);
-
-}
-
-
-.statistics-expense-summary > div:last-child {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 3px;
-
-}
-
-
-.statistics-expense-summary span {
-
-    font-size: 10px;
-
-    font-weight: 900;
-
-    letter-spacing: 1px;
-
-    color: #b42318;
-
-}
-
-
-.statistics-expense-summary strong {
-
-    font-size: 27px;
-
-    font-weight: 900;
-
-    color: #b42318;
-
-}
-
-
-/* =========================================================
-   EXPENSE OVERVIEW
-========================================================= */
-
-.expense-overview-grid {
-
+.statistics-source-icon {
     display: grid;
 
-    grid-template-columns:
-        repeat(3, 1fr);
+    place-items: center;
 
-    gap: 8px;
+    flex: 0 0 auto;
 
+    width: 42px;
+    height: 42px;
+
+    border-radius: 14px;
+
+    background: #f5f7fb;
+
+    font-size: 20px;
 }
 
-
-.expense-overview-box {
-
-    padding: 14px 8px;
-
-    text-align: center;
-
-    border-radius: 15px;
-
-    background: #fff6f6;
-
-    border:
-        1px solid #fee2e2;
-
-}
-
-
-.expense-overview-box span {
-
+.statistics-source-left strong {
     display: block;
 
-    font-size: 9px;
+    color: #29344b;
 
-    font-weight: 800;
-
-    color: #98a2b3;
-
+    font-size: 13px;
 }
 
-
-.expense-overview-box strong {
-
+.statistics-source-left small {
     display: block;
 
-    margin-top: 6px;
+    margin-top: 3px;
 
-    font-size: 14px;
+    color: #929aaa;
 
-    font-weight: 900;
-
-    color: #344054;
-
+    font-size: 11px;
 }
 
+.statistics-source-money {
+    text-align: right;
+}
 
-.expense-overview-box:first-child strong {
+.statistics-source-money strong {
+    display: block;
 
-    color: #dc2626;
+    color: #18a36d;
 
+    font-size: 13px;
+}
+
+.statistics-source-money small {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #ee9b3b;
+
+    font-size: 10px;
 }
 
 
@@ -848,72 +543,51 @@
 ========================================================= */
 
 .statistics-expense-category-row {
-
-    padding: 14px 0;
+    padding: 15px 0;
 
     border-bottom:
-        1px solid #edf0f4;
-
+        1px solid #edf0f5;
 }
-
 
 .statistics-expense-category-row:last-child {
-
     border-bottom: 0;
-
 }
 
-
 .statistics-expense-category-top {
-
     display: flex;
 
+    align-items: center;
     justify-content: space-between;
 
     gap: 10px;
-
 }
-
 
 .statistics-expense-category-name {
+    color: #364056;
 
     font-size: 13px;
-
     font-weight: 800;
-
-    color: #344054;
-
 }
-
 
 .statistics-expense-category-money {
+    color: #eb5c67;
 
     font-size: 13px;
-
-    font-weight: 900;
-
-    color: #dc2626;
-
 }
 
-
 .statistics-expense-category-bar {
+    overflow: hidden;
 
     height: 7px;
 
-    margin-top: 8px;
+    margin-top: 10px;
 
     border-radius: 99px;
 
-    overflow: hidden;
-
-    background: #f1f3f5;
-
+    background: #f0f2f6;
 }
 
-
 .statistics-expense-category-bar span {
-
     display: block;
 
     height: 100%;
@@ -923,21 +597,23 @@
     background:
         linear-gradient(
             90deg,
-            #ef4444,
-            #fb7185
+            #ff6b6b,
+            #ee4266
         );
 
+    transition:
+        width .5s ease;
 }
 
-
 .statistics-expense-category-percent {
-
     margin-top: 5px;
 
+    color: #9aa2b1;
+
     font-size: 10px;
+    font-weight: 700;
 
-    color: #98a2b3;
-
+    text-align: right;
 }
 
 
@@ -946,124 +622,83 @@
 ========================================================= */
 
 .statistics-expense-row {
-
     display: flex;
 
     align-items: center;
 
-    gap: 11px;
+    gap: 12px;
 
     padding: 14px 0;
 
     border-bottom:
-        1px solid #edf0f4;
-
+        1px solid #edf0f5;
 }
-
 
 .statistics-expense-row:last-child {
-
     border-bottom: 0;
-
 }
 
-
 .statistics-expense-icon {
+    display: grid;
 
-    width: 38px;
-    height: 38px;
+    place-items: center;
 
-    display: flex;
+    flex: 0 0 auto;
 
-    align-items: center;
-    justify-content: center;
-
-    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
 
     border-radius: 13px;
 
-    background: #fff0f0;
+    color: #e84e5b;
 
-    color: #ef4444;
+    background: #fff0f1;
 
+    font-size: 18px;
+    font-weight: 900;
 }
-
 
 .statistics-expense-info {
-
-    flex: 1;
-
     min-width: 0;
 
+    flex: 1;
 }
-
 
 .statistics-expense-name {
-
-    font-size: 13px;
-
-    font-weight: 800;
-
-    color: #344054;
-
     overflow: hidden;
 
-    text-overflow: ellipsis;
-
-    white-space: nowrap;
-
-}
-
-
-.statistics-expense-category {
-
-    margin-top: 3px;
-
-    font-size: 10px;
-
-    color: #98a2b3;
-
-}
-
-
-.statistics-expense-date {
-
-    margin-top: 2px;
-
-    font-size: 10px;
-
-    color: #98a2b3;
-
-}
-
-
-.statistics-expense-money {
+    color: #2e394f;
 
     font-size: 13px;
-
-    font-weight: 900;
-
-    color: #dc2626;
+    font-weight: 800;
 
     white-space: nowrap;
-
+    text-overflow: ellipsis;
 }
 
+.statistics-expense-category {
+    margin-top: 3px;
 
-/* =========================================================
-   EMPTY
-========================================================= */
+    color: #8c95a5;
 
-.statistics-empty {
+    font-size: 10px;
+}
 
-    padding: 30px 10px;
+.statistics-expense-date {
+    margin-top: 3px;
 
-    text-align: center;
+    color: #a0a7b4;
 
-    color: #98a2b3;
+    font-size: 10px;
+}
 
-    font-size: 12px;
+.statistics-expense-money {
+    flex: 0 0 auto;
 
+    color: #e74f5c;
+
+    font-size: 13px;
+    font-weight: 900;
 }
 
 
@@ -1072,28 +707,70 @@
 ========================================================= */
 
 .statistics-chart {
+    overflow-x: auto;
 
+    padding: 5px 0 0;
+
+    scrollbar-width: none;
+}
+
+.statistics-chart::-webkit-scrollbar {
+    display: none;
+}
+
+.statistics-chart-legend {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 22px;
+
+    margin-bottom: 18px;
+}
+
+.statistics-chart-legend span {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color: #747e91;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.legend-dot {
+    width: 9px;
+    height: 9px;
+
+    border-radius: 50%;
+}
+
+.legend-dot.income {
+    background: #20bd7b;
+}
+
+.legend-dot.expense {
+    background: #f05c67;
+}
+
+.statistics-chart-body {
     display: flex;
 
     align-items: flex-end;
 
-    gap: 8px;
+    gap: 13px;
+
+    min-width: max-content;
 
     min-height: 190px;
 
-    padding: 15px 5px 5px;
-
-    overflow-x: auto;
-
+    padding: 0 8px;
 }
 
-
 .chart-day {
-
-    min-width: 30px;
-
-    flex: 1;
-
     display: flex;
 
     flex-direction: column;
@@ -1102,94 +779,300 @@
 
     align-items: center;
 
-    gap: 7px;
+    width: 30px;
 
+    min-height: 180px;
 }
 
-
 .chart-bars {
-
-    width: 100%;
-
-    height: 150px;
-
     display: flex;
 
     align-items: flex-end;
 
     justify-content: center;
 
-    gap: 3px;
-
-}
-
-
-.chart-bar {
-
-    width: 9px;
-
-    min-height: 2px;
-
-    border-radius:
-        5px 5px 2px 2px;
-
-    transition:
-        height .35s ease;
-
-}
-
-
-.chart-bar.income {
-
-    background:
-        linear-gradient(
-            180deg,
-            #34d399,
-            #059669
-        );
-
-}
-
-
-.chart-bar.expense {
-
-    background:
-        linear-gradient(
-            180deg,
-            #fb7185,
-            #dc2626
-        );
-
-}
-
-
-.chart-date {
-
-    font-size: 9px;
-
-    color: #98a2b3;
-
-    white-space: nowrap;
-
-}
-
-
-.empty-chart {
+    gap: 4px;
 
     width: 100%;
+    height: 150px;
+}
 
-    min-height: 150px;
+.chart-bar {
+    width: 10px;
 
+    min-height: 0;
+
+    border-radius:
+        7px 7px 3px 3px;
+
+    transition:
+        height .4s ease;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.08);
+}
+
+.chart-bar.income {
+    background:
+        linear-gradient(
+            180deg,
+            #38d996,
+            #10a86c
+        );
+}
+
+.chart-bar.expense {
+    background:
+        linear-gradient(
+            180deg,
+            #ff7a80,
+            #e64d5a
+        );
+}
+
+.chart-date {
+    margin-top: 9px;
+
+    color: #9099aa;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.empty-chart {
     display: flex;
+
+    flex-direction: column;
 
     align-items: center;
 
     justify-content: center;
 
-    color: #98a2b3;
+    min-height: 160px;
+
+    color: #9aa2b1;
+
+    gap: 8px;
 
     font-size: 12px;
+}
 
+.empty-chart span {
+    font-size: 30px;
+}
+
+
+/* =========================================================
+   DONUT / BÁNH XE
+========================================================= */
+
+.statistics-percent-section {
+    margin-top: 18px;
+
+    overflow: hidden;
+}
+
+.statistics-wheel-heading {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 22px;
+}
+
+.statistics-wheel-heading span {
+    color: #9aa2b1;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: 1.4px;
+}
+
+.statistics-wheel-heading h2 {
+    margin: 3px 0 0;
+
+    color: #26324a;
+
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.statistics-wheel-heading > small {
+    color: #7e8798;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.statistics-wheel-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 12px;
+}
+
+.statistics-wheel-card {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    padding: 17px 8px;
+
+    border-radius: 20px;
+
+    background: #f8f9fb;
+}
+
+.statistics-wheel-card.income {
+    background:
+        linear-gradient(
+            145deg,
+            #f0fff8,
+            #f8fffb
+        );
+}
+
+.statistics-wheel-card.expense {
+    background:
+        linear-gradient(
+            145deg,
+            #fff3f4,
+            #fff9f9
+        );
+}
+
+.statistics-donut {
+    position: relative;
+
+    display: grid;
+
+    place-items: center;
+
+    width: 128px;
+    height: 128px;
+
+    border-radius: 50%;
+
+    transform: rotate(-90deg);
+
+    box-shadow:
+        0 10px 24px
+        rgba(30,40,70,.10);
+}
+
+.statistics-donut::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 10px;
+
+    border-radius: 50%;
+
+    background: #fff;
+
+    box-shadow:
+        inset 0 0 0 1px
+        rgba(30,40,70,.04);
+}
+
+.income-donut {
+    background:
+        conic-gradient(
+            #13b879 0deg,
+            #48df9c
+            calc(var(--percent) * 3.6deg),
+            #dff5eb
+            calc(var(--percent) * 3.6deg),
+            #dff5eb 360deg
+        );
+}
+
+.expense-donut {
+    background:
+        conic-gradient(
+            #ef5661 0deg,
+            #ff858b
+            calc(var(--percent) * 3.6deg),
+            #fbe0e2
+            calc(var(--percent) * 3.6deg),
+            #fbe0e2 360deg
+        );
+}
+
+.statistics-donut-inner {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    transform: rotate(90deg);
+}
+
+.statistics-donut-inner strong {
+    color: #26324a;
+
+    font-size: 25px;
+    font-weight: 900;
+}
+
+.statistics-donut-inner span {
+    margin-top: 2px;
+
+    color: #8b94a5;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.statistics-wheel-info {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    margin-top: 12px;
+}
+
+.statistics-wheel-info strong {
+    color: #303a50;
+
+    font-size: 13px;
+}
+
+.statistics-wheel-info span {
+    margin-top: 3px;
+
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.statistics-wheel-card.income
+.statistics-wheel-info span {
+    color: #12a66d;
+}
+
+.statistics-wheel-card.expense
+.statistics-wheel-info span {
+    color: #e65360;
 }
 
 
@@ -1197,155 +1080,91 @@
    DARK MODE
 ========================================================= */
 
-body.dark .statistics-switch-button {
-
-    background: #202936;
-
-    color: #98a2b3;
-
+body.dark .statistics-hero {
+    box-shadow:
+        0 18px 40px rgba(0,0,0,.25);
 }
-
-
-body.dark .statistics-switch-button .switch-icon {
-
-    background: #293241;
-
-}
-
-
-body.dark .statistics-switch-button.income.active {
-
-    background:
-        rgba(16,185,129,.15);
-
-    color: #6ee7b7;
-
-}
-
-
-body.dark .statistics-switch-button.expense.active {
-
-    background:
-        rgba(239,68,68,.15);
-
-    color: #fda4af;
-
-}
-
 
 body.dark .period-tabs {
-
-    background: #202936;
-
+    background: #202632;
 }
-
 
 body.dark .period-tab {
-
-    color: #98a2b3;
-
+    color: #9da6b8;
 }
-
 
 body.dark .period-tab.active {
-
-    background: #293241;
-
-    color: #a5b4fc;
-
+    color: #fff;
 }
 
-
-body.dark .statistics-date-button {
-
-    background: #202936;
-
-    color: #f2f4f7;
-
+body.dark .statistics-date-row button {
+    color: #e7ebf3;
+    background: #202632;
 }
 
-
-body.dark .statistics-profit-card {
-
-    background:
-        linear-gradient(
-            135deg,
-            #102d23,
-            #123b2d
-        );
-
+body.dark .statistics-date-row strong {
+    color: #e7ebf3;
 }
-
-
-body.dark .profit-summary span,
-body.dark .profit-summary strong {
-
-    color: #6ee7b7;
-
-}
-
 
 body.dark .breakdown-row {
-
-    border-color: #293241;
-
+    border-color: #2c3442;
 }
 
-
-body.dark .breakdown-row span,
-body.dark .statistics-dish-name,
-body.dark .statistics-source-row strong,
-body.dark .statistics-expense-category-name,
-body.dark .statistics-expense-name {
-
-    color: #f2f4f7;
-
+body.dark .breakdown-row span {
+    color: #9ba4b5;
 }
 
-
-body.dark .statistics-expense-summary {
-
-    background:
-        linear-gradient(
-            135deg,
-            #35181b,
-            #421b20
-        );
-
+body.dark .breakdown-row strong {
+    color: #e7ebf3;
 }
-
-
-body.dark .statistics-expense-summary span,
-body.dark .statistics-expense-summary strong {
-
-    color: #fda4af;
-
-}
-
-
-body.dark .expense-overview-box {
-
-    background: #2b1c20;
-
-    border-color: #4a252b;
-
-}
-
-
-body.dark .expense-overview-box strong {
-
-    color: #f2f4f7;
-
-}
-
 
 body.dark .statistics-dish-row,
 body.dark .statistics-source-row,
 body.dark .statistics-expense-row,
 body.dark .statistics-expense-category-row {
+    border-color: #2c3442;
+}
 
-    border-color: #293241;
+body.dark .statistics-dish-name,
+body.dark .statistics-source-left strong,
+body.dark .statistics-expense-name,
+body.dark .statistics-wheel-heading h2 {
+    color: #e8ecf4;
+}
 
+body.dark .statistics-dish-detail span {
+    color: #a7afbd;
+    background: #242b38;
+}
+
+body.dark .statistics-dish-icon,
+body.dark .statistics-source-icon,
+body.dark .statistics-empty-icon {
+    background: #252c39;
+}
+
+body.dark .statistics-wheel-card {
+    background: #202632;
+}
+
+body.dark .statistics-wheel-card.income {
+    background: #192b26;
+}
+
+body.dark .statistics-wheel-card.expense {
+    background: #302124;
+}
+
+body.dark .statistics-donut::before {
+    background: #202632;
+}
+
+body.dark .statistics-donut-inner strong {
+    color: #eef2f7;
+}
+
+body.dark .statistics-wheel-info strong {
+    color: #e8ecf4;
 }
 
 
@@ -1356,67 +1175,33 @@ body.dark .statistics-expense-category-row {
 @media (max-width: 420px) {
 
     .statistics-hero {
-
-        padding: 18px;
-
-        border-radius: 20px;
-
+        padding: 21px;
+        border-radius: 22px;
     }
-
 
     .statistics-hero h2 {
-
-        font-size: 24px;
-
+        font-size: 25px;
     }
 
-
-    .statistics-switch-button {
-
-        min-height: 66px;
-
+    .profit-summary {
+        padding: 19px;
     }
-
-
-    .statistics-switch-button strong {
-
-        font-size: 14px;
-
-    }
-
-
-    .statistics-switch-button small {
-
-        font-size: 9px;
-
-    }
-
 
     .profit-summary strong {
-
         font-size: 27px;
-
     }
 
-
-    .statistics-expense-summary strong {
-
-        font-size: 23px;
-
+    .statistics-donut {
+        width: 112px;
+        height: 112px;
     }
 
-
-    .expense-overview-box {
-
-        padding: 12px 5px;
-
+    .statistics-donut-inner strong {
+        font-size: 22px;
     }
 
-
-    .expense-overview-box strong {
-
-        font-size: 12px;
-
+    .statistics-wheel-card {
+        padding: 14px 5px;
     }
 
 }
