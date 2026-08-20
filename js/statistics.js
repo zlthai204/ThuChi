@@ -611,3 +611,116 @@ function getPeriodLabel() {
     )}`;
 
 }
+function renderStatisticsChart() {
+
+    const chart = document.getElementById("statisticsChart");
+
+    if (!chart) return;
+
+    chart.innerHTML = "";
+
+    const transactions = window.transactions || [];
+
+    if (!transactions.length) {
+        chart.innerHTML = `
+            <div class="empty-chart">
+                Chưa có dữ liệu để hiển thị
+            </div>
+        `;
+        return;
+    }
+
+    // Lấy dữ liệu theo ngày
+    const daily = {};
+
+    transactions.forEach(transaction => {
+
+        if (!transaction.date) return;
+
+        const date = transaction.date;
+
+        if (!daily[date]) {
+            daily[date] = {
+                thu: 0,
+                chi: 0
+            };
+        }
+
+        const amount = Number(transaction.amount) || 0;
+
+        if (transaction.type === "thu") {
+            daily[date].thu += amount;
+        }
+
+        if (transaction.type === "chi") {
+            daily[date].chi += amount;
+        }
+    });
+
+    const dates = Object.keys(daily).sort();
+
+    if (!dates.length) {
+        chart.innerHTML = `
+            <div class="empty-chart">
+                Chưa có dữ liệu
+            </div>
+        `;
+        return;
+    }
+
+    const maxValue = Math.max(
+        ...dates.map(date =>
+            Math.max(
+                daily[date].thu,
+                daily[date].chi
+            )
+        ),
+        1
+    );
+
+    dates.forEach(date => {
+
+        const data = daily[date];
+
+        const thuPercent =
+            (data.thu / maxValue) * 100;
+
+        const chiPercent =
+            (data.chi / maxValue) * 100;
+
+        const dateObject = new Date(date + "T00:00:00");
+
+        const label =
+            dateObject.getDate() +
+            "/" +
+            (dateObject.getMonth() + 1);
+
+        const item = document.createElement("div");
+
+        item.className = "chart-day";
+
+        item.innerHTML = `
+            <div class="chart-bars">
+
+                <div
+                    class="chart-bar income"
+                    style="height:${Math.max(thuPercent, 2)}%"
+                    title="Thu: ${formatMoney(data.thu)}">
+                </div>
+
+                <div
+                    class="chart-bar expense"
+                    style="height:${Math.max(chiPercent, 2)}%"
+                    title="Chi: ${formatMoney(data.chi)}">
+                </div>
+
+            </div>
+
+            <div class="chart-date">
+                ${label}
+            </div>
+        `;
+
+        chart.appendChild(item);
+    });
+}
