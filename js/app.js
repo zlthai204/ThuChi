@@ -32,25 +32,30 @@ document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
-        setToday();
+        try {
 
-        loadTheme();
+            loadTheme();
 
-        await loadInitialData();
+            setToday();
 
-        /*
-         * Đảm bảo trạng thái giao diện ban đầu
-         */
+            await loadInitialData();
 
-        setTransactionType(
-            AppState.transactionType
-        );
+            initializeTransactionForm();
 
-        setOrderSource(
-            AppState.orderSource
-        );
+            navigateTo("home");
 
-        navigateTo("home");
+        } catch (error) {
+
+            console.error(
+                "Lỗi khởi tạo ứng dụng:",
+                error
+            );
+
+            showToast(
+                "Không thể tải dữ liệu"
+            );
+
+        }
 
     }
 );
@@ -64,6 +69,10 @@ async function loadInitialData() {
 
     try {
 
+        /*
+         * LOAD CATEGORIES
+         */
+
         AppState.categories =
             await dbGet(
                 "categories",
@@ -75,6 +84,10 @@ async function loadInitialData() {
                 }
             );
 
+
+        /*
+         * LOAD DISHES
+         */
 
         AppState.dishes =
             await dbGet(
@@ -88,6 +101,10 @@ async function loadInitialData() {
             );
 
 
+        /*
+         * LOAD TRANSACTIONS
+         */
+
         AppState.transactions =
             await dbGet(
                 "transactions",
@@ -100,14 +117,24 @@ async function loadInitialData() {
             );
 
 
+        console.log(
+            "Categories:",
+            AppState.categories
+        );
+
+        console.log(
+            "Dishes:",
+            AppState.dishes
+        );
+
+        console.log(
+            "Transactions:",
+            AppState.transactions
+        );
+
+
         /*
-         * Render từng module.
-         * Các hàm thật nằm trong:
-         * home.js
-         * statistics.js
-         * history.js
-         * restaurant.js
-         * cod.js
+         * Render toàn bộ giao diện
          */
 
         renderAll();
@@ -116,9 +143,11 @@ async function loadInitialData() {
     } catch (error) {
 
         console.error(
-            "Lỗi loadInitialData:",
+            "loadInitialData error:",
             error
         );
+
+        throw error;
 
     }
 
@@ -131,26 +160,29 @@ async function loadInitialData() {
 
 function navigateTo(page) {
 
-    AppState.currentPage = page;
+    AppState.currentPage =
+        page;
 
 
     /*
-     * Ẩn tất cả page
+     * ẨN TẤT CẢ PAGE
      */
 
     document
         .querySelectorAll(".page")
-        .forEach(element => {
+        .forEach(
+            element => {
 
-            element.classList.remove(
-                "active-page"
-            );
+                element.classList.remove(
+                    "active-page"
+                );
 
-        });
+            }
+        );
 
 
     /*
-     * Hiện page được chọn
+     * HIỆN PAGE
      */
 
     const pageElement =
@@ -169,18 +201,20 @@ function navigateTo(page) {
 
 
     /*
-     * Active bottom navigation
+     * NAV ACTIVE
      */
 
     document
         .querySelectorAll(".nav-button")
-        .forEach(button => {
+        .forEach(
+            button => {
 
-            button.classList.remove(
-                "active"
-            );
+                button.classList.remove(
+                    "active"
+                );
 
-        });
+            }
+        );
 
 
     const navMap = {
@@ -214,8 +248,16 @@ function navigateTo(page) {
 
 
     /*
-     * Không dùng smooth khi đổi page.
-     * Tránh cảm giác giật trên mobile.
+     * TITLE
+     */
+
+    updatePageTitle(
+        page
+    );
+
+
+    /*
+     * SCROLL TOP
      */
 
     window.scrollTo(
@@ -225,7 +267,7 @@ function navigateTo(page) {
 
 
     /*
-     * Render module tương ứng
+     * RENDER PAGE
      */
 
     switch (page) {
@@ -233,6 +275,8 @@ function navigateTo(page) {
         case "home":
 
             renderHome();
+
+            refreshTransactionSelectors();
 
             break;
 
@@ -275,15 +319,310 @@ function navigateTo(page) {
 
 function renderAll() {
 
+    /*
+     * Quan trọng:
+     * render selector trước để Home
+     * luôn nhận categories + dishes.
+     */
+
+    refreshTransactionSelectors();
+
+
+    /*
+     * HOME
+     */
+
     renderHome();
+
+
+    /*
+     * STATISTICS
+     */
 
     renderStatistics();
 
+
+    /*
+     * HISTORY
+     */
+
     renderHistory();
+
+
+    /*
+     * RESTAURANT
+     */
 
     renderRestaurant();
 
+
+    /*
+     * COD
+     */
+
     renderCOD();
+
+}
+
+
+/* =========================================================
+   TRANSACTION SELECTORS
+========================================================= */
+
+function refreshTransactionSelectors() {
+
+    const categorySelect =
+        document.getElementById(
+            "transactionCategory"
+        );
+
+
+    const dishSelect =
+        document.getElementById(
+            "transactionDish"
+        );
+
+
+    /*
+     * Không có form thì bỏ qua
+     */
+
+    if (
+        !categorySelect ||
+        !dishSelect
+    ) {
+
+        return;
+
+    }
+
+
+    /*
+     * Lưu lựa chọn hiện tại
+     */
+
+    const selectedCategory =
+        categorySelect.value;
+
+
+    const selectedDish =
+        dishSelect.value;
+
+
+    /*
+     * CATEGORY
+     */
+
+    categorySelect.innerHTML = `
+        <option value="">
+            Chọn danh mục
+        </option>
+    `;
+
+
+    AppState.categories.forEach(
+        category => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                category.id;
+
+
+            option.textContent =
+                category.name;
+
+
+            categorySelect.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    /*
+     * Khôi phục category
+     */
+
+    if (
+        AppState.categories.some(
+            category =>
+                String(category.id) ===
+                String(selectedCategory)
+        )
+    ) {
+
+        categorySelect.value =
+            selectedCategory;
+
+    }
+
+
+    /*
+     * Dishes theo category
+     */
+
+    renderTransactionDishes(
+        categorySelect.value,
+        selectedDish
+    );
+
+}
+
+
+/* =========================================================
+   RENDER TRANSACTION DISHES
+========================================================= */
+
+function renderTransactionDishes(
+    categoryId,
+    selectedDish = ""
+) {
+
+    const dishSelect =
+        document.getElementById(
+            "transactionDish"
+        );
+
+
+    if (!dishSelect) {
+
+        return;
+
+    }
+
+
+    dishSelect.innerHTML = `
+        <option value="">
+            Chọn món
+        </option>
+    `;
+
+
+    let dishes =
+        AppState.dishes;
+
+
+    /*
+     * Nếu đã chọn danh mục
+     * thì chỉ hiện món trong danh mục.
+     */
+
+    if (categoryId) {
+
+        dishes =
+            AppState.dishes.filter(
+                dish =>
+                    String(
+                        dish.category_id
+                    ) ===
+                    String(
+                        categoryId
+                    )
+            );
+
+    } else {
+
+        /*
+         * Chưa chọn category
+         * thì không hiện món.
+         */
+
+        dishes = [];
+
+    }
+
+
+    dishes.forEach(
+        dish => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                dish.id;
+
+
+            option.textContent =
+                dish.name;
+
+
+            dishSelect.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    /*
+     * Khôi phục món
+     */
+
+    if (
+        dishes.some(
+            dish =>
+                String(dish.id) ===
+                String(selectedDish)
+        )
+    ) {
+
+        dishSelect.value =
+            selectedDish;
+
+    }
+
+}
+
+
+/* =========================================================
+   CATEGORY CHANGE
+========================================================= */
+
+document.addEventListener(
+    "change",
+    event => {
+
+        if (
+            event.target.id ===
+            "transactionCategory"
+        ) {
+
+            renderTransactionDishes(
+                event.target.value
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   INITIAL FORM
+========================================================= */
+
+function initializeTransactionForm() {
+
+    setTransactionType(
+        AppState.transactionType
+    );
+
+
+    setOrderSource(
+        AppState.orderSource
+    );
+
+
+    refreshTransactionSelectors();
 
 }
 
@@ -303,7 +642,11 @@ function showToast(message) {
         );
 
 
-    if (!toast) return;
+    if (!toast) {
+
+        return;
+
+    }
 
 
     toast.textContent =
@@ -364,7 +707,9 @@ function loadTheme() {
         );
 
 
-    if (dark === "true") {
+    if (
+        dark === "true"
+    ) {
 
         document.body.classList.add(
             "dark"
@@ -379,18 +724,9 @@ function loadTheme() {
    DATE
 ========================================================= */
 
-/*
- * Quan trọng:
- *
- * KHÔNG dùng:
- *
- * new Date().toISOString().split("T")[0]
- *
- * vì ISO dùng UTC và có thể làm ngày ở Việt Nam
- * bị lùi 1 ngày.
- */
-
-function getLocalDateString(date = new Date()) {
+function getLocalDateString(
+    date = new Date()
+) {
 
     const year =
         date.getFullYear();
@@ -455,10 +791,6 @@ function setToday() {
     }
 
 
-    /*
-     * Statistics mặc định là hôm nay
-     */
-
     AppState.statisticsDate =
         new Date();
 
@@ -466,7 +798,7 @@ function setToday() {
 
 
 /* =========================================================
-   HELPERS
+   TEXT
 ========================================================= */
 
 function setText(
@@ -503,7 +835,13 @@ function setTextIfExists(
 }
 
 
-function formatMoney(value) {
+/* =========================================================
+   MONEY
+========================================================= */
+
+function formatMoney(
+    value
+) {
 
     const number =
         Number(value) || 0;
@@ -519,11 +857,17 @@ function formatMoney(value) {
 }
 
 
+/* =========================================================
+   DATE FORMAT
+========================================================= */
+
 function formatDate(
     date
 ) {
 
-    if (!(date instanceof Date)) {
+    if (
+        !(date instanceof Date)
+    ) {
 
         date =
             new Date(date);
@@ -569,17 +913,23 @@ function formatVietnameseDate(
     }
 
 
+    const value =
+        String(
+            dateString
+        );
+
+
     /*
-     * Nếu database lưu YYYY-MM-DD
+     * YYYY-MM-DD
      */
 
     const parts =
-        String(
-            dateString
-        ).split("-");
+        value.split("-");
 
 
-    if (parts.length === 3) {
+    if (
+        parts.length === 3
+    ) {
 
         return `${parts[2]}/${parts[1]}/${parts[0]}`;
 
@@ -587,13 +937,11 @@ function formatVietnameseDate(
 
 
     /*
-     * Fallback nếu truyền Date
+     * Fallback
      */
 
     const date =
-        new Date(
-            dateString
-        );
+        new Date(value);
 
 
     if (
@@ -609,18 +957,18 @@ function formatVietnameseDate(
     }
 
 
-    return String(
-        dateString
-    );
+    return value;
 
 }
 
 
 /* =========================================================
-   HTML SAFETY
+   HTML ESCAPE
 ========================================================= */
 
-function escapeHTML(value) {
+function escapeHTML(
+    value
+) {
 
     return String(
         value ?? ""
@@ -628,15 +976,20 @@ function escapeHTML(value) {
         /[&<>"']/g,
         char => ({
 
-            "&": "&amp;",
+            "&":
+                "&amp;",
 
-            "<": "&lt;",
+            "<":
+                "&lt;",
 
-            ">": "&gt;",
+            ">":
+                "&gt;",
 
-            '"': "&quot;",
+            '"':
+                "&quot;",
 
-            "'": "&#039;"
+            "'":
+                "&#039;"
 
         })[char]
     );
@@ -645,20 +998,29 @@ function escapeHTML(value) {
 
 
 /* =========================================================
-   SAFE NUMBER
+   NUMBER
 ========================================================= */
 
-function toNumber(value) {
+function toNumber(
+    value
+) {
 
     const number =
         Number(value);
 
 
-    return Number.isFinite(
-        number
-    )
-        ? number
-        : 0;
+    if (
+        Number.isFinite(
+            number
+        )
+    ) {
+
+        return number;
+
+    }
+
+
+    return 0;
 
 }
 
@@ -707,21 +1069,17 @@ function getDishCost(
 
 
 /* =========================================================
-   GET TRANSACTION DISH COST
+   TRANSACTION COST
 ========================================================= */
 
 function getTransactionDishCost(
     transaction
 ) {
 
-    if (!transaction) {
-
-        return 0;
-
-    }
-
-
-    if (!transaction.dish_id) {
+    if (
+        !transaction ||
+        !transaction.dish_id
+    ) {
 
         return 0;
 
@@ -736,13 +1094,6 @@ function getTransactionDishCost(
                     transaction.dish_id
                 )
         );
-
-
-    if (!dish) {
-
-        return 0;
-
-    }
 
 
     return getDishCost(
@@ -767,7 +1118,7 @@ function renderHome() {
 
 
     /*
-     * Tổng doanh thu
+     * DOANH THU
      */
 
     const income =
@@ -790,7 +1141,7 @@ function renderHome() {
 
 
     /*
-     * Tổng chi phí
+     * CHI PHÍ
      */
 
     const expense =
@@ -813,7 +1164,7 @@ function renderHome() {
 
 
     /*
-     * Phí app
+     * PHÍ APP
      */
 
     const appFee =
@@ -836,7 +1187,7 @@ function renderHome() {
 
 
     /*
-     * Giá vốn COD
+     * GIÁ VỐN
      */
 
     const codCost =
@@ -859,7 +1210,7 @@ function renderHome() {
 
 
     /*
-     * Lợi nhuận thực
+     * LỢI NHUẬN
      */
 
     const profit =
@@ -868,10 +1219,6 @@ function renderHome() {
         appFee -
         codCost;
 
-
-    /*
-     * Tổng
-     */
 
     setText(
         "homeRevenue",
@@ -908,9 +1255,6 @@ function renderHome() {
 
     /*
      * HÔM NAY
-     *
-     * Dùng local date.
-     * Không dùng toISOString().
      */
 
     const today =
@@ -919,10 +1263,17 @@ function renderHome() {
 
     const todayTransactions =
         transactions.filter(
-            t =>
-                t.date === today
+            transaction =>
+                normalizeTransactionDate(
+                    transaction.date
+                ) ===
+                today
         );
 
+
+    /*
+     * Hôm nay - doanh thu
+     */
 
     const todayIncome =
         todayTransactions
@@ -943,6 +1294,10 @@ function renderHome() {
             );
 
 
+    /*
+     * Hôm nay - chi phí
+     */
+
     const todayExpense =
         todayTransactions
             .filter(
@@ -962,6 +1317,10 @@ function renderHome() {
             );
 
 
+    /*
+     * Hôm nay - phí app
+     */
+
     const todayFee =
         todayTransactions
             .filter(
@@ -980,6 +1339,10 @@ function renderHome() {
                 0
             );
 
+
+    /*
+     * Hôm nay - giá vốn
+     */
 
     const todayCost =
         todayTransactions
@@ -1035,390 +1398,92 @@ function renderHome() {
 
 
 /* =========================================================
-   TRANSACTION CATEGORY / DISH SELECT
+   NORMALIZE DATABASE DATE
 ========================================================= */
 
-/*
- * Tự đổ danh mục và món vào form Home.
- * Không ảnh hưởng nếu HTML không có các select này.
- */
+function normalizeTransactionDate(
+    value
+) {
 
-function renderTransactionSelectors() {
+    if (!value) {
 
-    const categorySelect =
-        document.getElementById(
-            "transactionCategory"
-        );
-
-
-    const dishSelect =
-        document.getElementById(
-            "transactionDish"
-        );
-
-
-    /*
-     * CATEGORY
-     */
-
-    if (categorySelect) {
-
-        const currentValue =
-            categorySelect.value;
-
-
-        categorySelect.innerHTML = `
-            <option value="">
-                Chọn danh mục
-            </option>
-        `;
-
-
-        AppState.categories.forEach(
-            category => {
-
-                categorySelect.innerHTML += `
-                    <option value="${escapeHTML(
-                        category.id
-                    )}">
-                        ${escapeHTML(
-                            category.name
-                        )}
-                    </option>
-                `;
-
-            }
-        );
-
-
-        /*
-         * Giữ lựa chọn cũ nếu còn tồn tại
-         */
-
-        if (
-            AppState.categories.some(
-                category =>
-                    String(
-                        category.id
-                    ) ===
-                    String(
-                        currentValue
-                    )
-            )
-        ) {
-
-            categorySelect.value =
-                currentValue;
-
-        }
+        return "";
 
     }
 
 
     /*
-     * DISH
+     * Nếu database trả:
+     *
+     * 2026-08-21
      */
 
-    if (dishSelect) {
+    if (
+        /^\d{4}-\d{2}-\d{2}$/.test(
+            String(value)
+        )
+    ) {
 
-        const categoryId =
-            categorySelect?.value || "";
-
-
-        const currentValue =
-            dishSelect.value;
-
-
-        const dishes =
-            categoryId
-                ? AppState.dishes.filter(
-                    dish =>
-                        String(
-                            dish.category_id
-                        ) ===
-                        String(
-                            categoryId
-                        )
-                )
-                : AppState.dishes;
-
-
-        dishSelect.innerHTML = `
-            <option value="">
-                Chọn món
-            </option>
-        `;
-
-
-        dishes.forEach(
-            dish => {
-
-                dishSelect.innerHTML += `
-                    <option value="${escapeHTML(
-                        dish.id
-                    )}">
-                        ${escapeHTML(
-                            dish.name
-                        )}
-                    </option>
-                `;
-
-            }
-        );
-
-
-        if (
-            dishes.some(
-                dish =>
-                    String(
-                        dish.id
-                    ) ===
-                    String(
-                        currentValue
-                    )
-            )
-        ) {
-
-            dishSelect.value =
-                currentValue;
-
-        }
+        return String(value);
 
     }
 
-}
+
+    /*
+     * Nếu database trả timestamp:
+     *
+     * 2026-08-21T00:00:00...
+     */
+
+    const text =
+        String(value);
 
 
-/* =========================================================
-   CATEGORY -> DISH
-========================================================= */
+    if (
+        text.length >= 10
+    ) {
 
-document.addEventListener(
-    "change",
-    event => {
-
-        if (
-            event.target.id ===
-            "transactionCategory"
-        ) {
-
-            const dishSelect =
-                document.getElementById(
-                    "transactionDish"
-                );
-
-
-            if (!dishSelect) return;
-
-
-            const categoryId =
-                event.target.value;
-
-
-            const dishes =
-                AppState.dishes.filter(
-                    dish =>
-                        String(
-                            dish.category_id
-                        ) ===
-                        String(
-                            categoryId
-                        )
-                );
-
-
-            dishSelect.innerHTML = `
-                <option value="">
-                    Chọn món
-                </option>
-            `;
-
-
-            dishes.forEach(
-                dish => {
-
-                    dishSelect.innerHTML += `
-                        <option value="${escapeHTML(
-                            dish.id
-                        )}">
-                            ${escapeHTML(
-                                dish.name
-                            )}
-                        </option>
-                    `;
-
-                }
+        const first10 =
+            text.substring(
+                0,
+                10
             );
 
+
+        if (
+            /^\d{4}-\d{2}-\d{2}$/.test(
+                first10
+            )
+        ) {
+
+            return first10;
+
         }
 
     }
-);
-
-
-/* =========================================================
-   REFRESH SELECTORS AFTER DATA LOAD
-========================================================= */
-
-const originalLoadInitialData =
-    loadInitialData;
-
-
-/*
- * Không override loadInitialData.
- * renderAll() sẽ gọi renderHome().
- *
- * Các selector sẽ được refresh tại đây khi cần.
- */
-
-function refreshHomeSelectors() {
-
-    const categorySelect =
-        document.getElementById(
-            "transactionCategory"
-        );
-
-
-    if (!categorySelect) return;
-
-
-    const selectedCategory =
-        categorySelect.value;
-
-
-    categorySelect.innerHTML = `
-        <option value="">
-            Chọn danh mục
-        </option>
-    `;
-
-
-    AppState.categories.forEach(
-        category => {
-
-            categorySelect.innerHTML += `
-                <option value="${escapeHTML(
-                    category.id
-                )}">
-                    ${escapeHTML(
-                        category.name
-                    )}
-                </option>
-            `;
-
-        }
-    );
-
-
-    categorySelect.value =
-        selectedCategory || "";
 
 
     /*
-     * Nếu đang chọn danh mục,
-     * cập nhật món.
+     * Fallback Date
      */
 
-    const dishSelect =
-        document.getElementById(
-            "transactionDish"
-        );
+    const date =
+        new Date(value);
 
 
-    if (!dishSelect) return;
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "";
+
+    }
 
 
-    const selectedDish =
-        dishSelect.value;
-
-
-    const dishes =
-        selectedCategory
-            ? AppState.dishes.filter(
-                dish =>
-                    String(
-                        dish.category_id
-                    ) ===
-                    String(
-                        selectedCategory
-                    )
-            )
-            : [];
-
-
-    dishSelect.innerHTML = `
-        <option value="">
-            Chọn món
-        </option>
-    `;
-
-
-    dishes.forEach(
-        dish => {
-
-            dishSelect.innerHTML += `
-                <option value="${escapeHTML(
-                    dish.id
-                )}">
-                    ${escapeHTML(
-                        dish.name
-                    )}
-                </option>
-            `;
-
-        }
-    );
-
-
-    dishSelect.value =
-        selectedDish || "";
-
-}
-
-
-/* =========================================================
-   OVERRIDE renderAll SAFELY
-========================================================= */
-
-function refreshAllUI() {
-
-    refreshHomeSelectors();
-
-    renderHome();
-
-    renderStatistics();
-
-    renderHistory();
-
-    renderRestaurant();
-
-    renderCOD();
-
-}
-
-
-/*
- * Khi các module gọi renderAll(),
- * dùng hàm này.
- */
-
-window.renderAll =
-    refreshAllUI;
-
-
-/* =========================================================
-   INITIAL FORM STATE
-========================================================= */
-
-function initializeFormState() {
-
-    setTransactionType(
-        AppState.transactionType
-    );
-
-
-    setOrderSource(
-        AppState.orderSource
+    return getLocalDateString(
+        date
     );
 
 }
@@ -1438,7 +1503,11 @@ function updatePageTitle(
         );
 
 
-    if (!title) return;
+    if (!title) {
+
+        return;
+
+    }
 
 
     const titles = {
@@ -1466,52 +1535,3 @@ function updatePageTitle(
         "Bếp Nhà Duyên";
 
 }
-
-
-/* =========================================================
-   PATCH NAVIGATION TITLE
-========================================================= */
-
-const _navigateTo =
-    navigateTo;
-
-
-window.navigateTo =
-    function(page) {
-
-        updatePageTitle(
-            page
-        );
-
-        _navigateTo(
-            page
-        );
-
-    };
-
-
-/* =========================================================
-   PATCH INIT
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        /*
-         * Đợi DOM + các file JS module
-         */
-
-        setTimeout(
-            () => {
-
-                refreshHomeSelectors();
-
-                initializeFormState();
-
-            },
-            0
-        );
-
-    }
-);
