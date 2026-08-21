@@ -1,7 +1,6 @@
 /* =========================================================
    HOME.JS
    BẾP NHÀ DUYÊN
-   THU / CHI CATEGORY
 ========================================================= */
 
 
@@ -22,8 +21,8 @@ function renderHome() {
 
 /* =========================================================
    CATEGORY SELECT
-   THU  -> category.type = thu
-   CHI  -> category.type = chi
+   THU -> CHỈ DANH MỤC THU
+   CHI -> CHỈ DANH MỤC CHI
 ========================================================= */
 
 function renderTransactionCategories() {
@@ -34,7 +33,11 @@ function renderTransactionCategories() {
         );
 
 
-    if (!select) return;
+    if (!select) {
+
+        return;
+
+    }
 
 
     const oldValue =
@@ -56,24 +59,26 @@ function renderTransactionCategories() {
             : [];
 
 
+    /*
+     * Lấy loại giao dịch hiện tại
+     */
+
     const transactionType =
-        AppState.transactionType === "chi"
-            ? "chi"
-            : "thu";
+        String(
+            AppState.transactionType ||
+            "thu"
+        )
+        .trim()
+        .toLowerCase();
 
 
     /*
-     * CHỈ LẤY DANH MỤC ĐÚNG LOẠI
+     * CHỈ LẤY ĐÚNG TYPE
      */
 
     const filteredCategories =
         categories.filter(
             category => {
-
-                /*
-                 * Nếu category chưa có type
-                 * thì mặc định là thu.
-                 */
 
                 const categoryType =
                     String(
@@ -103,7 +108,11 @@ function renderTransactionCategories() {
 
 
             /*
-             * ID database là BIGINT
+             * QUAN TRỌNG:
+             *
+             * categories.id là BIGINT
+             *
+             * nên giữ ID dạng số.
              */
 
             option.value =
@@ -126,8 +135,8 @@ function renderTransactionCategories() {
 
 
     /*
-     * GIỮ DANH MỤC CŨ
-     * nếu vẫn thuộc đúng loại.
+     * Giữ lại danh mục cũ nếu
+     * vẫn thuộc đúng loại.
      */
 
     if (
@@ -146,10 +155,16 @@ function renderTransactionCategories() {
             oldValue;
 
     }
+    else {
+
+        select.value =
+            "";
+
+    }
 
 
     /*
-     * ĐỔI DANH MỤC -> ĐỔI MÓN
+     * Đổi danh mục -> đổi món
      */
 
     select.onchange =
@@ -164,6 +179,7 @@ function renderTransactionCategories() {
 
 /* =========================================================
    DISH SELECT
+   CHỈ HIỂN THỊ MÓN THU
 ========================================================= */
 
 function renderTransactionDishes() {
@@ -206,10 +222,24 @@ function renderTransactionDishes() {
 
 
     /*
-     * Không chọn danh mục
+     * Nếu CHI:
+     *
+     * không hiển thị món.
      */
 
-    if (!categoryId) {
+    const transactionType =
+        String(
+            AppState.transactionType ||
+            "thu"
+        )
+        .trim()
+        .toLowerCase();
+
+
+    if (
+        transactionType ===
+        "chi"
+    ) {
 
         return;
 
@@ -217,21 +247,10 @@ function renderTransactionDishes() {
 
 
     /*
-     * Chỉ danh mục THU mới có món.
-     *
-     * Danh mục CHI:
-     * không hiện món.
+     * Chưa chọn danh mục
      */
 
-    const transactionType =
-        AppState.transactionType === "chi"
-            ? "chi"
-            : "thu";
-
-
-    if (
-        transactionType === "chi"
-    ) {
+    if (!categoryId) {
 
         return;
 
@@ -246,19 +265,13 @@ function renderTransactionDishes() {
             : [];
 
 
-    /*
-     * LỌC MÓN THEO CATEGORY ID
-     *
-     * ID hiện tại là BIGINT.
-     */
-
     const categoryDishes =
         dishes.filter(
             dish =>
-                Number(
+                String(
                     dish.category_id
                 ) ===
-                Number(
+                String(
                     categoryId
                 )
         );
@@ -272,6 +285,10 @@ function renderTransactionDishes() {
                     "option"
                 );
 
+
+            /*
+             * dishes.id cũng là BIGINT
+             */
 
             option.value =
                 String(
@@ -291,10 +308,6 @@ function renderTransactionDishes() {
         }
     );
 
-
-    /*
-     * GIỮ MÓN CŨ
-     */
 
     if (
         categoryDishes.some(
@@ -330,10 +343,6 @@ function renderHomeSummary() {
             : [];
 
 
-    /*
-     * TỔNG DOANH THU
-     */
-
     const totalIncome =
         transactions
             .filter(
@@ -343,10 +352,7 @@ function renderHomeSummary() {
                     ) === "thu"
             )
             .reduce(
-                (
-                    sum,
-                    transaction
-                ) =>
+                (sum, transaction) =>
                     sum +
                     getTransactionAmount(
                         transaction
@@ -354,10 +360,6 @@ function renderHomeSummary() {
                 0
             );
 
-
-    /*
-     * TỔNG CHI PHÍ
-     */
 
     const totalExpense =
         transactions
@@ -368,10 +370,7 @@ function renderHomeSummary() {
                     ) === "chi"
             )
             .reduce(
-                (
-                    sum,
-                    transaction
-                ) =>
+                (sum, transaction) =>
                     sum +
                     getTransactionAmount(
                         transaction
@@ -379,10 +378,6 @@ function renderHomeSummary() {
                 0
             );
 
-
-    /*
-     * TỔNG PHÍ APP
-     */
 
     const totalAppFee =
         transactions
@@ -393,10 +388,7 @@ function renderHomeSummary() {
                     ) === "thu"
             )
             .reduce(
-                (
-                    sum,
-                    transaction
-                ) =>
+                (sum, transaction) =>
                     sum +
                     getTransactionFee(
                         transaction
@@ -405,19 +397,11 @@ function renderHomeSummary() {
             );
 
 
-    /*
-     * TỔNG GIÁ VỐN
-     */
-
     const totalCost =
         calculateHomeCODCost(
             transactions
         );
 
-
-    /*
-     * LỢI NHUẬN
-     */
 
     const totalProfit =
         totalIncome -
@@ -513,10 +497,6 @@ function renderTodaySummary(
         );
 
 
-    /*
-     * DOANH THU HÔM NAY
-     */
-
     const todayIncome =
         todayTransactions
             .filter(
@@ -526,10 +506,7 @@ function renderTodaySummary(
                     ) === "thu"
             )
             .reduce(
-                (
-                    sum,
-                    transaction
-                ) =>
+                (sum, transaction) =>
                     sum +
                     getTransactionAmount(
                         transaction
@@ -537,10 +514,6 @@ function renderTodaySummary(
                 0
             );
 
-
-    /*
-     * CHI PHÍ HÔM NAY
-     */
 
     const todayExpense =
         todayTransactions
@@ -551,10 +524,7 @@ function renderTodaySummary(
                     ) === "chi"
             )
             .reduce(
-                (
-                    sum,
-                    transaction
-                ) =>
+                (sum, transaction) =>
                     sum +
                     getTransactionAmount(
                         transaction
@@ -562,10 +532,6 @@ function renderTodaySummary(
                 0
             );
 
-
-    /*
-     * PHÍ APP HÔM NAY
-     */
 
     const todayAppFee =
         todayTransactions
@@ -576,10 +542,7 @@ function renderTodaySummary(
                     ) === "thu"
             )
             .reduce(
-                (
-                    sum,
-                    transaction
-                ) =>
+                (sum, transaction) =>
                     sum +
                     getTransactionFee(
                         transaction
@@ -587,10 +550,6 @@ function renderTodaySummary(
                 0
             );
 
-
-    /*
-     * GIÁ VỐN HÔM NAY
-     */
 
     const todayCost =
         calculateHomeCODCost(
@@ -649,7 +608,7 @@ function renderTodaySummary(
 
 
 /* =========================================================
-   CALCULATE COD COST
+   COD COST
 ========================================================= */
 
 function calculateHomeCODCost(
@@ -673,10 +632,6 @@ function calculateHomeCODCost(
     transactions.forEach(
         transaction => {
 
-            /*
-             * Chỉ THU mới tính giá vốn.
-             */
-
             if (
                 normalizeTransactionType(
                     transaction.type
@@ -687,10 +642,6 @@ function calculateHomeCODCost(
 
             }
 
-
-            /*
-             * Không có món
-             */
 
             if (
                 transaction.dish_id ===
@@ -708,10 +659,10 @@ function calculateHomeCODCost(
             const dish =
                 AppState.dishes.find(
                     item =>
-                        Number(
+                        String(
                             item.id
                         ) ===
-                        Number(
+                        String(
                             transaction.dish_id
                         )
                 );
@@ -737,8 +688,7 @@ function calculateHomeCODCost(
 
                     total +=
                         Number(
-                            part.amount ||
-                            0
+                            part.amount || 0
                         );
 
                 }
@@ -754,7 +704,7 @@ function calculateHomeCODCost(
 
 
 /* =========================================================
-   TRANSACTION TYPE
+   TYPE
 ========================================================= */
 
 function normalizeTransactionType(
@@ -764,14 +714,14 @@ function normalizeTransactionType(
     return String(
         type || ""
     )
-        .trim()
-        .toLowerCase();
+    .trim()
+    .toLowerCase();
 
 }
 
 
 /* =========================================================
-   TRANSACTION AMOUNT
+   AMOUNT
 ========================================================= */
 
 function getTransactionAmount(
@@ -796,7 +746,7 @@ function getTransactionAmount(
 
 
 /* =========================================================
-   TRANSACTION FEE
+   FEE
 ========================================================= */
 
 function getTransactionFee(
@@ -828,39 +778,21 @@ function getLocalDateString() {
         new Date();
 
 
-    const year =
-        now.getFullYear();
-
-
-    const month =
-        String(
-            now.getMonth() + 1
-        )
-        .padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            now.getDate()
-        )
-        .padStart(
-            2,
-            "0"
-        );
-
-
     return (
-        `${year}-${month}-${day}`
+        `${now.getFullYear()}-` +
+        `${String(
+            now.getMonth() + 1
+        ).padStart(2, "0")}-` +
+        `${String(
+            now.getDate()
+        ).padStart(2, "0")}`
     );
 
 }
 
 
 /* =========================================================
-   TRANSACTION TYPE BUTTON
+   TRANSACTION TYPE
 ========================================================= */
 
 function setTransactionType(
@@ -919,12 +851,6 @@ function setTransactionType(
         );
 
 
-    const dishSelect =
-        document.getElementById(
-            "transactionDish"
-        );
-
-
     const isIncome =
         AppState.transactionType ===
         "thu";
@@ -951,31 +877,46 @@ function setTransactionType(
 
 
     /*
-     * CHI KHÔNG CÓ MÓN
-     */
-
-    if (
-        dishSelect &&
-        !isIncome
-    ) {
-
-        dishSelect.innerHTML = `
-            <option value="">
-                Không chọn món
-            </option>
-        `;
-
-    }
-
-
-    /*
-     * ĐỔI THU/CHI
-     * -> đổi danh mục
+     * QUAN TRỌNG:
+     *
+     * Khi đổi Thu <-> Chi,
+     * render lại danh mục.
+     *
+     * Vì vậy:
+     *
+     * THU -> chỉ danh mục thu
+     * CHI -> chỉ danh mục chi
      */
 
     renderTransactionCategories();
 
+
     renderTransactionDishes();
+
+
+    /*
+     * Khi CHI:
+     * xóa món đang chọn.
+     */
+
+    if (
+        AppState.transactionType ===
+        "chi"
+    ) {
+
+        const dish =
+            document.getElementById(
+                "transactionDish"
+            );
+
+
+        if (dish) {
+
+            dish.value = "";
+
+        }
+
+    }
 
 }
 
@@ -1044,247 +985,289 @@ function setOrderSource(
 
 async function saveTransaction() {
 
-    try {
-
-        const type =
-            AppState.transactionType ===
-            "chi"
-                ? "chi"
-                : "thu";
+    const categoryId =
+        document.getElementById(
+            "transactionCategory"
+        )?.value || "";
 
 
-        const categoryId =
+    const dishId =
+        document.getElementById(
+            "transactionDish"
+        )?.value || "";
+
+
+    const customName =
+        document.getElementById(
+            "transactionName"
+        )?.value
+        ?.trim() || "";
+
+
+    const amount =
+        Number(
             document.getElementById(
-                "transactionCategory"
-            )?.value || "";
-
-
-        /*
-         * CHI không có món
-         */
-
-        const dishId =
-            type === "thu"
-                ? (
-                    document.getElementById(
-                        "transactionDish"
-                    )?.value || ""
-                )
-                : "";
-
-
-        const customName =
-            document.getElementById(
-                "transactionName"
+                "transactionAmount"
             )?.value
-            ?.trim() || "";
+        ) || 0;
 
 
-        const amount =
-            Number(
-                document.getElementById(
-                    "transactionAmount"
-                )?.value
-            ) || 0;
-
-
-        const appFee =
-            type === "thu"
-                ? Number(
-                    document.getElementById(
-                        "appFee"
-                    )?.value
-                ) || 0
-                : 0;
-
-
-        const date =
+    const appFee =
+        Number(
             document.getElementById(
-                "transactionDate"
-            )?.value ||
-            getLocalDateString();
-
-
-        const note =
-            document.getElementById(
-                "transactionNote"
+                "appFee"
             )?.value
-            ?.trim() || "";
+        ) || 0;
 
 
-        if (
-            amount <= 0
-        ) {
-
-            showToast(
-                "Vui lòng nhập số tiền"
-            );
-
-            return;
-
-        }
+    const date =
+        document.getElementById(
+            "transactionDate"
+        )?.value ||
+        getLocalDateString();
 
 
-        /*
-         * BIGINT
-         */
+    const note =
+        document.getElementById(
+            "transactionNote"
+        )?.value
+        ?.trim() || "";
 
-        const categoryIdNumber =
-            categoryId
-                ? Number(
+
+    const transactionType =
+        normalizeTransactionType(
+            AppState.transactionType
+        ) || "thu";
+
+
+    if (amount <= 0) {
+
+        showToast(
+            "Vui lòng nhập số tiền"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * =========================
+     * TÌM CATEGORY
+     * =========================
+     */
+
+    const category =
+        AppState.categories.find(
+            item =>
+                String(
+                    item.id
+                ) ===
+                String(
                     categoryId
                 )
-                : null;
-
-
-        const dishIdNumber =
-            dishId
-                ? Number(
-                    dishId
-                )
-                : null;
-
-
-        /*
-         * KIỂM TRA ID
-         */
-
-        if (
-            categoryId &&
-            !Number.isInteger(
-                categoryIdNumber
-            )
-        ) {
-
-            console.error(
-                "category_id không hợp lệ:",
-                categoryId
-            );
-
-            showToast(
-                "ID danh mục không hợp lệ"
-            );
-
-            return;
-
-        }
-
-
-        if (
-            dishId &&
-            !Number.isInteger(
-                dishIdNumber
-            )
-        ) {
-
-            console.error(
-                "dish_id không hợp lệ:",
-                dishId
-            );
-
-            showToast(
-                "ID món không hợp lệ"
-            );
-
-            return;
-
-        }
-
-
-        /*
-         * TÌM CATEGORY
-         */
-
-        const category =
-            AppState.categories.find(
-                item =>
-                    Number(
-                        item.id
-                    ) ===
-                    categoryIdNumber
-            );
-
-
-        /*
-         * TÌM DISH
-         */
-
-        const dish =
-            dishIdNumber !== null
-                ? AppState.dishes.find(
-                    item =>
-                        Number(
-                            item.id
-                        ) ===
-                        dishIdNumber
-                )
-                : null;
-
-
-        /*
-         * PAYLOAD
-         */
-
-        const payload = {
-
-            type:
-                type,
-
-
-            category_id:
-                categoryIdNumber,
-
-
-            dish_id:
-                dishIdNumber,
-
-
-            category_name:
-                category?.name ||
-                "",
-
-
-            dish_name:
-                dish?.name ||
-                customName ||
-                "Giao dịch",
-
-
-            source:
-                type === "thu"
-                    ? (
-                        AppState.orderSource ||
-                        "ShopeeFood"
-                    )
-                    : null,
-
-
-            amount:
-                amount,
-
-
-            app_fee:
-                appFee,
-
-
-            date:
-                date,
-
-
-            note:
-                note
-
-        };
-
-
-        console.log(
-            "TRANSACTION PAYLOAD:",
-            payload
         );
 
 
+    /*
+     * =========================
+     * KIỂM TRA CATEGORY TYPE
+     * =========================
+     */
+
+    if (category) {
+
+        const categoryType =
+            String(
+                category.type ||
+                "thu"
+            )
+            .trim()
+            .toLowerCase();
+
+
+        if (
+            categoryType !==
+            transactionType
+        ) {
+
+            showToast(
+                "Danh mục không đúng loại giao dịch"
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    /*
+     * =========================
+     * TÌM DISH
+     * =========================
+     */
+
+    let dish = null;
+
+
+    if (
+        transactionType ===
+        "thu" &&
+        dishId
+    ) {
+
+        dish =
+            AppState.dishes.find(
+                item =>
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        dishId
+                    )
+            );
+
+    }
+
+
+    /*
+     * =========================
+     * BIGINT
+     *
+     * categories.id = bigint
+     * dishes.id     = bigint
+     *
+     * => Number()
+     *
+     * Không được UUID.
+     * =========================
+     */
+
+    const numericCategoryId =
+        categoryId
+            ? Number(categoryId)
+            : null;
+
+
+    const numericDishId =
+        transactionType === "thu" &&
+        dishId
+            ? Number(dishId)
+            : null;
+
+
+    /*
+     * Kiểm tra ID có phải số
+     */
+
+    if (
+        categoryId &&
+        !Number.isInteger(
+            numericCategoryId
+        )
+    ) {
+
+        showToast(
+            "ID danh mục không hợp lệ"
+        );
+
+        console.error(
+            "categoryId không phải bigint:",
+            categoryId
+        );
+
+        return;
+
+    }
+
+
+    if (
+        dishId &&
+        !Number.isInteger(
+            numericDishId
+        )
+    ) {
+
+        showToast(
+            "ID món không hợp lệ"
+        );
+
+        console.error(
+            "dishId không phải bigint:",
+            dishId
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * =========================
+     * PAYLOAD
+     * =========================
+     */
+
+    const payload = {
+
+        type:
+            transactionType,
+
+        category_id:
+            numericCategoryId,
+
+        dish_id:
+            numericDishId,
+
+        category_name:
+            category?.name ||
+            "",
+
+        dish_name:
+            dish?.name ||
+            customName ||
+            "Giao dịch",
+
+        source:
+            transactionType ===
+            "thu"
+                ? (
+                    AppState.orderSource ||
+                    "Ngoài sàn"
+                )
+                : null,
+
+        amount:
+            amount,
+
+        app_fee:
+            transactionType ===
+            "thu"
+                ? appFee
+                : 0,
+
+        date:
+            date,
+
+        note:
+            note
+
+    };
+
+
+    console.log(
+        "TRANSACTION PAYLOAD:",
+        payload
+    );
+
+
+    try {
+
         /*
+         * =========================
          * EDIT
+         * =========================
          */
 
         if (
@@ -1306,7 +1289,9 @@ async function saveTransaction() {
 
 
         /*
+         * =========================
          * INSERT
+         * =========================
          */
 
         else {
@@ -1325,7 +1310,9 @@ async function saveTransaction() {
 
 
         /*
-         * LOAD LẠI
+         * =========================
+         * LOAD
+         * =========================
          */
 
         AppState.transactions =
@@ -1354,10 +1341,6 @@ async function saveTransaction() {
         console.error(
             "Lỗi saveTransaction:",
             error
-        );
-
-        showToast(
-            "Không thể lưu giao dịch"
         );
 
     }
@@ -1409,8 +1392,7 @@ function clearTransactionForm() {
 
     if (category) {
 
-        category.value =
-            "";
+        category.value = "";
 
     }
 
@@ -1428,32 +1410,28 @@ function clearTransactionForm() {
 
     if (name) {
 
-        name.value =
-            "";
+        name.value = "";
 
     }
 
 
     if (fee) {
 
-        fee.value =
-            "";
+        fee.value = "";
 
     }
 
 
     if (amount) {
 
-        amount.value =
-            "";
+        amount.value = "";
 
     }
 
 
     if (note) {
 
-        note.value =
-            "";
+        note.value = "";
 
     }
 
@@ -1528,7 +1506,7 @@ function formatMoney(
 
 
 /* =========================================================
-   FORMAT VIETNAMESE DATE
+   FORMAT DATE
 ========================================================= */
 
 function formatVietnameseDate(
