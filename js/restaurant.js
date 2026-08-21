@@ -1,13 +1,7 @@
 /* =========================================================
    RESTAURANT.JS
    BẾP NHÀ DUYÊN
-
-   CATEGORY:
-   - thu
-   - chi
-
-   DISH:
-   - chỉ thuộc category thu
+   QUẢN LÝ DANH MỤC THU + DANH MỤC CHI
 ========================================================= */
 
 
@@ -22,40 +16,35 @@ function renderRestaurant() {
             "dishCategorySelect"
         );
 
-
     const container =
         document.getElementById(
             "restaurantMenuList"
         );
 
 
-    if (
-        !categorySelect ||
-        !container
-    ) {
+    if (!categorySelect || !container) {
 
         return;
 
     }
 
 
-    /* =====================================================
-       CATEGORY SELECT CHO THÊM MÓN
-
-       CHỈ HIỆN CATEGORY THU
-    ===================================================== */
+    /*
+     * =========================
+     * SELECT DANH MỤC MÓN
+     * CHỈ HIỂN THỊ DANH MỤC THU
+     * =========================
+     */
 
     categorySelect.innerHTML = `
         <option value="">
-            Chọn danh mục món
+            Chọn danh mục
         </option>
     `;
 
 
     const categories =
-        Array.isArray(
-            AppState.categories
-        )
+        Array.isArray(AppState.categories)
             ? AppState.categories
             : [];
 
@@ -64,38 +53,36 @@ function renderRestaurant() {
         categories.filter(
             category =>
                 String(
-                    category.type ||
-                    "thu"
-                )
-                .trim()
-                .toLowerCase() ===
-                "thu"
+                    category.type || "thu"
+                ).toLowerCase() === "thu"
         );
 
 
     incomeCategories.forEach(
         category => {
 
-            categorySelect.innerHTML += `
+            const option =
+                document.createElement("option");
 
-                <option
-                    value="${category.id}">
+            option.value =
+                String(category.id);
 
-                    ${escapeHTML(
-                        category.name
-                    )}
+            option.textContent =
+                category.name || "Không tên";
 
-                </option>
-
-            `;
+            categorySelect.appendChild(
+                option
+            );
 
         }
     );
 
 
-    /* =====================================================
-       RENDER MENU
-    ===================================================== */
+    /*
+     * =========================
+     * RENDER MENU
+     * =========================
+     */
 
     container.innerHTML = "";
 
@@ -105,50 +92,43 @@ function renderRestaurant() {
 
             const categoryType =
                 String(
-                    category.type ||
-                    "thu"
+                    category.type || "thu"
                 )
                 .trim()
                 .toLowerCase();
 
 
-            const isIncome =
-                categoryType ===
-                "thu";
-
-
-            const isExpense =
-                categoryType ===
-                "chi";
-
-
-            /*
-             * CHỈ LẤY MÓN NẾU LÀ THU
-             */
-
             const dishes =
-                isIncome
+                Array.isArray(AppState.dishes)
                     ? AppState.dishes.filter(
                         dish =>
-                            Number(
+                            String(
                                 dish.category_id
                             ) ===
-                            Number(
+                            String(
                                 category.id
                             )
                     )
                     : [];
 
 
+            const typeLabel =
+                categoryType === "chi"
+                    ? "🔴 PHẦN CHI"
+                    : "🟢 PHẦN THU";
+
+
+            const typeClass =
+                categoryType === "chi"
+                    ? "expense"
+                    : "income";
+
+
             container.innerHTML += `
 
                 <div
                     class="restaurant-category
-                    ${
-                        isExpense
-                            ? "expense-category"
-                            : "income-category"
-                    }">
+                           restaurant-category-${typeClass}">
 
                     <div class="
                         restaurant-category-header
@@ -160,14 +140,9 @@ function renderRestaurant() {
                                 restaurant-category-name
                             ">
 
-                                ${
-                                    isIncome
-                                        ? "🟢"
-                                        : "🔴"
-                                }
-
+                                📁
                                 ${escapeHTML(
-                                    category.name
+                                    category.name || "Không tên"
                                 )}
 
                             </div>
@@ -177,11 +152,7 @@ function renderRestaurant() {
                                 restaurant-category-type
                             ">
 
-                                ${
-                                    isIncome
-                                        ? "Danh mục thu"
-                                        : "Danh mục chi"
-                                }
+                                ${typeLabel}
 
                             </div>
 
@@ -190,11 +161,7 @@ function renderRestaurant() {
                                 restaurant-category-count
                             ">
 
-                                ${
-                                    isIncome
-                                        ? `${dishes.length} món`
-                                        : "Dùng cho khoản chi"
-                                }
+                                ${dishes.length} món
 
                             </div>
 
@@ -211,7 +178,8 @@ function renderRestaurant() {
                                     deleteCategory(
                                         '${category.id}'
                                     )
-                                ">
+                                "
+                                aria-label="Xóa danh mục">
 
                                 🗑️
 
@@ -222,81 +190,65 @@ function renderRestaurant() {
                     </div>
 
 
-                    ${
-                        isIncome
-                            ? `
+                    <div class="restaurant-dishes">
 
-                                <div
-                                    class="restaurant-dishes">
+                        ${
+                            dishes.length
 
-                                    ${
-                                        dishes.length
-                                            ? dishes.map(
-                                                dish => `
+                                ? dishes.map(
+                                    dish => `
 
-                                                <div
-                                                    class="
-                                                    restaurant-dish">
+                                    <div class="
+                                        restaurant-dish
+                                    ">
 
-                                                    <span
-                                                        class="
-                                                        restaurant-dish-name">
+                                        <span class="
+                                            restaurant-dish-name
+                                        ">
 
-                                                        🍜
-                                                        ${escapeHTML(
-                                                            dish.name
-                                                        )}
+                                            🍜
+                                            ${escapeHTML(
+                                                dish.name || "Không tên"
+                                            )}
 
-                                                    </span>
+                                        </span>
 
 
-                                                    <button
-                                                        type="button"
-                                                        class="
-                                                        restaurant-dish-delete"
-                                                        onclick="
-                                                            deleteDish(
-                                                                '${dish.id}'
-                                                            )
-                                                        ">
+                                        <button
+                                            type="button"
+                                            class="
+                                                restaurant-dish-delete
+                                            "
+                                            onclick="
+                                                deleteDish(
+                                                    '${dish.id}'
+                                                )
+                                            "
+                                            aria-label="Xóa món">
 
-                                                        🗑️
+                                            🗑️
 
-                                                    </button>
+                                        </button>
 
-                                                </div>
+                                    </div>
 
-                                            `
-                                            ).join("")
-                                            : `
+                                `
+                                ).join("")
 
-                                                <div
-                                                    class="
-                                                    history-empty">
+                                : `
 
-                                                    Chưa có món.
+                                    <div class="
+                                        history-empty
+                                    ">
 
-                                                </div>
+                                        Chưa có món.
 
-                                            `
-                                    }
+                                    </div>
 
-                                </div>
+                                `
+                        }
 
-                            `
-                            : `
-
-                                <div
-                                    class="
-                                    restaurant-expense-info">
-
-                                    🔴 Các khoản chi sẽ
-                                    sử dụng danh mục này.
-
-                                </div>
-
-                            `
-                    }
+                    </div>
 
                 </div>
 
@@ -305,6 +257,12 @@ function renderRestaurant() {
         }
     );
 
+
+    /*
+     * =========================
+     * COUNT
+     * =========================
+     */
 
     setText(
         "restaurantCount",
@@ -318,17 +276,13 @@ function renderRestaurant() {
    ADD CATEGORY
 ========================================================= */
 
-async function addCategory() {
+async function addCategory(
+    type = "thu"
+) {
 
     const input =
         document.getElementById(
             "newCategoryName"
-        );
-
-
-    const typeSelect =
-        document.getElementById(
-            "newCategoryType"
         );
 
 
@@ -343,12 +297,6 @@ async function addCategory() {
         input.value.trim();
 
 
-    const type =
-        typeSelect?.value === "chi"
-            ? "chi"
-            : "thu";
-
-
     if (!name) {
 
         showToast(
@@ -360,39 +308,10 @@ async function addCategory() {
     }
 
 
-    /*
-     * Kiểm tra trùng tên cùng loại
-     */
-
-    const exists =
-        AppState.categories.some(
-            category =>
-                String(
-                    category.name || ""
-                )
-                .trim()
-                .toLowerCase() ===
-                name.toLowerCase()
-                &&
-                String(
-                    category.type ||
-                    "thu"
-                )
-                .trim()
-                .toLowerCase() ===
-                type
-        );
-
-
-    if (exists) {
-
-        showToast(
-            "Danh mục này đã tồn tại"
-        );
-
-        return;
-
-    }
+    const normalizedType =
+        type === "chi"
+            ? "chi"
+            : "thu";
 
 
     try {
@@ -400,30 +319,24 @@ async function addCategory() {
         await dbInsert(
             "categories",
             {
-                name:
-                    name,
-
-                type:
-                    type
+                name,
+                type: normalizedType
             }
         );
 
 
-        input.value =
-            "";
-
-
-        if (typeSelect) {
-
-            typeSelect.value =
-                "thu";
-
-        }
+        input.value = "";
 
 
         AppState.categories =
             await dbGet(
-                "categories"
+                "categories",
+                {
+                    order: {
+                        column: "created_at",
+                        ascending: true
+                    }
+                }
             );
 
 
@@ -431,18 +344,23 @@ async function addCategory() {
 
 
         /*
-         * Cập nhật luôn Home
+         * Cập nhật Home luôn
          */
 
-        renderTransactionCategories();
+        if (
+            typeof renderHome ===
+            "function"
+        ) {
 
-        renderTransactionDishes();
+            renderHome();
+
+        }
 
 
         showToast(
-            type === "thu"
-                ? "Đã thêm danh mục Thu"
-                : "Đã thêm danh mục Chi"
+            normalizedType === "chi"
+                ? "Đã thêm danh mục chi"
+                : "Đã thêm danh mục thu"
         );
 
     }
@@ -459,7 +377,34 @@ async function addCategory() {
 
 
 /* =========================================================
+   ADD INCOME CATEGORY
+========================================================= */
+
+async function addIncomeCategory() {
+
+    await addCategory(
+        "thu"
+    );
+
+}
+
+
+/* =========================================================
+   ADD EXPENSE CATEGORY
+========================================================= */
+
+async function addExpenseCategory() {
+
+    await addCategory(
+        "chi"
+    );
+
+}
+
+
+/* =========================================================
    ADD DISH
+   CHỈ CHO PHÉP THÊM MÓN VÀO DANH MỤC THU
 ========================================================= */
 
 async function addDish() {
@@ -476,15 +421,8 @@ async function addDish() {
         );
 
 
-    if (!input) {
-
-        return;
-
-    }
-
-
     const name =
-        input.value.trim();
+        input?.value.trim() || "";
 
 
     if (!categoryId) {
@@ -510,18 +448,14 @@ async function addDish() {
 
 
     /*
-     * Kiểm tra category
+     * category_id phải là BIGINT
      */
 
     const category =
         AppState.categories.find(
             item =>
-                Number(
-                    item.id
-                ) ===
-                Number(
-                    categoryId
-                )
+                String(item.id) ===
+                String(categoryId)
         );
 
 
@@ -537,59 +471,18 @@ async function addDish() {
 
 
     /*
-     * KHÔNG CHO THÊM MÓN VÀO CATEGORY CHI
+     * Không cho thêm món vào danh mục chi
      */
 
-    const categoryType =
-        String(
-            category.type ||
-            "thu"
-        )
-        .trim()
-        .toLowerCase();
-
-
     if (
-        categoryType !==
-        "thu"
+        String(
+            category.type || "thu"
+        ).toLowerCase() ===
+        "chi"
     ) {
 
         showToast(
-            "Danh mục Chi không thêm món"
-        );
-
-        return;
-
-    }
-
-
-    /*
-     * Kiểm tra trùng món trong category
-     */
-
-    const exists =
-        AppState.dishes.some(
-            dish =>
-                Number(
-                    dish.category_id
-                ) ===
-                Number(
-                    categoryId
-                )
-                &&
-                String(
-                    dish.name || ""
-                )
-                .trim()
-                .toLowerCase() ===
-                name.toLowerCase()
-        );
-
-
-    if (exists) {
-
-        showToast(
-            "Món này đã tồn tại"
+            "Danh mục chi không thêm món"
         );
 
         return;
@@ -603,34 +496,39 @@ async function addDish() {
             "dishes",
             {
                 category_id:
-                    Number(
-                        categoryId
-                    ),
+                    Number(categoryId),
 
-                name:
-                    name
+                name
             }
         );
 
 
-        input.value =
-            "";
+        input.value = "";
 
 
         AppState.dishes =
             await dbGet(
-                "dishes"
+                "dishes",
+                {
+                    order: {
+                        column: "created_at",
+                        ascending: true
+                    }
+                }
             );
 
 
         renderRestaurant();
 
 
-        /*
-         * Cập nhật Home
-         */
+        if (
+            typeof renderHome ===
+            "function"
+        ) {
 
-        renderTransactionDishes();
+            renderHome();
+
+        }
 
 
         showToast(
@@ -658,25 +556,13 @@ async function deleteCategory(
     id
 ) {
 
-    /*
-     * BIGINT
-     */
-
-    const categoryId =
-        Number(id);
-
-
-    /*
-     * Kiểm tra món
-     */
-
     const hasDish =
         AppState.dishes.some(
             dish =>
-                Number(
+                String(
                     dish.category_id
                 ) ===
-                categoryId
+                String(id)
         );
 
 
@@ -690,13 +576,6 @@ async function deleteCategory(
 
     }
 
-
-    /*
-     * Kiểm tra giao dịch
-     *
-     * Nếu category đang được dùng,
-     * vẫn có thể xóa vì FK SET NULL.
-     */
 
     if (
         !confirm(
@@ -713,26 +592,29 @@ async function deleteCategory(
 
         await dbDelete(
             "categories",
-            categoryId
+            id
         );
 
 
         AppState.categories =
             AppState.categories.filter(
                 category =>
-                    Number(
-                        category.id
-                    ) !==
-                    categoryId
+                    String(category.id) !==
+                    String(id)
             );
 
 
         renderRestaurant();
 
 
-        renderTransactionCategories();
+        if (
+            typeof renderHome ===
+            "function"
+        ) {
 
-        renderTransactionDishes();
+            renderHome();
+
+        }
 
 
         showToast(
@@ -760,10 +642,6 @@ async function deleteDish(
     id
 ) {
 
-    const dishId =
-        Number(id);
-
-
     if (
         !confirm(
             "Xóa món này?"
@@ -779,24 +657,29 @@ async function deleteDish(
 
         await dbDelete(
             "dishes",
-            dishId
+            id
         );
 
 
         AppState.dishes =
             AppState.dishes.filter(
                 dish =>
-                    Number(
-                        dish.id
-                    ) !==
-                    dishId
+                    String(dish.id) !==
+                    String(id)
             );
 
 
         renderRestaurant();
 
 
-        renderTransactionDishes();
+        if (
+            typeof renderHome ===
+            "function"
+        ) {
+
+            renderHome();
+
+        }
 
 
         showToast(
@@ -812,5 +695,29 @@ async function deleteDish(
         );
 
     }
+
+}
+
+
+/* =========================================================
+   HELPER
+========================================================= */
+
+function getCategoryType(
+    category
+) {
+
+    if (!category) {
+
+        return "thu";
+
+    }
+
+
+    return String(
+        category.type || "thu"
+    )
+    .trim()
+    .toLowerCase();
 
 }
