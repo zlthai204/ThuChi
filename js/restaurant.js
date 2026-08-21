@@ -1,4 +1,4 @@
-đây là phần quán , function renderRestaurant() {
+ function renderRestaurant() {
 
     const categorySelect =
         document.getElementById(
