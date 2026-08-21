@@ -1,15 +1,4 @@
-/* =========================================================
-   RESTAURANT.JS
-   BẾP NHÀ DUYÊN
-   QUẢN LÝ DANH MỤC THU + DANH MỤC CHI
-========================================================= */
-
-
-/* =========================================================
-   RENDER RESTAURANT
-========================================================= */
-
-function renderRestaurant() {
+đây là phần quán , function renderRestaurant() {
 
     const categorySelect =
         document.getElementById(
@@ -22,19 +11,9 @@ function renderRestaurant() {
         );
 
 
-    if (!categorySelect || !container) {
+    if (!categorySelect ||
+        !container) return;
 
-        return;
-
-    }
-
-
-    /*
-     * =========================
-     * SELECT DANH MỤC MÓN
-     * CHỈ HIỂN THỊ DANH MỤC THU
-     * =========================
-     */
 
     categorySelect.innerHTML = `
         <option value="">
@@ -43,92 +22,40 @@ function renderRestaurant() {
     `;
 
 
-    const categories =
-        Array.isArray(AppState.categories)
-            ? AppState.categories
-            : [];
-
-
-    const incomeCategories =
-        categories.filter(
-            category =>
-                String(
-                    category.type || "thu"
-                ).toLowerCase() === "thu"
-        );
-
-
-    incomeCategories.forEach(
+    AppState.categories.forEach(
         category => {
 
-            const option =
-                document.createElement("option");
+            categorySelect.innerHTML += `
 
-            option.value =
-                String(category.id);
+                <option value="${category.id}">
+                    ${escapeHTML(category.name)}
+                </option>
 
-            option.textContent =
-                category.name || "Không tên";
-
-            categorySelect.appendChild(
-                option
-            );
+            `;
 
         }
     );
 
 
-    /*
-     * =========================
-     * RENDER MENU
-     * =========================
-     */
-
     container.innerHTML = "";
 
 
-    categories.forEach(
+    AppState.categories.forEach(
         category => {
 
-            const categoryType =
-                String(
-                    category.type || "thu"
-                )
-                .trim()
-                .toLowerCase();
-
-
             const dishes =
-                Array.isArray(AppState.dishes)
-                    ? AppState.dishes.filter(
-                        dish =>
-                            String(
-                                dish.category_id
-                            ) ===
-                            String(
-                                category.id
-                            )
-                    )
-                    : [];
-
-
-            const typeLabel =
-                categoryType === "chi"
-                    ? "🔴 PHẦN CHI"
-                    : "🟢 PHẦN THU";
-
-
-            const typeClass =
-                categoryType === "chi"
-                    ? "expense"
-                    : "income";
+                AppState.dishes.filter(
+                    dish =>
+                        String(
+                            dish.category_id
+                        ) ===
+                        String(category.id)
+                );
 
 
             container.innerHTML += `
 
-                <div
-                    class="restaurant-category
-                           restaurant-category-${typeClass}">
+                <div class="restaurant-category">
 
                     <div class="
                         restaurant-category-header
@@ -139,47 +66,28 @@ function renderRestaurant() {
                             <div class="
                                 restaurant-category-name
                             ">
-
                                 📁
-                                ${escapeHTML(
-                                    category.name || "Không tên"
-                                )}
-
+                                ${escapeHTML(category.name)}
                             </div>
-
-
-                            <div class="
-                                restaurant-category-type
-                            ">
-
-                                ${typeLabel}
-
-                            </div>
-
 
                             <div class="
                                 restaurant-category-count
                             ">
-
                                 ${dishes.length} món
-
                             </div>
 
                         </div>
-
 
                         <div class="
                             restaurant-category-actions
                         ">
 
                             <button
-                                type="button"
                                 onclick="
                                     deleteCategory(
                                         '${category.id}'
                                     )
-                                "
-                                aria-label="Xóa danh mục">
+                                ">
 
                                 🗑️
 
@@ -194,28 +102,21 @@ function renderRestaurant() {
 
                         ${
                             dishes.length
-
                                 ? dishes.map(
                                     dish => `
 
-                                    <div class="
-                                        restaurant-dish
-                                    ">
+                                    <div class="restaurant-dish">
 
                                         <span class="
                                             restaurant-dish-name
                                         ">
-
                                             🍜
                                             ${escapeHTML(
-                                                dish.name || "Không tên"
+                                                dish.name
                                             )}
-
                                         </span>
 
-
                                         <button
-                                            type="button"
                                             class="
                                                 restaurant-dish-delete
                                             "
@@ -223,8 +124,7 @@ function renderRestaurant() {
                                                 deleteDish(
                                                     '${dish.id}'
                                                 )
-                                            "
-                                            aria-label="Xóa món">
+                                            ">
 
                                             🗑️
 
@@ -234,17 +134,12 @@ function renderRestaurant() {
 
                                 `
                                 ).join("")
-
                                 : `
-
                                     <div class="
                                         history-empty
                                     ">
-
                                         Chưa có món.
-
                                     </div>
-
                                 `
                         }
 
@@ -258,12 +153,6 @@ function renderRestaurant() {
     );
 
 
-    /*
-     * =========================
-     * COUNT
-     * =========================
-     */
-
     setText(
         "restaurantCount",
         `${AppState.dishes.length} món`
@@ -272,26 +161,14 @@ function renderRestaurant() {
 }
 
 
-/* =========================================================
-   ADD CATEGORY
-========================================================= */
+/* ADD CATEGORY */
 
-async function addCategory(
-    type = "thu"
-) {
+async function addCategory() {
 
     const input =
         document.getElementById(
             "newCategoryName"
         );
-
-
-    if (!input) {
-
-        return;
-
-    }
-
 
     const name =
         input.value.trim();
@@ -308,111 +185,40 @@ async function addCategory(
     }
 
 
-    const normalizedType =
-        type === "chi"
-            ? "chi"
-            : "thu";
-
-
-    try {
-
-        await dbInsert(
-            "categories",
-            {
-                name,
-                type: normalizedType
-            }
-        );
-
-
-        input.value = "";
-
-
-        AppState.categories =
-            await dbGet(
-                "categories",
-                {
-                    order: {
-                        column: "created_at",
-                        ascending: true
-                    }
-                }
-            );
-
-
-        renderRestaurant();
-
-
-        /*
-         * Cập nhật Home luôn
-         */
-
-        if (
-            typeof renderHome ===
-            "function"
-        ) {
-
-            renderHome();
-
+    await dbInsert(
+        "categories",
+        {
+            name
         }
+    );
 
 
-        showToast(
-            normalizedType === "chi"
-                ? "Đã thêm danh mục chi"
-                : "Đã thêm danh mục thu"
+    input.value = "";
+
+
+    AppState.categories =
+        await dbGet(
+            "categories"
         );
 
-    }
-    catch (error) {
 
-        console.error(
-            "Lỗi addCategory:",
-            error
-        );
+    renderRestaurant();
 
-    }
-
-}
-
-
-/* =========================================================
-   ADD INCOME CATEGORY
-========================================================= */
-
-async function addIncomeCategory() {
-
-    await addCategory(
-        "thu"
+    showToast(
+        "Đã thêm danh mục"
     );
 
 }
 
 
-/* =========================================================
-   ADD EXPENSE CATEGORY
-========================================================= */
-
-async function addExpenseCategory() {
-
-    await addCategory(
-        "chi"
-    );
-
-}
-
-
-/* =========================================================
-   ADD DISH
-   CHỈ CHO PHÉP THÊM MÓN VÀO DANH MỤC THU
-========================================================= */
+/* ADD DISH */
 
 async function addDish() {
 
     const categoryId =
         document.getElementById(
             "dishCategorySelect"
-        )?.value || "";
+        ).value;
 
 
     const input =
@@ -422,13 +228,13 @@ async function addDish() {
 
 
     const name =
-        input?.value.trim() || "";
+        input.value.trim();
 
 
     if (!categoryId) {
 
         showToast(
-            "Chọn danh mục món"
+            "Chọn danh mục"
         );
 
         return;
@@ -447,122 +253,45 @@ async function addDish() {
     }
 
 
-    /*
-     * category_id phải là BIGINT
-     */
+    await dbInsert(
+        "dishes",
+        {
+            category_id:
+                categoryId,
 
-    const category =
-        AppState.categories.find(
-            item =>
-                String(item.id) ===
-                String(categoryId)
-        );
-
-
-    if (!category) {
-
-        showToast(
-            "Không tìm thấy danh mục"
-        );
-
-        return;
-
-    }
-
-
-    /*
-     * Không cho thêm món vào danh mục chi
-     */
-
-    if (
-        String(
-            category.type || "thu"
-        ).toLowerCase() ===
-        "chi"
-    ) {
-
-        showToast(
-            "Danh mục chi không thêm món"
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        await dbInsert(
-            "dishes",
-            {
-                category_id:
-                    Number(categoryId),
-
-                name
-            }
-        );
-
-
-        input.value = "";
-
-
-        AppState.dishes =
-            await dbGet(
-                "dishes",
-                {
-                    order: {
-                        column: "created_at",
-                        ascending: true
-                    }
-                }
-            );
-
-
-        renderRestaurant();
-
-
-        if (
-            typeof renderHome ===
-            "function"
-        ) {
-
-            renderHome();
-
+            name
         }
+    );
 
 
-        showToast(
-            "Đã thêm món"
+    input.value = "";
+
+
+    AppState.dishes =
+        await dbGet(
+            "dishes"
         );
 
-    }
-    catch (error) {
 
-        console.error(
-            "Lỗi addDish:",
-            error
-        );
+    renderRestaurant();
 
-    }
+    showToast(
+        "Đã thêm món"
+    );
 
 }
 
 
-/* =========================================================
-   DELETE CATEGORY
-========================================================= */
+/* DELETE CATEGORY */
 
-async function deleteCategory(
-    id
-) {
+async function deleteCategory(id) {
 
     const hasDish =
         AppState.dishes.some(
             dish =>
                 String(
                     dish.category_id
-                ) ===
-                String(id)
+                ) === String(id)
         );
 
 
@@ -581,143 +310,61 @@ async function deleteCategory(
         !confirm(
             "Xóa danh mục này?"
         )
-    ) {
-
-        return;
-
-    }
+    ) return;
 
 
-    try {
+    await dbDelete(
+        "categories",
+        id
+    );
 
-        await dbDelete(
-            "categories",
-            id
+
+    AppState.categories =
+        AppState.categories.filter(
+            category =>
+                String(category.id) !==
+                String(id)
         );
 
 
-        AppState.categories =
-            AppState.categories.filter(
-                category =>
-                    String(category.id) !==
-                    String(id)
-            );
+    renderRestaurant();
 
-
-        renderRestaurant();
-
-
-        if (
-            typeof renderHome ===
-            "function"
-        ) {
-
-            renderHome();
-
-        }
-
-
-        showToast(
-            "Đã xóa danh mục"
-        );
-
-    }
-    catch (error) {
-
-        console.error(
-            "Lỗi deleteCategory:",
-            error
-        );
-
-    }
+    showToast(
+        "Đã xóa danh mục"
+    );
 
 }
 
 
-/* =========================================================
-   DELETE DISH
-========================================================= */
+/* DELETE DISH */
 
-async function deleteDish(
-    id
-) {
+async function deleteDish(id) {
 
     if (
         !confirm(
             "Xóa món này?"
         )
-    ) {
-
-        return;
-
-    }
+    ) return;
 
 
-    try {
+    await dbDelete(
+        "dishes",
+        id
+    );
 
-        await dbDelete(
-            "dishes",
-            id
+
+    AppState.dishes =
+        AppState.dishes.filter(
+            dish =>
+                String(dish.id) !==
+                String(id)
         );
 
 
-        AppState.dishes =
-            AppState.dishes.filter(
-                dish =>
-                    String(dish.id) !==
-                    String(id)
-            );
+    renderRestaurant();
 
-
-        renderRestaurant();
-
-
-        if (
-            typeof renderHome ===
-            "function"
-        ) {
-
-            renderHome();
-
-        }
-
-
-        showToast(
-            "Đã xóa món"
-        );
-
-    }
-    catch (error) {
-
-        console.error(
-            "Lỗi deleteDish:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   HELPER
-========================================================= */
-
-function getCategoryType(
-    category
-) {
-
-    if (!category) {
-
-        return "thu";
-
-    }
-
-
-    return String(
-        category.type || "thu"
-    )
-    .trim()
-    .toLowerCase();
+    showToast(
+        "Đã xóa món"
+    );
 
 }
