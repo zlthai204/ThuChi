@@ -1,4 +1,4 @@
-```javascript
+javascript
 /* =========================================================
    HOME.JS
    BẾP NHÀ DUYÊN
@@ -1444,4 +1444,3 @@ function formatVietnameseDate(
     );
 
 }
-```
