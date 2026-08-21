@@ -1,15 +1,66 @@
-javascript
 /* =========================================================
    RESTAURANT.JS
    BẾP NHÀ DUYÊN
+
+   QUẢN LÝ:
+   1. Danh mục món THU
+   2. Món ăn
+   3. Danh mục riêng cho CHI
 ========================================================= */
+
+
+/* =========================================================
+   LOAD EXPENSE CATEGORIES
+========================================================= */
+
+async function loadExpenseCategories() {
+
+    try {
+
+        AppState.expenseCategories =
+            await dbGet(
+                "expense_categories",
+                {
+                    order: {
+                        column:
+                            "created_at",
+
+                        ascending:
+                            true
+                    }
+                }
+            );
+
+
+        return (
+            AppState.expenseCategories
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Lỗi load danh mục Chi:",
+            error
+        );
+
+
+        AppState.expenseCategories =
+            [];
+
+
+        return [];
+
+    }
+
+}
 
 
 /* =========================================================
    RENDER RESTAURANT
 ========================================================= */
 
-function renderRestaurant() {
+async function renderRestaurant() {
 
     const categorySelect =
         document.getElementById(
@@ -23,238 +74,27 @@ function renderRestaurant() {
         );
 
 
-    /*
-     * DROPDOWN DANH MỤC MÓN
-     */
+    if (
+        !categorySelect ||
+        !container
+    ) {
 
-    if (categorySelect) {
-
-        categorySelect.innerHTML = `
-            <option value="">
-                Chọn danh mục
-            </option>
-        `;
-
-
-        const incomeCategories =
-            Array.isArray(
-                AppState.categories
-            )
-                ? AppState.categories.filter(
-                    category =>
-                        String(
-                            category.type ||
-                            "thu"
-                        )
-                        .toLowerCase() ===
-                        "thu"
-                )
-                : [];
-
-
-        incomeCategories.forEach(
-            category => {
-
-                categorySelect.innerHTML += `
-
-                    <option
-                        value="${category.id}"
-                    >
-                        ${escapeHTML(
-                            category.name
-                        )}
-                    </option>
-
-                `;
-
-            }
-        );
+        return;
 
     }
 
 
     /*
-     * DANH SÁCH MÓN
+     * =====================================================
+     * SELECT DANH MỤC MÓN
+     * =====================================================
      */
 
-    if (container) {
-
-        container.innerHTML = "";
-
-
-        const incomeCategories =
-            Array.isArray(
-                AppState.categories
-            )
-                ? AppState.categories.filter(
-                    category =>
-                        String(
-                            category.type ||
-                            "thu"
-                        )
-                        .toLowerCase() ===
-                        "thu"
-                )
-                : [];
-
-
-        incomeCategories.forEach(
-            category => {
-
-                const dishes =
-                    AppState.dishes.filter(
-                        dish =>
-                            String(
-                                dish.category_id
-                            ) ===
-                            String(
-                                category.id
-                            )
-                    );
-
-
-                container.innerHTML += `
-
-                    <div class="restaurant-category">
-
-                        <div class="
-                            restaurant-category-header
-                        ">
-
-                            <div>
-
-                                <div class="
-                                    restaurant-category-name
-                                ">
-                                    📁
-                                    ${escapeHTML(
-                                        category.name
-                                    )}
-                                </div>
-
-                                <div class="
-                                    restaurant-category-count
-                                ">
-                                    ${dishes.length} món
-                                </div>
-
-                            </div>
-
-
-                            <div class="
-                                restaurant-category-actions
-                            ">
-
-                                <button
-                                    type="button"
-                                    onclick="
-                                        deleteCategory(
-                                            '${category.id}'
-                                        )
-                                    "
-                                    title="Xóa danh mục">
-
-                                    🗑️
-
-                                </button>
-
-                            </div>
-
-                        </div>
-
-
-                        <div class="restaurant-dishes">
-
-                            ${
-                                dishes.length
-                                    ? dishes.map(
-                                        dish => `
-
-                                        <div class="restaurant-dish">
-
-                                            <span class="
-                                                restaurant-dish-name
-                                            ">
-                                                🍜
-                                                ${escapeHTML(
-                                                    dish.name
-                                                )}
-                                            </span>
-
-
-                                            <button
-                                                type="button"
-                                                class="
-                                                    restaurant-dish-delete
-                                                "
-                                                onclick="
-                                                    deleteDish(
-                                                        '${dish.id}'
-                                                    )
-                                                "
-                                                title="Xóa món">
-
-                                                🗑️
-
-                                            </button>
-
-                                        </div>
-
-                                    `
-                                    ).join("")
-                                    : `
-                                        <div class="
-                                            history-empty
-                                        ">
-                                            Chưa có món.
-                                        </div>
-                                    `
-                            }
-
-                        </div>
-
-                    </div>
-
-                `;
-
-            }
-        );
-
-    }
-
-
-    /*
-     * Tổng món
-     */
-
-    setText(
-        "restaurantCount",
-        `${AppState.dishes.length} món`
-    );
-
-
-    /*
-     * Render danh mục CHI
-     */
-
-    renderExpenseCategories();
-
-}
-
-
-/* =========================================================
-   RENDER EXPENSE CATEGORIES
-========================================================= */
-
-function renderExpenseCategories() {
-
-    const container =
-        document.getElementById(
-            "expenseCategoryList"
-        );
-
-
-    if (!container) return;
+    categorySelect.innerHTML = `
+        <option value="">
+            Chọn danh mục món
+        </option>
+    `;
 
 
     const categories =
@@ -265,110 +105,345 @@ function renderExpenseCategories() {
             : [];
 
 
-    const expenseCategories =
-        categories.filter(
-            category =>
-                String(
-                    category.type ||
-                    "thu"
-                )
-                .trim()
-                .toLowerCase() ===
-                "chi"
-        );
-
-
-    container.innerHTML = "";
-
-
-    if (
-        expenseCategories.length ===
-        0
-    ) {
-
-        container.innerHTML = `
-
-            <div class="history-empty">
-
-                Chưa có danh mục khoản chi.
-
-            </div>
-
-        `;
-
-    }
-
-
-    expenseCategories.forEach(
+    categories.forEach(
         category => {
 
-            container.innerHTML += `
-
-                <div class="restaurant-category">
-
-                    <div class="
-                        restaurant-category-header
-                    ">
-
-                        <div>
-
-                            <div class="
-                                restaurant-category-name
-                            ">
-                                💸
-                                ${escapeHTML(
-                                    category.name
-                                )}
-                            </div>
-
-                            <div class="
-                                restaurant-category-count
-                            ">
-                                Danh mục chi
-                            </div>
-
-                        </div>
+            const option =
+                document.createElement(
+                    "option"
+                );
 
 
-                        <div class="
-                            restaurant-category-actions
-                        ">
+            option.value =
+                category.id;
 
-                            <button
-                                type="button"
-                                onclick="
-                                    deleteExpenseCategory(
-                                        '${category.id}'
-                                    )
-                                "
-                                title="Xóa danh mục chi">
 
-                                🗑️
+            option.textContent =
+                category.name ||
+                "Không tên";
 
-                            </button>
 
-                        </div>
+            categorySelect.appendChild(
+                option
+            );
 
-                    </div>
+        }
+    );
 
-                </div>
 
-            `;
+    /*
+     * =====================================================
+     * MENU MÓN
+     * =====================================================
+     */
+
+    container.innerHTML =
+        "";
+
+
+    categories.forEach(
+        category => {
+
+            const dishes =
+                Array.isArray(
+                    AppState.dishes
+                )
+                    ? AppState.dishes.filter(
+                        dish =>
+                            String(
+                                dish.category_id
+                            ) ===
+                            String(
+                                category.id
+                            )
+                    )
+                    : [];
+
+
+            const categoryDiv =
+                document.createElement(
+                    "div"
+                );
+
+
+            categoryDiv.className =
+                "restaurant-category";
+
+
+            /*
+             * Header
+             */
+
+            const header =
+                document.createElement(
+                    "div"
+                );
+
+
+            header.className =
+                "restaurant-category-header";
+
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            const name =
+                document.createElement(
+                    "div"
+                );
+
+
+            name.className =
+                "restaurant-category-name";
+
+
+            name.textContent =
+                `📁 ${category.name || "Không tên"}`;
+
+
+            const count =
+                document.createElement(
+                    "div"
+                );
+
+
+            count.className =
+                "restaurant-category-count";
+
+
+            count.textContent =
+                `${dishes.length} món`;
+
+
+            info.appendChild(
+                name
+            );
+
+
+            info.appendChild(
+                count
+            );
+
+
+            /*
+             * Actions
+             */
+
+            const actions =
+                document.createElement(
+                    "div"
+                );
+
+
+            actions.className =
+                "restaurant-category-actions";
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.type =
+                "button";
+
+
+            deleteButton.textContent =
+                "🗑️";
+
+
+            deleteButton.title =
+                "Xóa danh mục";
+
+
+            deleteButton.onclick =
+                function () {
+
+                    deleteCategory(
+                        category.id
+                    );
+
+                };
+
+
+            actions.appendChild(
+                deleteButton
+            );
+
+
+            header.appendChild(
+                info
+            );
+
+
+            header.appendChild(
+                actions
+            );
+
+
+            categoryDiv.appendChild(
+                header
+            );
+
+
+            /*
+             * =================================================
+             * DISH LIST
+             * =================================================
+             */
+
+            const dishContainer =
+                document.createElement(
+                    "div"
+                );
+
+
+            dishContainer.className =
+                "restaurant-dishes";
+
+
+            if (
+                dishes.length === 0
+            ) {
+
+                const empty =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                empty.className =
+                    "history-empty";
+
+
+                empty.textContent =
+                    "Chưa có món.";
+
+
+                dishContainer.appendChild(
+                    empty
+                );
+
+            }
+            else {
+
+                dishes.forEach(
+                    dish => {
+
+                        const row =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        row.className =
+                            "restaurant-dish";
+
+
+                        const dishName =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        dishName.className =
+                            "restaurant-dish-name";
+
+
+                        dishName.textContent =
+                            `🍜 ${dish.name || "Không tên"}`;
+
+
+                        const deleteDishButton =
+                            document.createElement(
+                                "button"
+                            );
+
+
+                        deleteDishButton.type =
+                            "button";
+
+
+                        deleteDishButton.className =
+                            "restaurant-dish-delete";
+
+
+                        deleteDishButton.textContent =
+                            "🗑️";
+
+
+                        deleteDishButton.title =
+                            "Xóa món";
+
+
+                        deleteDishButton.onclick =
+                            function () {
+
+                                deleteDish(
+                                    dish.id
+                                );
+
+                            };
+
+
+                        row.appendChild(
+                            dishName
+                        );
+
+
+                        row.appendChild(
+                            deleteDishButton
+                        );
+
+
+                        dishContainer.appendChild(
+                            row
+                        );
+
+                    }
+                );
+
+            }
+
+
+            categoryDiv.appendChild(
+                dishContainer
+            );
+
+
+            container.appendChild(
+                categoryDiv
+            );
 
         }
     );
 
 
     setText(
-        "expenseCategoryCount",
-        `${expenseCategories.length} danh mục`
+        "restaurantCount",
+        `${AppState.dishes.length} món`
     );
+
+
+    /*
+     * =====================================================
+     * DANH MỤC CHI
+     * =====================================================
+     */
+
+    await loadExpenseCategories();
+
+    renderExpenseCategories();
 
 }
 
 
 /* =========================================================
-   ADD CATEGORY - THU
+   ADD CATEGORY MÓN
 ========================================================= */
 
 async function addCategory() {
@@ -389,7 +464,7 @@ async function addCategory() {
     if (!name) {
 
         showToast(
-            "Nhập tên danh mục"
+            "Nhập tên danh mục món"
         );
 
         return;
@@ -402,13 +477,13 @@ async function addCategory() {
         await dbInsert(
             "categories",
             {
-                name,
-                type: "thu"
+                name
             }
         );
 
 
-        input.value = "";
+        input.value =
+            "";
 
 
         AppState.categories =
@@ -429,76 +504,6 @@ async function addCategory() {
 
         console.error(
             "Lỗi addCategory:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   ADD CATEGORY - CHI
-========================================================= */
-
-async function addExpenseCategory() {
-
-    const input =
-        document.getElementById(
-            "newExpenseCategoryName"
-        );
-
-
-    if (!input) return;
-
-
-    const name =
-        input.value.trim();
-
-
-    if (!name) {
-
-        showToast(
-            "Nhập tên danh mục chi"
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        await dbInsert(
-            "categories",
-            {
-                name,
-                type: "chi"
-            }
-        );
-
-
-        input.value = "";
-
-
-        AppState.categories =
-            await dbGet(
-                "categories"
-            );
-
-
-        renderRestaurant();
-
-
-        showToast(
-            "Đã thêm danh mục chi"
-        );
-
-    }
-    catch (error) {
-
-        console.error(
-            "Lỗi addExpenseCategory:",
             error
         );
 
@@ -535,7 +540,7 @@ async function addDish() {
     if (!categoryId) {
 
         showToast(
-            "Chọn danh mục"
+            "Chọn danh mục món"
         );
 
         return;
@@ -547,40 +552,6 @@ async function addDish() {
 
         showToast(
             "Nhập tên món"
-        );
-
-        return;
-
-    }
-
-
-    /*
-     * Kiểm tra category phải là THU
-     */
-
-    const category =
-        AppState.categories.find(
-            item =>
-                String(
-                    item.id
-                ) ===
-                String(
-                    categoryId
-                )
-        );
-
-
-    if (
-        !category ||
-        String(
-            category.type ||
-            "thu"
-        ).toLowerCase() !==
-        "thu"
-    ) {
-
-        showToast(
-            "Chỉ có thể thêm món vào danh mục Thu"
         );
 
         return;
@@ -601,7 +572,8 @@ async function addDish() {
         );
 
 
-        input.value = "";
+        input.value =
+            "";
 
 
         AppState.dishes =
@@ -631,7 +603,7 @@ async function addDish() {
 
 
 /* =========================================================
-   DELETE CATEGORY - THU
+   DELETE CATEGORY MÓN
 ========================================================= */
 
 async function deleteCategory(
@@ -639,12 +611,17 @@ async function deleteCategory(
 ) {
 
     const hasDish =
+        Array.isArray(
+            AppState.dishes
+        ) &&
         AppState.dishes.some(
             dish =>
                 String(
                     dish.category_id
                 ) ===
-                String(id)
+                String(
+                    id
+                )
         );
 
 
@@ -684,7 +661,9 @@ async function deleteCategory(
                     String(
                         category.id
                     ) !==
-                    String(id)
+                    String(
+                        id
+                    )
             );
 
 
@@ -700,93 +679,6 @@ async function deleteCategory(
 
         console.error(
             "Lỗi deleteCategory:",
-            error
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   DELETE CATEGORY - CHI
-========================================================= */
-
-async function deleteExpenseCategory(
-    id
-) {
-
-    /*
-     * Không cho xóa nếu đã có giao dịch
-     * thuộc danh mục này.
-     */
-
-    const hasTransaction =
-        Array.isArray(
-            AppState.transactions
-        )
-            ? AppState.transactions.some(
-                transaction =>
-                    String(
-                        transaction.category_id
-                    ) ===
-                    String(id)
-            )
-            : false;
-
-
-    if (hasTransaction) {
-
-        showToast(
-            "Danh mục đã có giao dịch, không thể xóa"
-        );
-
-        return;
-
-    }
-
-
-    if (
-        !confirm(
-            "Xóa danh mục khoản chi này?"
-        )
-    ) {
-
-        return;
-
-    }
-
-
-    try {
-
-        await dbDelete(
-            "categories",
-            id
-        );
-
-
-        AppState.categories =
-            AppState.categories.filter(
-                category =>
-                    String(
-                        category.id
-                    ) !==
-                    String(id)
-            );
-
-
-        renderRestaurant();
-
-
-        showToast(
-            "Đã xóa danh mục chi"
-        );
-
-    }
-    catch (error) {
-
-        console.error(
-            "Lỗi deleteExpenseCategory:",
             error
         );
 
@@ -828,7 +720,9 @@ async function deleteDish(
                     String(
                         dish.id
                     ) !==
-                    String(id)
+                    String(
+                        id
+                    )
             );
 
 
@@ -850,3 +744,338 @@ async function deleteDish(
     }
 
 }
+
+
+/* =========================================================
+   RENDER EXPENSE CATEGORIES
+========================================================= */
+
+function renderExpenseCategories() {
+
+    const container =
+        document.getElementById(
+            "expenseCategoryList"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    const categories =
+        Array.isArray(
+            AppState.expenseCategories
+        )
+            ? AppState.expenseCategories
+            : [];
+
+
+    if (
+        categories.length === 0
+    ) {
+
+        container.innerHTML = `
+            <div class="history-empty">
+                Chưa có danh mục chi.
+            </div>
+        `;
+
+        return;
+
+    }
+
+
+    categories.forEach(
+        category => {
+
+            const row =
+                document.createElement(
+                    "div"
+                );
+
+
+            row.className =
+                "expense-category-row";
+
+
+            const info =
+                document.createElement(
+                    "div"
+                );
+
+
+            info.className =
+                "expense-category-info";
+
+
+            const name =
+                document.createElement(
+                    "strong"
+                );
+
+
+            name.textContent =
+                `📁 ${category.name || "Không tên"}`;
+
+
+            info.appendChild(
+                name
+            );
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.type =
+                "button";
+
+
+            deleteButton.className =
+                "expense-category-delete";
+
+
+            deleteButton.textContent =
+                "🗑️";
+
+
+            deleteButton.title =
+                "Xóa danh mục chi";
+
+
+            deleteButton.onclick =
+                function () {
+
+                    deleteExpenseCategory(
+                        category.id
+                    );
+
+                };
+
+
+            row.appendChild(
+                info
+            );
+
+
+            row.appendChild(
+                deleteButton
+            );
+
+
+            container.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ADD EXPENSE CATEGORY
+========================================================= */
+
+async function addExpenseCategory() {
+
+    const input =
+        document.getElementById(
+            "newExpenseCategoryName"
+        );
+
+
+    if (!input) {
+
+        return;
+
+    }
+
+
+    const name =
+        input.value.trim();
+
+
+    if (!name) {
+
+        showToast(
+            "Nhập tên danh mục chi"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        await dbInsert(
+            "expense_categories",
+            {
+                name
+            }
+        );
+
+
+        input.value =
+            "";
+
+
+        await loadExpenseCategories();
+
+
+        renderExpenseCategories();
+
+
+        /*
+         * Nếu đang ở form Chi
+         * thì cập nhật lại danh mục.
+         */
+
+        if (
+            AppState.transactionType ===
+            "chi"
+        ) {
+
+            renderTransactionCategories();
+
+        }
+
+
+        showToast(
+            "Đã thêm danh mục chi"
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Lỗi addExpenseCategory:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   DELETE EXPENSE CATEGORY
+========================================================= */
+
+async function deleteExpenseCategory(
+    id
+) {
+
+    /*
+     * Kiểm tra giao dịch đã sử dụng
+     * danh mục này chưa.
+     */
+
+    const transactions =
+        Array.isArray(
+            AppState.transactions
+        )
+            ? AppState.transactions
+            : [];
+
+
+    const used =
+        transactions.some(
+            transaction =>
+                normalizeTransactionType(
+                    transaction.type
+                ) === "chi" &&
+                String(
+                    transaction.category_id
+                ) ===
+                String(
+                    id
+                )
+        );
+
+
+    if (used) {
+
+        showToast(
+            "Danh mục đã có giao dịch, không thể xóa"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !confirm(
+            "Xóa danh mục chi này?"
+        )
+    ) {
+
+        return;
+
+    }
+
+
+    try {
+
+        await dbDelete(
+            "expense_categories",
+            id
+        );
+
+
+        AppState.expenseCategories =
+            AppState.expenseCategories.filter(
+                category =>
+                    String(
+                        category.id
+                    ) !==
+                    String(
+                        id
+                    )
+            );
+
+
+        renderExpenseCategories();
+
+
+        if (
+            AppState.transactionType ===
+            "chi"
+        ) {
+
+            renderTransactionCategories();
+
+        }
+
+
+        showToast(
+            "Đã xóa danh mục chi"
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Lỗi deleteExpenseCategory:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   END RESTAURANT.JS
+========================================================= */
