@@ -1,7 +1,7 @@
 /* =========================================================
    HOME.JS
    BẾP NHÀ DUYÊN
-   THU / CHI + DANH MỤC RIÊNG
+   THU / CHI
 ========================================================= */
 
 
@@ -55,27 +55,30 @@ function renderTransactionCategories() {
 
 
     /*
-     * Chỉ lấy danh mục theo loại giao dịch
-     *
-     * THU -> type = thu
-     * CHI -> type = chi
+     * =====================================================
+     * XÁC ĐỊNH THU / CHI
+     * =====================================================
      */
 
-    const transactionType =
+    const type =
         normalizeTransactionType(
             AppState.transactionType
-        ) || "thu";
+        );
 
+
+    /*
+     * THU
+     *
+     * Chỉ lấy category không phải chi.
+     *
+     * CHI
+     *
+     * Chỉ lấy category có type = chi.
+     */
 
     const filteredCategories =
         categories.filter(
             category => {
-
-                /*
-                 * Nếu category chưa có type
-                 * thì coi là danh mục THU để
-                 * không làm mất dữ liệu cũ.
-                 */
 
                 const categoryType =
                     normalizeTransactionType(
@@ -83,19 +86,28 @@ function renderTransactionCategories() {
                     );
 
 
-                if (!categoryType) {
+                if (type === "chi") {
 
                     return (
-                        transactionType ===
-                        "thu"
+                        categoryType ===
+                        "chi"
                     );
 
                 }
 
 
+                /*
+                 * THU
+                 *
+                 * Cho phép:
+                 *
+                 * type = thu
+                 * type = rỗng / cũ
+                 */
+
                 return (
-                    categoryType ===
-                    transactionType
+                    categoryType !==
+                    "chi"
                 );
 
             }
@@ -105,23 +117,24 @@ function renderTransactionCategories() {
     filteredCategories.forEach(
         category => {
 
+            /*
+             * CHỈ DÙNG ID DATABASE
+             *
+             * categories.id phải là bigint.
+             */
+
+            const id =
+                category.id;
+
+
             const option =
                 document.createElement(
                     "option"
                 );
 
 
-            /*
-             * categories.id là BIGINT
-             *
-             * Ép thành String để dùng
-             * làm value HTML.
-             */
-
             option.value =
-                String(
-                    category.id
-                );
+                String(id);
 
 
             option.textContent =
@@ -138,19 +151,14 @@ function renderTransactionCategories() {
 
 
     /*
-     * Giữ lại danh mục đang chọn
-     * nếu nó vẫn thuộc đúng loại.
+     * Giữ category cũ nếu còn tồn tại
      */
 
     if (
         filteredCategories.some(
             category =>
-                String(
-                    category.id
-                ) ===
-                String(
-                    oldValue
-                )
+                String(category.id) ===
+                String(oldValue)
         )
     ) {
 
@@ -161,7 +169,7 @@ function renderTransactionCategories() {
 
 
     /*
-     * Đổi danh mục -> đổi món
+     * Đổi category
      */
 
     select.onchange =
@@ -206,6 +214,10 @@ function renderTransactionDishes() {
         categorySelect.value;
 
 
+    const oldDishValue =
+        dishSelect.value;
+
+
     dishSelect.innerHTML = `
         <option value="">
             Chọn món
@@ -214,19 +226,24 @@ function renderTransactionDishes() {
 
 
     /*
-     * CHI không dùng món.
+     * =====================================================
+     * CHI KHÔNG CÓ MÓN
+     * =====================================================
      */
 
-    const transactionType =
+    if (
         normalizeTransactionType(
             AppState.transactionType
-        );
-
-
-    if (
-        transactionType !==
-        "thu"
+        ) === "chi"
     ) {
+
+        dishSelect.innerHTML = `
+            <option value="">
+                Không áp dụng
+            </option>
+        `;
+
+        dishSelect.value = "";
 
         return;
 
@@ -234,7 +251,7 @@ function renderTransactionDishes() {
 
 
     /*
-     * Chưa chọn danh mục.
+     * Chưa chọn category
      */
 
     if (!categoryId) {
@@ -251,6 +268,10 @@ function renderTransactionDishes() {
             ? AppState.dishes
             : [];
 
+
+    /*
+     * Lọc món theo category
+     */
 
     const categoryDishes =
         dishes.filter(
@@ -274,7 +295,7 @@ function renderTransactionDishes() {
 
 
             /*
-             * dishes.id cũng là BIGINT.
+             * dishes.id phải là bigint
              */
 
             option.value =
@@ -295,6 +316,931 @@ function renderTransactionDishes() {
         }
     );
 
+
+    /*
+     * Giữ món đang chọn
+     */
+
+    if (
+        categoryDishes.some(
+            dish =>
+                String(dish.id) ===
+                String(oldDishValue)
+        )
+    ) {
+
+        dishSelect.value =
+            oldDishValue;
+
+    }
+
+}
+
+
+/* =========================================================
+   TRANSACTION TYPE
+========================================================= */
+
+function setTransactionType(
+    type
+) {
+
+    type =
+        normalizeTransactionType(
+            type
+        );
+
+
+    if (
+        type !== "thu" &&
+        type !== "chi"
+    ) {
+
+        type = "thu";
+
+    }
+
+
+    AppState.transactionType =
+        type;
+
+
+    const incomeButton =
+        document.getElementById(
+            "incomeTypeButton"
+        );
+
+
+    const expenseButton =
+        document.getElementById(
+            "expenseTypeButton"
+        );
+
+
+    if (incomeButton) {
+
+        incomeButton.classList.toggle(
+            "active",
+            type === "thu"
+        );
+
+    }
+
+
+    if (expenseButton) {
+
+        expenseButton.classList.toggle(
+            "active",
+            type === "chi"
+        );
+
+    }
+
+
+    /*
+     * THU mới có nguồn đơn
+     */
+
+    const sourceBox =
+        document.getElementById(
+            "orderSourceBox"
+        );
+
+
+    /*
+     * THU mới có phí app
+     */
+
+    const feeBox =
+        document.getElementById(
+            "appFeeBox"
+        );
+
+
+    const isIncome =
+        type === "thu";
+
+
+    if (sourceBox) {
+
+        sourceBox.style.display =
+            isIncome
+                ? "block"
+                : "none";
+
+    }
+
+
+    if (feeBox) {
+
+        feeBox.style.display =
+            isIncome
+                ? "block"
+                : "none";
+
+    }
+
+
+    /*
+     * QUAN TRỌNG
+     *
+     * Đổi THU / CHI phải render lại
+     * danh mục.
+     */
+
+    renderTransactionCategories();
+
+    renderTransactionDishes();
+
+}
+
+
+/* =========================================================
+   ORDER SOURCE
+========================================================= */
+
+function setOrderSource(
+    source
+) {
+
+    AppState.orderSource =
+        source;
+
+
+    document
+        .querySelectorAll(
+            ".source-button"
+        )
+        .forEach(
+            button => {
+
+                button.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    const sourceMap = {
+
+        ShopeeFood:
+            "sourceShopee",
+
+        GrabFood:
+            "sourceGrab",
+
+        "Ngoài sàn":
+            "sourceOutside"
+
+    };
+
+
+    const button =
+        document.getElementById(
+            sourceMap[source]
+        );
+
+
+    if (button) {
+
+        button.classList.add(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SAVE TRANSACTION
+========================================================= */
+
+async function saveTransaction() {
+
+    const type =
+        normalizeTransactionType(
+            AppState.transactionType
+        );
+
+
+    /*
+     * =====================================================
+     * LẤY FORM
+     * =====================================================
+     */
+
+    const categoryElement =
+        document.getElementById(
+            "transactionCategory"
+        );
+
+
+    const dishElement =
+        document.getElementById(
+            "transactionDish"
+        );
+
+
+    const customNameElement =
+        document.getElementById(
+            "transactionName"
+        );
+
+
+    const amountElement =
+        document.getElementById(
+            "transactionAmount"
+        );
+
+
+    const appFeeElement =
+        document.getElementById(
+            "appFee"
+        );
+
+
+    const dateElement =
+        document.getElementById(
+            "transactionDate"
+        );
+
+
+    const noteElement =
+        document.getElementById(
+            "transactionNote"
+        );
+
+
+    const categoryValue =
+        categoryElement?.value || "";
+
+
+    const dishValue =
+        dishElement?.value || "";
+
+
+    const customName =
+        customNameElement?.value
+            ?.trim() || "";
+
+
+    const amount =
+        Number(
+            amountElement?.value
+        ) || 0;
+
+
+    const appFee =
+        Number(
+            appFeeElement?.value
+        ) || 0;
+
+
+    const date =
+        dateElement?.value ||
+        getLocalDateString();
+
+
+    const note =
+        noteElement?.value
+            ?.trim() || "";
+
+
+    /*
+     * =====================================================
+     * KIỂM TRA SỐ TIỀN
+     * =====================================================
+     */
+
+    if (
+        amount <= 0
+    ) {
+
+        showToast(
+            "Vui lòng nhập số tiền"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * =====================================================
+     * TÌM CATEGORY
+     * =====================================================
+     */
+
+    let category =
+        null;
+
+
+    if (categoryValue) {
+
+        category =
+            AppState.categories.find(
+                item =>
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        categoryValue
+                    )
+            );
+
+    }
+
+
+    /*
+     * =====================================================
+     * CHI BẮT BUỘC CÓ CATEGORY
+     * =====================================================
+     */
+
+    if (
+        type === "chi" &&
+        !category
+    ) {
+
+        showToast(
+            "Vui lòng chọn danh mục phần chi"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * =====================================================
+     * KIỂM TRA CATEGORY ID
+     *
+     * categories.id = bigint
+     *
+     * Không được phép UUID.
+     * =====================================================
+     */
+
+    let categoryId =
+        null;
+
+
+    if (category) {
+
+        const parsedCategoryId =
+            Number(
+                category.id
+            );
+
+
+        if (
+            !Number.isInteger(
+                parsedCategoryId
+            ) ||
+            parsedCategoryId <= 0
+        ) {
+
+            console.error(
+                "CATEGORY ID KHÔNG PHẢI BIGINT:",
+                category
+            );
+
+
+            showToast(
+                "Lỗi ID danh mục. Hãy tải lại trang."
+            );
+
+            return;
+
+        }
+
+
+        categoryId =
+            parsedCategoryId;
+
+    }
+
+
+    /*
+     * =====================================================
+     * TÌM DISH
+     *
+     * CHI KHÔNG DÙNG DISH
+     * =====================================================
+     */
+
+    let dish =
+        null;
+
+
+    let dishId =
+        null;
+
+
+    if (
+        type === "thu" &&
+        dishValue
+    ) {
+
+        dish =
+            AppState.dishes.find(
+                item =>
+                    String(
+                        item.id
+                    ) ===
+                    String(
+                        dishValue
+                    )
+            );
+
+
+        if (dish) {
+
+            const parsedDishId =
+                Number(
+                    dish.id
+                );
+
+
+            if (
+                !Number.isInteger(
+                    parsedDishId
+                ) ||
+                parsedDishId <= 0
+            ) {
+
+                console.error(
+                    "DISH ID KHÔNG PHẢI BIGINT:",
+                    dish
+                );
+
+
+                showToast(
+                    "Lỗi ID món. Hãy tải lại trang."
+                );
+
+                return;
+
+            }
+
+
+            dishId =
+                parsedDishId;
+
+        }
+
+    }
+
+
+    /*
+     * =====================================================
+     * KIỂM TRA CATEGORY TYPE
+     *
+     * =====================================================
+     */
+
+    if (category) {
+
+        const categoryType =
+            normalizeTransactionType(
+                category.type
+            );
+
+
+        if (
+            type === "chi" &&
+            categoryType !== "chi"
+        ) {
+
+            showToast(
+                "Danh mục này không phải danh mục phần chi"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            type === "thu" &&
+            categoryType === "chi"
+        ) {
+
+            showToast(
+                "Danh mục phần chi không dùng cho phần thu"
+            );
+
+            return;
+
+        }
+
+    }
+
+
+    /*
+     * =====================================================
+     * TÊN GIAO DỊCH
+     * =====================================================
+     */
+
+    let transactionDishName =
+        "Giao dịch";
+
+
+    if (
+        type === "chi"
+    ) {
+
+        transactionDishName =
+            category?.name ||
+            customName ||
+            "Chi phí";
+
+    } else {
+
+        transactionDishName =
+            dish?.name ||
+            customName ||
+            "Giao dịch";
+
+    }
+
+
+    /*
+     * =====================================================
+     * PAYLOAD
+     *
+     * QUAN TRỌNG:
+     *
+     * category_id = BIGINT
+     * dish_id     = BIGINT
+     *
+     * CHI:
+     * dish_id = null
+     * =====================================================
+     */
+
+    const payload = {
+
+        type:
+            type,
+
+
+        category_id:
+            categoryId,
+
+
+        dish_id:
+            type === "thu"
+                ? dishId
+                : null,
+
+
+        category_name:
+            category?.name ||
+            "",
+
+
+        dish_name:
+            transactionDishName,
+
+
+        source:
+            type === "thu"
+                ? (
+                    AppState.orderSource ||
+                    null
+                )
+                : null,
+
+
+        amount:
+            amount,
+
+
+        app_fee:
+            type === "thu"
+                ? appFee
+                : 0,
+
+
+        date:
+            date,
+
+
+        note:
+            note
+
+    };
+
+
+    /*
+     * =====================================================
+     * DEBUG
+     * =====================================================
+     */
+
+    console.log(
+        "SAVE TRANSACTION PAYLOAD:",
+        payload
+    );
+
+
+    /*
+     * =====================================================
+     * CHỐT LẦN CUỐI
+     *
+     * Nếu UUID lọt vào đây thì dừng.
+     * =====================================================
+     */
+
+    if (
+        payload.category_id !== null &&
+        !Number.isInteger(
+            Number(
+                payload.category_id
+            )
+        )
+    ) {
+
+        console.error(
+            "BLOCK UUID CATEGORY:",
+            payload.category_id
+        );
+
+
+        showToast(
+            "ID danh mục không hợp lệ"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        payload.dish_id !== null &&
+        !Number.isInteger(
+            Number(
+                payload.dish_id
+            )
+        )
+    ) {
+
+        console.error(
+            "BLOCK UUID DISH:",
+            payload.dish_id
+        );
+
+
+        showToast(
+            "ID món không hợp lệ"
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        /*
+         * =================================================
+         * EDIT
+         * =================================================
+         */
+
+        if (
+            AppState.editingTransactionId
+        ) {
+
+            await dbUpdate(
+                "transactions",
+                AppState.editingTransactionId,
+                payload
+            );
+
+
+            showToast(
+                "Đã cập nhật giao dịch"
+            );
+
+        }
+
+
+        /*
+         * =================================================
+         * INSERT
+         * =================================================
+         */
+
+        else {
+
+            await dbInsert(
+                "transactions",
+                payload
+            );
+
+
+            showToast(
+                "Đã lưu giao dịch"
+            );
+
+        }
+
+
+        /*
+         * =================================================
+         * LOAD TRANSACTIONS
+         * =================================================
+         */
+
+        AppState.transactions =
+            await dbGet(
+                "transactions",
+                {
+                    order: {
+                        column:
+                            "date",
+
+                        ascending:
+                            false
+                    }
+                }
+            );
+
+
+        /*
+         * CLEAR
+         */
+
+        clearTransactionForm();
+
+
+        /*
+         * RENDER
+         */
+
+        renderAll();
+
+    }
+    catch (error) {
+
+        console.error(
+            "Lỗi saveTransaction:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CLEAR FORM
+========================================================= */
+
+function clearTransactionForm() {
+
+    const category =
+        document.getElementById(
+            "transactionCategory"
+        );
+
+
+    const dish =
+        document.getElementById(
+            "transactionDish"
+        );
+
+
+    const name =
+        document.getElementById(
+            "transactionName"
+        );
+
+
+    const fee =
+        document.getElementById(
+            "appFee"
+        );
+
+
+    const amount =
+        document.getElementById(
+            "transactionAmount"
+        );
+
+
+    const note =
+        document.getElementById(
+            "transactionNote"
+        );
+
+
+    if (category) {
+
+        category.value =
+            "";
+
+    }
+
+
+    if (dish) {
+
+        dish.innerHTML = `
+            <option value="">
+                Chọn món
+            </option>
+        `;
+
+    }
+
+
+    if (name) {
+
+        name.value =
+            "";
+
+    }
+
+
+    if (fee) {
+
+        fee.value =
+            "";
+
+    }
+
+
+    if (amount) {
+
+        amount.value =
+            "";
+
+    }
+
+
+    if (note) {
+
+        note.value =
+            "";
+
+    }
+
+
+    AppState.editingTransactionId =
+        null;
+
+
+    const cancelButton =
+        document.getElementById(
+            "cancelEditButton"
+        );
+
+
+    if (cancelButton) {
+
+        cancelButton.style.display =
+            "none";
+
+    }
+
+
+    setToday();
+
+
+    /*
+     * Mặc định về THU
+     */
+
+    setTransactionType(
+        "thu"
+    );
+
+
+    setOrderSource(
+        "ShopeeFood"
+    );
+
+}
+
+
+/* =========================================================
+   CANCEL EDIT
+========================================================= */
+
+function cancelEdit() {
+
+    clearTransactionForm();
+
+
+    showToast(
+        "Đã hủy sửa"
+    );
+
 }
 
 
@@ -311,6 +1257,10 @@ function renderHomeSummary() {
             ? AppState.transactions
             : [];
 
+
+    /*
+     * TỔNG THU
+     */
 
     const totalIncome =
         transactions
@@ -330,6 +1280,10 @@ function renderHomeSummary() {
             );
 
 
+    /*
+     * TỔNG CHI
+     */
+
     const totalExpense =
         transactions
             .filter(
@@ -347,6 +1301,10 @@ function renderHomeSummary() {
                 0
             );
 
+
+    /*
+     * TỔNG PHÍ APP
+     */
 
     const totalAppFee =
         transactions
@@ -366,11 +1324,19 @@ function renderHomeSummary() {
             );
 
 
+    /*
+     * TỔNG GIÁ VỐN
+     */
+
     const totalCost =
         calculateHomeCODCost(
             transactions
         );
 
+
+    /*
+     * LỢI NHUẬN
+     */
 
     const totalProfit =
         totalIncome -
@@ -613,10 +1579,8 @@ function calculateHomeCODCost(
 
 
             if (
-                transaction.dish_id ===
-                    null ||
-                transaction.dish_id ===
-                    undefined ||
+                transaction.dish_id === null ||
+                transaction.dish_id === undefined ||
                 transaction.dish_id === ""
             ) {
 
@@ -657,8 +1621,7 @@ function calculateHomeCODCost(
 
                     total +=
                         Number(
-                            part.amount ||
-                            0
+                            part.amount || 0
                         );
 
                 }
@@ -691,7 +1654,7 @@ function normalizeTransactionType(
 
 
 /* =========================================================
-   TRANSACTION AMOUNT
+   GET AMOUNT
 ========================================================= */
 
 function getTransactionAmount(
@@ -716,7 +1679,7 @@ function getTransactionAmount(
 
 
 /* =========================================================
-   TRANSACTION FEE
+   GET FEE
 ========================================================= */
 
 function getTransactionFee(
@@ -774,864 +1737,6 @@ function getLocalDateString() {
 
     return (
         `${year}-${month}-${day}`
-    );
-
-}
-
-
-/* =========================================================
-   SET TRANSACTION TYPE
-========================================================= */
-
-function setTransactionType(
-    type
-) {
-
-    type =
-        normalizeTransactionType(
-            type
-        );
-
-
-    if (
-        type !== "thu" &&
-        type !== "chi"
-    ) {
-
-        type = "thu";
-
-    }
-
-
-    AppState.transactionType =
-        type;
-
-
-    const incomeButton =
-        document.getElementById(
-            "incomeTypeButton"
-        );
-
-
-    const expenseButton =
-        document.getElementById(
-            "expenseTypeButton"
-        );
-
-
-    if (incomeButton) {
-
-        incomeButton.classList.toggle(
-            "active",
-            type === "thu"
-        );
-
-    }
-
-
-    if (expenseButton) {
-
-        expenseButton.classList.toggle(
-            "active",
-            type === "chi"
-        );
-
-    }
-
-
-    const sourceBox =
-        document.getElementById(
-            "orderSourceBox"
-        );
-
-
-    const feeBox =
-        document.getElementById(
-            "appFeeBox"
-        );
-
-
-    const dishSelect =
-        document.getElementById(
-            "transactionDish"
-        );
-
-
-    const dishLabel =
-        document.querySelector(
-            'label[for="transactionDish"]'
-        );
-
-
-    const isIncome =
-        type === "thu";
-
-
-    /*
-     * Thu mới có nguồn đơn.
-     */
-
-    if (sourceBox) {
-
-        sourceBox.style.display =
-            isIncome
-                ? "block"
-                : "none";
-
-    }
-
-
-    /*
-     * Thu mới có phí app.
-     */
-
-    if (feeBox) {
-
-        feeBox.style.display =
-            isIncome
-                ? "block"
-                : "none";
-
-    }
-
-
-    /*
-     * Chi không cần chọn món.
-     */
-
-    if (dishSelect) {
-
-        dishSelect.style.display =
-            isIncome
-                ? ""
-                : "none";
-
-    }
-
-
-    if (dishLabel) {
-
-        dishLabel.style.display =
-            isIncome
-                ? ""
-                : "none";
-
-    }
-
-
-    /*
-     * Khi chuyển THU / CHI,
-     * render lại danh mục.
-     */
-
-    renderTransactionCategories();
-
-    renderTransactionDishes();
-
-}
-
-
-/* =========================================================
-   ORDER SOURCE
-========================================================= */
-
-function setOrderSource(
-    source
-) {
-
-    AppState.orderSource =
-        source;
-
-
-    document
-        .querySelectorAll(
-            ".source-button"
-        )
-        .forEach(
-            button => {
-
-                button.classList.remove(
-                    "active"
-                );
-
-            }
-        );
-
-
-    const sourceMap = {
-
-        ShopeeFood:
-            "sourceShopee",
-
-        GrabFood:
-            "sourceGrab",
-
-        "Ngoài sàn":
-            "sourceOutside"
-
-    };
-
-
-    const button =
-        document.getElementById(
-            sourceMap[source]
-        );
-
-
-    if (button) {
-
-        button.classList.add(
-            "active"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   SAVE TRANSACTION
-========================================================= */
-
-async function saveTransaction() {
-
-    const transactionType =
-        normalizeTransactionType(
-            AppState.transactionType
-        ) || "thu";
-
-
-    const categoryElement =
-        document.getElementById(
-            "transactionCategory"
-        );
-
-
-    const dishElement =
-        document.getElementById(
-            "transactionDish"
-        );
-
-
-    const categoryIdRaw =
-        categoryElement?.value ||
-        "";
-
-
-    const dishIdRaw =
-        dishElement?.value ||
-        "";
-
-
-    const customName =
-        document.getElementById(
-            "transactionName"
-        )?.value
-        ?.trim() || "";
-
-
-    const amount =
-        Number(
-            document.getElementById(
-                "transactionAmount"
-            )?.value
-        ) || 0;
-
-
-    const appFee =
-        Number(
-            document.getElementById(
-                "appFee"
-            )?.value
-        ) || 0;
-
-
-    const date =
-        document.getElementById(
-            "transactionDate"
-        )?.value ||
-        getLocalDateString();
-
-
-    const note =
-        document.getElementById(
-            "transactionNote"
-        )?.value
-        ?.trim() || "";
-
-
-    /*
-     * =====================================================
-     * KIỂM TRA TIỀN
-     * =====================================================
-     */
-
-    if (
-        amount <= 0
-    ) {
-
-        showToast(
-            "Vui lòng nhập số tiền"
-        );
-
-        return;
-
-    }
-
-
-    /*
-     * =====================================================
-     * TÌM CATEGORY
-     * =====================================================
-     */
-
-    let categoryId =
-        null;
-
-
-    let category =
-        null;
-
-
-    if (categoryIdRaw) {
-
-        category =
-            AppState.categories.find(
-                item =>
-                    String(
-                        item.id
-                    ) ===
-                    String(
-                        categoryIdRaw
-                    )
-            );
-
-
-        if (!category) {
-
-            showToast(
-                "Danh mục không tồn tại"
-            );
-
-            return;
-
-        }
-
-
-        /*
-         * categories.id là BIGINT.
-         *
-         * Number() giúp tránh gửi UUID
-         * hoặc chuỗi không hợp lệ.
-         */
-
-        categoryId =
-            Number(
-                category.id
-            );
-
-
-        if (
-            !Number.isSafeInteger(
-                categoryId
-            )
-        ) {
-
-            console.error(
-                "CATEGORY ID KHÔNG PHẢI BIGINT:",
-                category
-            );
-
-
-            showToast(
-                "ID danh mục không hợp lệ"
-            );
-
-            return;
-
-        }
-
-    }
-
-
-    /*
-     * =====================================================
-     * KIỂM TRA CATEGORY ĐÚNG LOẠI
-     * =====================================================
-     */
-
-    if (category) {
-
-        const categoryType =
-            normalizeTransactionType(
-                category.type
-            );
-
-
-        /*
-         * Danh mục cũ không có type
-         * được xem là THU.
-         */
-
-        if (
-            categoryType &&
-            categoryType !==
-                transactionType
-        ) {
-
-            showToast(
-                "Danh mục không thuộc loại giao dịch này"
-            );
-
-            return;
-
-        }
-
-    }
-
-
-    /*
-     * =====================================================
-     * TÌM DISH
-     * =====================================================
-     */
-
-    let dishId =
-        null;
-
-
-    let dish =
-        null;
-
-
-    /*
-     * CHỈ THU mới được có dish.
-     */
-
-    if (
-        transactionType ===
-        "thu" &&
-        dishIdRaw
-    ) {
-
-        dish =
-            AppState.dishes.find(
-                item =>
-                    String(
-                        item.id
-                    ) ===
-                    String(
-                        dishIdRaw
-                    )
-            );
-
-
-        if (!dish) {
-
-            showToast(
-                "Món không tồn tại"
-            );
-
-            return;
-
-        }
-
-
-        /*
-         * dishes.id là BIGINT.
-         */
-
-        dishId =
-            Number(
-                dish.id
-            );
-
-
-        if (
-            !Number.isSafeInteger(
-                dishId
-            )
-        ) {
-
-            console.error(
-                "DISH ID KHÔNG PHẢI BIGINT:",
-                dish
-            );
-
-
-            showToast(
-                "ID món không hợp lệ"
-            );
-
-            return;
-
-        }
-
-    }
-
-
-    /*
-     * =====================================================
-     * CHI KHÔNG ĐƯỢC GỬI dish_id
-     * =====================================================
-     */
-
-    if (
-        transactionType ===
-        "chi"
-    ) {
-
-        dishId =
-            null;
-
-        dish =
-            null;
-
-    }
-
-
-    /*
-     * =====================================================
-     * TÊN GIAO DỊCH
-     * =====================================================
-     */
-
-    let dishName =
-        "Giao dịch";
-
-
-    if (dish) {
-
-        dishName =
-            dish.name ||
-            customName ||
-            "Giao dịch";
-
-    }
-    else if (customName) {
-
-        dishName =
-            customName;
-
-    }
-
-
-    /*
-     * =====================================================
-     * PAYLOAD
-     * =====================================================
-     */
-
-    const payload = {
-
-        type:
-            transactionType,
-
-        /*
-         * BIGINT
-         */
-
-        category_id:
-            categoryId,
-
-        /*
-         * BIGINT
-         */
-
-        dish_id:
-            dishId,
-
-        category_name:
-            category?.name ||
-            "",
-
-        dish_name:
-            dishName,
-
-        source:
-            transactionType ===
-            "thu"
-                ? (
-                    AppState.orderSource ||
-                    "Ngoài sàn"
-                )
-                : null,
-
-        amount:
-            amount,
-
-        app_fee:
-            transactionType ===
-            "thu"
-                ? appFee
-                : 0,
-
-        date:
-            date,
-
-        note:
-            note
-
-    };
-
-
-    /*
-     * =====================================================
-     * DEBUG
-     * =====================================================
-     */
-
-    console.log(
-        "SAVE TRANSACTION PAYLOAD:",
-        payload
-    );
-
-
-    try {
-
-        /*
-         * =================================================
-         * EDIT
-         * =================================================
-         */
-
-        if (
-            AppState.editingTransactionId
-        ) {
-
-            await dbUpdate(
-                "transactions",
-                AppState.editingTransactionId,
-                payload
-            );
-
-
-            showToast(
-                "Đã cập nhật giao dịch"
-            );
-
-        }
-
-
-        /*
-         * =================================================
-         * INSERT
-         * =================================================
-         */
-
-        else {
-
-            await dbInsert(
-                "transactions",
-                payload
-            );
-
-
-            showToast(
-                "Đã lưu giao dịch"
-            );
-
-        }
-
-
-        /*
-         * =================================================
-         * LOAD LẠI
-         * =================================================
-         */
-
-        AppState.transactions =
-            await dbGet(
-                "transactions",
-                {
-                    order: {
-
-                        column:
-                            "date",
-
-                        ascending:
-                            false
-
-                    }
-                }
-            );
-
-
-        /*
-         * =================================================
-         * CLEAR
-         * =================================================
-         */
-
-        clearTransactionForm();
-
-
-        /*
-         * =================================================
-         * RENDER
-         * =================================================
-         */
-
-        if (
-            typeof renderAll ===
-            "function"
-        ) {
-
-            renderAll();
-
-        }
-
-    }
-    catch (error) {
-
-        console.error(
-            "Lỗi saveTransaction:",
-            error
-        );
-
-        showToast(
-            "Không thể lưu giao dịch"
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   CLEAR FORM
-========================================================= */
-
-function clearTransactionForm() {
-
-    const category =
-        document.getElementById(
-            "transactionCategory"
-        );
-
-
-    const dish =
-        document.getElementById(
-            "transactionDish"
-        );
-
-
-    const name =
-        document.getElementById(
-            "transactionName"
-        );
-
-
-    const fee =
-        document.getElementById(
-            "appFee"
-        );
-
-
-    const amount =
-        document.getElementById(
-            "transactionAmount"
-        );
-
-
-    const note =
-        document.getElementById(
-            "transactionNote"
-        );
-
-
-    if (category) {
-
-        category.value =
-            "";
-
-    }
-
-
-    if (dish) {
-
-        dish.innerHTML = `
-            <option value="">
-                Chọn món
-            </option>
-        `;
-
-    }
-
-
-    if (name) {
-
-        name.value =
-            "";
-
-    }
-
-
-    if (fee) {
-
-        fee.value =
-            "";
-
-    }
-
-
-    if (amount) {
-
-        amount.value =
-            "";
-
-    }
-
-
-    if (note) {
-
-        note.value =
-            "";
-
-    }
-
-
-    AppState.editingTransactionId =
-        null;
-
-
-    const cancelButton =
-        document.getElementById(
-            "cancelEditButton"
-        );
-
-
-    if (cancelButton) {
-
-        cancelButton.style.display =
-            "none";
-
-    }
-
-
-    setToday();
-
-    setTransactionType(
-        "thu"
-    );
-
-    setOrderSource(
-        "ShopeeFood"
-    );
-
-}
-
-
-/* =========================================================
-   CANCEL EDIT
-========================================================= */
-
-function cancelEdit() {
-
-    clearTransactionForm();
-
-    showToast(
-        "Đã hủy sửa"
     );
 
 }
