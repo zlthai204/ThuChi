@@ -1,6 +1,7 @@
 /* =========================================================
    HOME.JS
    BẾP NHÀ DUYÊN
+   BIGINT VERSION
 ========================================================= */
 
 
@@ -30,7 +31,6 @@ function renderTransactionCategories() {
             "transactionCategory"
         );
 
-
     if (!select) return;
 
 
@@ -53,55 +53,47 @@ function renderTransactionCategories() {
             : [];
 
 
-    /*
-     * =====================================================
-     * CHỈ HIỂN THỊ ĐÚNG LOẠI
-     * =====================================================
-     */
-
     const currentType =
         normalizeTransactionType(
             AppState.transactionType
-        );
+        ) || "thu";
 
+
+    /*
+     * THU:
+     * chỉ lấy category.type = thu
+     *
+     * CHI:
+     * chỉ lấy category.type = chi
+     *
+     * Danh mục cũ chưa có type:
+     * mặc định xem là THU.
+     */
 
     const filteredCategories =
         categories.filter(
             category => {
 
-                /*
-                 * Nếu category có type
-                 * thì lọc theo THU / CHI
-                 */
-
-                if (
-                    category.type !==
-                    undefined &&
-                    category.type !==
-                    null &&
-                    String(
+                const categoryType =
+                    normalizeTransactionType(
                         category.type
-                    ).trim() !== ""
-                ) {
+                    );
+
+
+                if (!categoryType) {
 
                     return (
-                        normalizeTransactionType(
-                            category.type
-                        ) ===
-                        currentType
+                        currentType ===
+                        "thu"
                     );
 
                 }
 
 
-                /*
-                 * Danh mục cũ chưa có type
-                 *
-                 * Cho THU sử dụng
-                 * để không làm mất dữ liệu cũ.
-                 */
-
-                return currentType === "thu";
+                return (
+                    categoryType ===
+                    currentType
+                );
 
             }
         );
@@ -110,20 +102,40 @@ function renderTransactionCategories() {
     filteredCategories.forEach(
         category => {
 
+            const id =
+                Number(
+                    category.id
+                );
+
+
+            /*
+             * Database là BIGINT.
+             */
+
+            if (
+                !Number.isSafeInteger(
+                    id
+                )
+            ) {
+
+                console.warn(
+                    "Category ID không hợp lệ:",
+                    category
+                );
+
+                return;
+
+            }
+
+
             const option =
                 document.createElement(
                     "option"
                 );
 
 
-            /*
-             * categories.id là BIGINT
-             */
-
             option.value =
-                String(
-                    category.id
-                );
+                String(id);
 
 
             option.textContent =
@@ -140,7 +152,7 @@ function renderTransactionCategories() {
 
 
     /*
-     * Giữ danh mục đang chọn
+     * Giữ danh mục cũ
      */
 
     if (
@@ -160,10 +172,6 @@ function renderTransactionCategories() {
 
     }
 
-
-    /*
-     * Đổi danh mục
-     */
 
     select.onchange =
         function () {
@@ -203,7 +211,7 @@ function renderTransactionDishes() {
     }
 
 
-    const categoryId =
+    const categoryValue =
         categorySelect.value;
 
 
@@ -219,25 +227,32 @@ function renderTransactionDishes() {
 
 
     /*
-     * CHI không có món
+     * Chưa chọn danh mục
      */
 
-    if (
-        normalizeTransactionType(
-            AppState.transactionType
-        ) !== "thu"
-    ) {
+    if (!categoryValue) {
 
         return;
 
     }
 
 
-    /*
-     * Chưa chọn danh mục
-     */
+    const categoryId =
+        Number(
+            categoryValue
+        );
 
-    if (!categoryId) {
+
+    if (
+        !Number.isSafeInteger(
+            categoryId
+        )
+    ) {
+
+        console.error(
+            "category_id không phải BIGINT:",
+            categoryValue
+        );
 
         return;
 
@@ -255,17 +270,37 @@ function renderTransactionDishes() {
     const categoryDishes =
         dishes.filter(
             dish =>
-                String(
+                Number(
                     dish.category_id
                 ) ===
-                String(
-                    categoryId
-                )
+                categoryId
         );
 
 
     categoryDishes.forEach(
         dish => {
+
+            const dishId =
+                Number(
+                    dish.id
+                );
+
+
+            if (
+                !Number.isSafeInteger(
+                    dishId
+                )
+            ) {
+
+                console.warn(
+                    "Dish ID không hợp lệ:",
+                    dish
+                );
+
+                return;
+
+            }
+
 
             const option =
                 document.createElement(
@@ -273,13 +308,9 @@ function renderTransactionDishes() {
                 );
 
 
-            /*
-             * dishes.id cũng là BIGINT
-             */
-
             option.value =
                 String(
-                    dish.id
+                    dishId
                 );
 
 
@@ -638,7 +669,8 @@ function calculateHomeCODCost(
                     null ||
                 transaction.dish_id ===
                     undefined ||
-                transaction.dish_id === ""
+                transaction.dish_id ===
+                    ""
             ) {
 
                 return;
@@ -649,10 +681,10 @@ function calculateHomeCODCost(
             const dish =
                 AppState.dishes.find(
                     item =>
-                        String(
+                        Number(
                             item.id
                         ) ===
-                        String(
+                        Number(
                             transaction.dish_id
                         )
                 );
@@ -711,7 +743,7 @@ function normalizeTransactionType(
 
 
 /* =========================================================
-   TRANSACTION AMOUNT
+   AMOUNT
 ========================================================= */
 
 function getTransactionAmount(
@@ -736,7 +768,7 @@ function getTransactionAmount(
 
 
 /* =========================================================
-   TRANSACTION FEE
+   FEE
 ========================================================= */
 
 function getTransactionFee(
@@ -808,7 +840,9 @@ function setTransactionType(
 ) {
 
     AppState.transactionType =
-        type;
+        normalizeTransactionType(
+            type
+        ) || "thu";
 
 
     const incomeButton =
@@ -827,7 +861,8 @@ function setTransactionType(
 
         incomeButton.classList.toggle(
             "active",
-            type === "thu"
+            AppState.transactionType ===
+            "thu"
         );
 
     }
@@ -837,7 +872,8 @@ function setTransactionType(
 
         expenseButton.classList.toggle(
             "active",
-            type === "chi"
+            AppState.transactionType ===
+            "chi"
         );
 
     }
@@ -855,20 +891,9 @@ function setTransactionType(
         );
 
 
-    const dishBox =
-        document.getElementById(
-            "transactionDishBox"
-        );
-
-
-    const nameBox =
-        document.getElementById(
-            "transactionNameBox"
-        );
-
-
     const isIncome =
-        type === "thu";
+        AppState.transactionType ===
+        "thu";
 
 
     if (sourceBox) {
@@ -892,33 +917,10 @@ function setTransactionType(
 
 
     /*
-     * THU có món
-     * CHI không có món
-     */
-
-    if (dishBox) {
-
-        dishBox.style.display =
-            isIncome
-                ? "block"
-                : "none";
-
-    }
-
-
-    if (nameBox) {
-
-        nameBox.style.display =
-            isIncome
-                ? "none"
-                : "block";
-
-    }
-
-
-    /*
-     * Quan trọng:
-     * đổi THU / CHI thì render lại danh mục
+     * RẤT QUAN TRỌNG:
+     *
+     * Đổi THU / CHI phải đổi
+     * danh mục ngay.
      */
 
     renderTransactionCategories();
@@ -992,64 +994,178 @@ function setOrderSource(
 
 async function saveTransaction() {
 
-    const type =
+    const categorySelect =
+        document.getElementById(
+            "transactionCategory"
+        );
+
+
+    const dishSelect =
+        document.getElementById(
+            "transactionDish"
+        );
+
+
+    const nameInput =
+        document.getElementById(
+            "transactionName"
+        );
+
+
+    const amountInput =
+        document.getElementById(
+            "transactionAmount"
+        );
+
+
+    const appFeeInput =
+        document.getElementById(
+            "appFee"
+        );
+
+
+    const dateInput =
+        document.getElementById(
+            "transactionDate"
+        );
+
+
+    const noteInput =
+        document.getElementById(
+            "transactionNote"
+        );
+
+
+    /*
+     * TYPE
+     */
+
+    const transactionType =
         normalizeTransactionType(
             AppState.transactionType
         ) || "thu";
 
 
-    const categoryId =
-        document.getElementById(
-            "transactionCategory"
-        )?.value || "";
+    /*
+     * CATEGORY
+     */
+
+    const categoryValue =
+        categorySelect?.value || "";
 
 
-    const dishId =
-        document.getElementById(
-            "transactionDish"
-        )?.value || "";
+    let categoryId =
+        null;
 
 
-    const customName =
-        document.getElementById(
-            "transactionName"
-        )?.value
-        ?.trim() || "";
+    if (categoryValue) {
+
+        const numericCategoryId =
+            Number(
+                categoryValue
+            );
 
 
-    const amount =
-        Number(
-            document.getElementById(
-                "transactionAmount"
-            )?.value
-        ) || 0;
+        if (
+            !Number.isSafeInteger(
+                numericCategoryId
+            )
+        ) {
+
+            console.error(
+                "CATEGORY ID LỖI:",
+                categoryValue
+            );
 
 
-    const appFee =
-        Number(
-            document.getElementById(
-                "appFee"
-            )?.value
-        ) || 0;
+            showToast(
+                "Danh mục không hợp lệ"
+            );
 
 
-    const date =
-        document.getElementById(
-            "transactionDate"
-        )?.value ||
-        getLocalDateString();
+            return;
+
+        }
 
 
-    const note =
-        document.getElementById(
-            "transactionNote"
-        )?.value
-        ?.trim() || "";
+        categoryId =
+            numericCategoryId;
+
+    }
 
 
     /*
-     * Kiểm tra tiền
+     * DISH
+     *
+     * CHỈ THU mới có dish.
      */
+
+    const dishValue =
+        dishSelect?.value || "";
+
+
+    let dishId =
+        null;
+
+
+    if (
+        transactionType ===
+        "thu" &&
+        dishValue
+    ) {
+
+        const numericDishId =
+            Number(
+                dishValue
+            );
+
+
+        if (
+            !Number.isSafeInteger(
+                numericDishId
+            )
+        ) {
+
+            console.error(
+                "DISH ID LỖI:",
+                dishValue
+            );
+
+
+            showToast(
+                "Món không hợp lệ"
+            );
+
+
+            return;
+
+        }
+
+
+        dishId =
+            numericDishId;
+
+    }
+
+
+    /*
+     * NAME
+     */
+
+    const customName =
+        nameInput?.value
+            ?.trim() || "";
+
+
+    /*
+     * AMOUNT
+     */
+
+    const amount =
+        Number(
+            amountInput?.value
+        ) || 0;
+
 
     if (
         amount <= 0
@@ -1065,151 +1181,161 @@ async function saveTransaction() {
 
 
     /*
-     * =====================================================
-     * QUAN TRỌNG
-     * =====================================================
-     *
-     * categories.id và dishes.id là BIGINT.
-     *
-     * Không được gửi UUID.
+     * FEE
      */
 
-    let categoryIdBigInt =
-        null;
-
-
-    let dishIdBigInt =
-        null;
-
-
-    if (categoryId) {
-
-        const numberValue =
-            Number(
-                categoryId
-            );
-
-
-        if (
-            !Number.isSafeInteger(
-                numberValue
+    const appFee =
+        transactionType ===
+        "thu"
+            ? (
+                Number(
+                    appFeeInput?.value
+                ) || 0
             )
-        ) {
+            : 0;
 
-            console.error(
-                "CATEGORY ID KHÔNG PHẢI BIGINT:",
-                categoryId
+
+    /*
+     * DATE
+     */
+
+    const date =
+        dateInput?.value ||
+        getLocalDateString();
+
+
+    /*
+     * NOTE
+     */
+
+    const note =
+        noteInput?.value
+            ?.trim() || "";
+
+
+    /*
+     * TÌM CATEGORY
+     */
+
+    let category =
+        null;
+
+
+    if (
+        categoryId !== null
+    ) {
+
+        category =
+            AppState.categories.find(
+                item =>
+                    Number(
+                        item.id
+                    ) ===
+                    categoryId
             );
-
-
-            showToast(
-                "ID danh mục không hợp lệ"
-            );
-
-            return;
-
-        }
-
-
-        categoryIdBigInt =
-            numberValue;
 
     }
 
 
     /*
-     * CHỈ THU mới có dish_id
+     * TÌM DISH
+     */
+
+    let dish =
+        null;
+
+
+    if (
+        dishId !== null
+    ) {
+
+        dish =
+            AppState.dishes.find(
+                item =>
+                    Number(
+                        item.id
+                    ) ===
+                    dishId
+            );
+
+    }
+
+
+    /*
+     * CATEGORY KHÔNG TỒN TẠI
      */
 
     if (
-        type === "thu" &&
-        dishId
+        categoryId !== null &&
+        !category
     ) {
 
-        const numberValue =
-            Number(
-                dishId
-            );
+        console.error(
+            "Không tìm thấy category:",
+            categoryId,
+            AppState.categories
+        );
 
 
-        if (
-            !Number.isSafeInteger(
-                numberValue
-            )
-        ) {
-
-            console.error(
-                "DISH ID KHÔNG PHẢI BIGINT:",
-                dishId
-            );
+        showToast(
+            "Không tìm thấy danh mục"
+        );
 
 
-            showToast(
-                "ID món không hợp lệ"
-            );
-
-            return;
-
-        }
-
-
-        dishIdBigInt =
-            numberValue;
+        return;
 
     }
 
 
     /*
-     * Tìm món
+     * DISH KHÔNG TỒN TẠI
      */
 
-    const dish =
-        dishIdBigInt !== null
-            ? AppState.dishes.find(
-                item =>
-                    Number(
-                        item.id
-                    ) ===
-                    dishIdBigInt
-            )
-            : null;
+    if (
+        dishId !== null &&
+        !dish
+    ) {
+
+        console.error(
+            "Không tìm thấy dish:",
+            dishId,
+            AppState.dishes
+        );
+
+
+        showToast(
+            "Không tìm thấy món"
+        );
+
+
+        return;
+
+    }
 
 
     /*
-     * Tìm danh mục
-     */
-
-    const category =
-        categoryIdBigInt !== null
-            ? AppState.categories.find(
-                item =>
-                    Number(
-                        item.id
-                    ) ===
-                    categoryIdBigInt
-            )
-            : null;
-
-
-    /*
-     * =====================================================
      * PAYLOAD
-     * =====================================================
+     *
+     * BIGINT:
+     *
+     * category_id -> number
+     * dish_id     -> number
      */
 
     const payload = {
 
         type:
-            type,
+            transactionType,
 
 
         category_id:
-            categoryIdBigInt,
+            categoryId,
 
 
         dish_id:
-            type === "thu"
-                ? dishIdBigInt
+            transactionType ===
+            "thu"
+                ? dishId
                 : null,
 
 
@@ -1219,22 +1345,23 @@ async function saveTransaction() {
 
 
         dish_name:
-            type === "thu"
-                ? (
-                    dish?.name ||
-                    customName ||
-                    "Giao dịch"
-                )
-                : (
-                    customName ||
-                    category?.name ||
-                    "Chi phí"
-                ),
+            dish?.name ||
+            customName ||
+            (
+                transactionType ===
+                "chi"
+                    ? "Chi phí"
+                    : "Giao dịch"
+            ),
 
 
         source:
-            type === "thu"
-                ? AppState.orderSource
+            transactionType ===
+            "thu"
+                ? (
+                    AppState.orderSource ||
+                    null
+                )
                 : null,
 
 
@@ -1243,7 +1370,8 @@ async function saveTransaction() {
 
 
         app_fee:
-            type === "thu"
+            transactionType ===
+            "thu"
                 ? appFee
                 : 0,
 
@@ -1258,10 +1386,80 @@ async function saveTransaction() {
     };
 
 
+    /*
+     * DEBUG
+     */
+
     console.log(
-        "SAVE TRANSACTION PAYLOAD:",
+        "========== TRANSACTION PAYLOAD =========="
+    );
+
+    console.log(
         payload
     );
+
+    console.log(
+        "category_id:",
+        payload.category_id,
+        typeof payload.category_id
+    );
+
+    console.log(
+        "dish_id:",
+        payload.dish_id,
+        typeof payload.dish_id
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    /*
+     * CHẶN UUID
+     *
+     * Nếu somehow UUID lọt vào
+     * thì không gửi database.
+     */
+
+    if (
+        payload.category_id !== null &&
+        typeof payload.category_id !==
+            "number"
+    ) {
+
+        showToast(
+            "category_id không phải BIGINT"
+        );
+
+        console.error(
+            "BLOCK UUID category_id:",
+            payload.category_id
+        );
+
+        return;
+
+    }
+
+
+    if (
+        payload.dish_id !== null &&
+        typeof payload.dish_id !==
+            "number"
+    ) {
+
+        showToast(
+            "dish_id không phải BIGINT"
+        );
+
+        console.error(
+            "BLOCK UUID dish_id:",
+            payload.dish_id
+        );
+
+        return;
+
+    }
 
 
     try {
@@ -1308,7 +1506,7 @@ async function saveTransaction() {
 
 
         /*
-         * LOAD LẠI
+         * LOAD
          */
 
         AppState.transactions =
@@ -1316,28 +1514,43 @@ async function saveTransaction() {
                 "transactions",
                 {
                     order: {
+
                         column:
                             "date",
 
                         ascending:
                             false
+
                     }
                 }
             );
 
 
+        /*
+         * CLEAR
+         */
+
         clearTransactionForm();
 
 
-        renderAll();
+        /*
+         * RENDER
+         */
 
+        renderAll();
 
     }
     catch (error) {
 
         console.error(
-            "Lỗi saveTransaction:",
+            "LỖI saveTransaction:",
             error
+        );
+
+
+        showToast(
+            error?.message ||
+            "Không thể lưu giao dịch"
         );
 
     }
@@ -1525,8 +1738,7 @@ function formatVietnameseDate(
     const value =
         String(
             dateString
-        )
-        .substring(
+        ).substring(
             0,
             10
         );
@@ -1550,3 +1762,5 @@ function formatVietnameseDate(
     );
 
 }
+
+
