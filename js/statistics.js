@@ -2,29 +2,7 @@
    STATISTICS.JS
    PREMIUM STATISTICS
    FULL REBUILD
-
-   FEATURES
-   ---------------------------------------------------------
-   ✓ Thu + Chi cùng lúc
-   ✓ Ngày / Tuần / Tháng
-   ✓ Điều hướng ngày chính xác
-   ✓ Điều hướng tuần chính xác
-   ✓ Điều hướng tháng chính xác
-   ✓ Không lỗi ngày 29/30/31 khi chuyển tháng
-   ✓ Biểu đồ Thu / Chi
-   ✓ Tổng Thu / Chi
-   ✓ Lợi nhuận thực
-   ✓ Phí ShopeeFood
-   ✓ Phí GrabFood
-   ✓ COD / giá vốn
-   ✓ Thống kê món
-   ✓ Thống kê nguồn
-   ✓ Phân tích nhóm chi
-   ✓ Bánh xe tổng Thu / Chi
-   ✓ Bánh xe từng món
-   ✓ Bánh xe từng nhóm chi
-   ✓ Dark mode
-   ✓ Tương thích HTML cũ
+   + DATE PICKER NGÀY / THÁNG / NĂM ĐỘNG
 ========================================================= */
 
 
@@ -32,43 +10,23 @@
    STATE
 ========================================================= */
 
-if (
-    typeof AppState === "undefined"
-) {
-
+if (typeof AppState === "undefined") {
     window.AppState = {};
-
 }
 
-
-if (
-    !AppState.statisticsPeriod
-) {
-
+if (!AppState.statisticsPeriod) {
     AppState.statisticsPeriod = "day";
-
 }
-
 
 if (
     !(AppState.statisticsDate instanceof Date) ||
-    isNaN(
-        AppState.statisticsDate.getTime()
-    )
+    isNaN(AppState.statisticsDate.getTime())
 ) {
-
-    AppState.statisticsDate =
-        new Date();
-
+    AppState.statisticsDate = new Date();
 }
 
-
-if (
-    !AppState.statisticsMode
-) {
-
+if (!AppState.statisticsMode) {
     AppState.statisticsMode = "thu";
-
 }
 
 
@@ -76,195 +34,71 @@ if (
    DATE UTILITIES
 ========================================================= */
 
-/*
- * Tạo Date local an toàn.
- *
- * Không dùng:
- *
- * new Date("2026-08-22")
- *
- * vì JavaScript có thể hiểu thành UTC.
- */
-
-function statisticsCreateLocalDate(
-    year,
-    month,
-    day
-) {
-
-    const date =
-        new Date(
-            Number(year),
-            Number(month),
-            Number(day),
-            12,
-            0,
-            0,
-            0
-        );
-
-    return date;
-
+function statisticsCreateLocalDate(year, month, day) {
+    return new Date(
+        Number(year),
+        Number(month),
+        Number(day),
+        12,
+        0,
+        0,
+        0
+    );
 }
 
 
-/*
- * Chuyển Date -> YYYY-MM-DD
- */
-
-function statisticsDateToString(
-    date
-) {
-
+function statisticsDateToString(date) {
     if (
         !(date instanceof Date) ||
-        isNaN(
-            date.getTime()
-        )
+        isNaN(date.getTime())
     ) {
-
         return "";
-
     }
-
-
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        )
-            .padStart(
-                2,
-                "0"
-            );
-
-
-    const day =
-        String(
-            date.getDate()
-        )
-            .padStart(
-                2,
-                "0"
-            );
-
 
     return (
-        year +
+        date.getFullYear() +
         "-" +
-        month +
+        String(date.getMonth() + 1).padStart(2, "0") +
         "-" +
-        day
+        String(date.getDate()).padStart(2, "0")
+    );
+}
+
+
+function statisticsStringToDate(value) {
+    if (!value) {
+        return null;
+    }
+
+    const text = String(value).slice(0, 10);
+
+    const match = text.match(
+        /^(\d{4})-(\d{2})-(\d{2})$/
     );
 
-}
-
-
-/*
- * Chuyển YYYY-MM-DD -> Date local
- */
-
-function statisticsStringToDate(
-    value
-) {
-
-    if (!value) {
-
-        return null;
-
-    }
-
-
-    const text =
-        String(value)
-            .slice(
-                0,
-                10
-            );
-
-
-    const match =
-        text.match(
-            /^(\d{4})-(\d{2})-(\d{2})$/
-        );
-
-
     if (!match) {
-
         return null;
-
     }
 
+    const date = statisticsCreateLocalDate(
+        Number(match[1]),
+        Number(match[2]) - 1,
+        Number(match[3])
+    );
 
-    const year =
-        Number(
-            match[1]
-        );
-
-
-    const month =
-        Number(
-            match[2]
-        ) - 1;
-
-
-    const day =
-        Number(
-            match[3]
-        );
-
-
-    const date =
-        statisticsCreateLocalDate(
-            year,
-            month,
-            day
-        );
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return null;
-
-    }
-
-
-    return date;
-
+    return isNaN(date.getTime())
+        ? null
+        : date;
 }
 
-
-/*
- * Chuẩn hóa AppState.statisticsDate
- */
 
 function statisticsNormalizeDate() {
-
     if (
         !(AppState.statisticsDate instanceof Date) ||
-        isNaN(
-            AppState.statisticsDate.getTime()
-        )
+        isNaN(AppState.statisticsDate.getTime())
     ) {
-
-        AppState.statisticsDate =
-            new Date();
-
+        AppState.statisticsDate = new Date();
     }
-
-
-    /*
-     * Đưa về 12h trưa.
-     *
-     * Tránh các lỗi DST / timezone.
-     */
 
     AppState.statisticsDate =
         statisticsCreateLocalDate(
@@ -272,7 +106,45 @@ function statisticsNormalizeDate() {
             AppState.statisticsDate.getMonth(),
             AppState.statisticsDate.getDate()
         );
+}
 
+
+/* =========================================================
+   MONTH / DATE LABEL
+========================================================= */
+
+function statisticsMonthName(month) {
+    const months = [
+        "Tháng 1",
+        "Tháng 2",
+        "Tháng 3",
+        "Tháng 4",
+        "Tháng 5",
+        "Tháng 6",
+        "Tháng 7",
+        "Tháng 8",
+        "Tháng 9",
+        "Tháng 10",
+        "Tháng 11",
+        "Tháng 12"
+    ];
+
+    return months[month] || "";
+}
+
+
+function statisticsFormatDayMonthYear(date) {
+    if (!(date instanceof Date)) {
+        return "";
+    }
+
+    return (
+        String(date.getDate()).padStart(2, "0") +
+        "/" +
+        String(date.getMonth() + 1).padStart(2, "0") +
+        "/" +
+        date.getFullYear()
+    );
 }
 
 
@@ -280,15 +152,11 @@ function statisticsNormalizeDate() {
    SET MODE
 ========================================================= */
 
-function setStatisticsMode(
-    mode
-) {
-
+function setStatisticsMode(mode) {
     AppState.statisticsMode =
         mode === "chi"
             ? "chi"
             : "thu";
-
 }
 
 
@@ -296,89 +164,45 @@ function setStatisticsMode(
    PERIOD
 ========================================================= */
 
-function setStatisticsPeriod(
-    period
-) {
-
+function setStatisticsPeriod(period) {
     if (
-        ![
-            "day",
-            "week",
-            "month"
-        ].includes(
-            period
-        )
+        !["day", "week", "month"].includes(period)
     ) {
-
         period = "day";
-
     }
-
 
     statisticsNormalizeDate();
 
+    AppState.statisticsPeriod = period;
 
-    AppState.statisticsPeriod =
-        period;
-
-
-    /*
-     * Khi chuyển sang MONTH,
-     * luôn giữ tháng/năm hiện tại.
-     *
-     * Ngày được đưa về 1 để tránh
-     * lỗi ngày 29/30/31.
-     */
-
-    if (
-        period === "month"
-    ) {
-
+    if (period === "month") {
         AppState.statisticsDate =
             statisticsCreateLocalDate(
                 AppState.statisticsDate.getFullYear(),
                 AppState.statisticsDate.getMonth(),
                 1
             );
-
     }
 
-
-    /*
-     * Khi chuyển sang WEEK,
-     * vẫn giữ ngày hiện tại.
-     */
-
     document
-        .querySelectorAll(
-            ".period-tab"
-        )
-        .forEach(
-            button => {
-
-                button.classList.toggle(
-                    "active",
-                    button.dataset.period ===
-                    period
-                );
-
-            }
-        );
-
+        .querySelectorAll(".period-tab")
+        .forEach(button => {
+            button.classList.toggle(
+                "active",
+                button.dataset.period === period
+            );
+        });
 
     renderStatistics();
-
 }
 
 
 /* =========================================================
-   DATE RANGE
+   RANGE
 ========================================================= */
 
 function getStatisticsRange() {
-
     statisticsNormalizeDate();
-
 
     const baseDate =
         statisticsCreateLocalDate(
@@ -387,53 +211,25 @@ function getStatisticsRange() {
             AppState.statisticsDate.getDate()
         );
 
-
     let start;
     let end;
 
-
-    /* =====================================================
-       DAY
-    ===================================================== */
-
     if (
-        AppState.statisticsPeriod ===
-        "day"
+        AppState.statisticsPeriod === "day"
     ) {
-
-        start =
-            baseDate;
-
-
-        end =
-            baseDate;
-
+        start = baseDate;
+        end = baseDate;
     }
 
-
-    /* =====================================================
-       WEEK
-    ===================================================== */
-
     else if (
-        AppState.statisticsPeriod ===
-        "week"
+        AppState.statisticsPeriod === "week"
     ) {
-
-        const day =
-            baseDate.getDay();
-
-
-        /*
-         * Monday = 1
-         * Sunday = 0
-         */
+        const day = baseDate.getDay();
 
         const diff =
             day === 0
                 ? -6
                 : 1 - day;
-
 
         start =
             statisticsCreateLocalDate(
@@ -442,12 +238,9 @@ function getStatisticsRange() {
                 baseDate.getDate()
             );
 
-
         start.setDate(
-            start.getDate() +
-            diff
+            start.getDate() + diff
         );
-
 
         end =
             statisticsCreateLocalDate(
@@ -456,21 +249,12 @@ function getStatisticsRange() {
                 start.getDate()
             );
 
-
         end.setDate(
-            end.getDate() +
-            6
+            end.getDate() + 6
         );
-
     }
 
-
-    /* =====================================================
-       MONTH
-    ===================================================== */
-
     else {
-
         start =
             statisticsCreateLocalDate(
                 baseDate.getFullYear(),
@@ -478,31 +262,18 @@ function getStatisticsRange() {
                 1
             );
 
-
         end =
             statisticsCreateLocalDate(
                 baseDate.getFullYear(),
                 baseDate.getMonth() + 1,
                 0
             );
-
     }
 
-
     return {
-
-        start:
-            statisticsDateToString(
-                start
-            ),
-
-        end:
-            statisticsDateToString(
-                end
-            )
-
+        start: statisticsDateToString(start),
+        end: statisticsDateToString(end)
     };
-
 }
 
 
@@ -510,34 +281,15 @@ function getStatisticsRange() {
    TRANSACTION DATE
 ========================================================= */
 
-function statisticsGetTransactionDate(
-    transaction
-) {
-
+function statisticsGetTransactionDate(transaction) {
     if (
         !transaction ||
         !transaction.date
     ) {
-
         return "";
-
     }
 
-
-    /*
-     * Lấy trực tiếp YYYY-MM-DD.
-     *
-     * Không new Date() để tránh lệch ngày.
-     */
-
-    return String(
-        transaction.date
-    )
-        .slice(
-            0,
-            10
-        );
-
+    return String(transaction.date).slice(0, 10);
 }
 
 
@@ -546,130 +298,63 @@ function statisticsGetTransactionDate(
 ========================================================= */
 
 function getStatisticsTransactions() {
-
-    const range =
-        getStatisticsRange();
-
+    const range = getStatisticsRange();
 
     const transactions =
-        Array.isArray(
-            AppState.transactions
-        )
+        Array.isArray(AppState.transactions)
             ? AppState.transactions
             : [];
 
-
-    return transactions.filter(
-        transaction => {
-
-            const date =
-                statisticsGetTransactionDate(
-                    transaction
-                );
-
-
-            if (!date) {
-
-                return false;
-
-            }
-
-
-            return (
-                date >= range.start &&
-                date <= range.end
+    return transactions.filter(transaction => {
+        const date =
+            statisticsGetTransactionDate(
+                transaction
             );
 
+        if (!date) {
+            return false;
         }
-    );
 
+        return (
+            date >= range.start &&
+            date <= range.end
+        );
+    });
 }
 
 
 /* =========================================================
-   SAFE TEXT
+   SAFE
 ========================================================= */
 
-function statisticsSafeText(
-    value
-) {
-
+function statisticsSafeText(value) {
     if (
         value === null ||
         value === undefined
     ) {
-
         return "";
-
     }
 
-
-    return String(
-        value
-    );
-
+    return String(value);
 }
 
 
-/* =========================================================
-   SAFE HTML
-========================================================= */
-
-function statisticsEscapeHTML(
-    value
-) {
-
+function statisticsEscapeHTML(value) {
     const text =
-        statisticsSafeText(
-            value
-        );
+        statisticsSafeText(value);
 
-
-    if (
-        typeof escapeHTML ===
-        "function"
-    ) {
-
+    if (typeof escapeHTML === "function") {
         try {
-
-            return escapeHTML(
-                text
-            );
-
-        } catch (error) {
-
-            console.warn(
-                "escapeHTML error:",
-                error
-            );
-
-        }
-
+            return escapeHTML(text);
+        } catch (error) {}
     }
 
-
     return text
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 
@@ -677,60 +362,28 @@ function statisticsEscapeHTML(
    NUMBER
 ========================================================= */
 
-function statisticsNumber(
-    value
-) {
-
-    if (
-        typeof toNumber ===
-        "function"
-    ) {
-
+function statisticsNumber(value) {
+    if (typeof toNumber === "function") {
         try {
-
-            return Number(
-                toNumber(
-                    value
-                )
-            ) || 0;
-
+            return Number(toNumber(value)) || 0;
         } catch (error) {}
-
     }
 
-
-    if (
-        typeof value ===
-        "number"
-    ) {
-
-        return isFinite(
-            value
-        )
+    if (typeof value === "number") {
+        return isFinite(value)
             ? value
             : 0;
-
     }
-
 
     const number =
         Number(
-            String(
-                value || 0
-            )
-                .replace(
-                    /[^\d.-]/g,
-                    ""
-                )
+            String(value || 0)
+                .replace(/[^\d.-]/g, "")
         );
 
-
-    return isFinite(
-        number
-    )
+    return isFinite(number)
         ? number
         : 0;
-
 }
 
 
@@ -738,38 +391,20 @@ function statisticsNumber(
    MONEY
 ========================================================= */
 
-function statisticsMoney(
-    value
-) {
-
-    if (
-        typeof formatMoney ===
-        "function"
-    ) {
-
+function statisticsMoney(value) {
+    if (typeof formatMoney === "function") {
         try {
-
             return formatMoney(
-                statisticsNumber(
-                    value
-                )
+                statisticsNumber(value)
             );
-
         } catch (error) {}
-
     }
 
-
     return (
-        statisticsNumber(
-            value
-        )
-            .toLocaleString(
-                "vi-VN"
-            ) +
+        statisticsNumber(value)
+            .toLocaleString("vi-VN") +
         " ₫"
     );
-
 }
 
 
@@ -777,113 +412,52 @@ function statisticsMoney(
    SET TEXT
 ========================================================= */
 
-function statisticsSetText(
-    id,
-    value
-) {
-
+function statisticsSetText(id, value) {
     const element =
-        document.getElementById(
-            id
-        );
-
+        document.getElementById(id);
 
     if (!element) {
-
         return;
-
     }
 
-
     element.textContent =
-        statisticsSafeText(
-            value
-        );
-
+        statisticsSafeText(value);
 }
 
 
-/*
- * Dùng setText của project nếu có.
- */
-
-function statisticsSetTextCompat(
-    id,
-    value
-) {
-
-    if (
-        typeof setText ===
-        "function"
-    ) {
-
+function statisticsSetTextCompat(id, value) {
+    if (typeof setText === "function") {
         try {
-
-            setText(
-                id,
-                value
-            );
-
+            setText(id, value);
             return;
-
         } catch (error) {}
-
     }
 
-
-    statisticsSetText(
-        id,
-        value
-    );
-
+    statisticsSetText(id, value);
 }
 
 
 /* =========================================================
-   GET DISH COST
+   DISH COST
 ========================================================= */
 
-function statisticsGetDishCost(
-    transaction
-) {
-
-    if (
-        !transaction
-    ) {
-
+function statisticsGetDishCost(transaction) {
+    if (!transaction) {
         return 0;
-
     }
-
 
     if (
         typeof getTransactionDishCost ===
         "function"
     ) {
-
         try {
-
             return statisticsNumber(
                 getTransactionDishCost(
                     transaction
                 )
             );
-
-        } catch (error) {
-
-            console.warn(
-                "getTransactionDishCost error:",
-                error
-            );
-
-        }
-
+        } catch (error) {}
     }
-
-
-    /*
-     * Fallback.
-     */
 
     return statisticsNumber(
         transaction.cost ||
@@ -891,7 +465,6 @@ function statisticsGetDishCost(
         transaction.food_cost ||
         0
     );
-
 }
 
 
@@ -900,31 +473,24 @@ function statisticsGetDishCost(
 ========================================================= */
 
 function renderStatistics() {
-
     try {
-
         statisticsNormalizeDate();
-
 
         const transactions =
             getStatisticsTransactions();
-
 
         const income =
             transactions.filter(
                 transaction =>
                     transaction &&
-                    transaction.type ===
-                    "thu"
+                    transaction.type === "thu"
             );
-
 
         const expenses =
             transactions.filter(
                 transaction =>
                     transaction &&
-                    transaction.type ===
-                    "chi"
+                    transaction.type === "chi"
             );
 
 
@@ -934,19 +500,11 @@ function renderStatistics() {
 
         const revenue =
             income.reduce(
-                (
-                    sum,
-                    transaction
-                ) => {
-
-                    return (
-                        sum +
-                        statisticsNumber(
-                            transaction.amount
-                        )
-                    );
-
-                },
+                (sum, transaction) =>
+                    sum +
+                    statisticsNumber(
+                        transaction.amount
+                    ),
                 0
             );
 
@@ -957,25 +515,17 @@ function renderStatistics() {
 
         const expense =
             expenses.reduce(
-                (
-                    sum,
-                    transaction
-                ) => {
-
-                    return (
-                        sum +
-                        statisticsNumber(
-                            transaction.amount
-                        )
-                    );
-
-                },
+                (sum, transaction) =>
+                    sum +
+                    statisticsNumber(
+                        transaction.amount
+                    ),
                 0
             );
 
 
         /* =================================================
-           SHOPEE FEE
+           APP FEES
         ================================================= */
 
         const shopeeFee =
@@ -986,26 +536,14 @@ function renderStatistics() {
                         "ShopeeFood"
                 )
                 .reduce(
-                    (
-                        sum,
-                        transaction
-                    ) => {
-
-                        return (
-                            sum +
-                            statisticsNumber(
-                                transaction.app_fee
-                            )
-                        );
-
-                    },
+                    (sum, transaction) =>
+                        sum +
+                        statisticsNumber(
+                            transaction.app_fee
+                        ),
                     0
                 );
 
-
-        /* =================================================
-           GRAB FEE
-        ================================================= */
 
         const grabFee =
             income
@@ -1015,25 +553,17 @@ function renderStatistics() {
                         "GrabFood"
                 )
                 .reduce(
-                    (
-                        sum,
-                        transaction
-                    ) => {
-
-                        return (
-                            sum +
-                            statisticsNumber(
-                                transaction.app_fee
-                            )
-                        );
-
-                    },
+                    (sum, transaction) =>
+                        sum +
+                        statisticsNumber(
+                            transaction.app_fee
+                        ),
                     0
                 );
 
 
         /* =================================================
-           COD / COST
+           COST
         ================================================= */
 
         const codCost =
@@ -1060,76 +590,78 @@ function renderStatistics() {
 
         statisticsSetTextCompat(
             "statisticsRevenue",
-            statisticsMoney(
-                revenue
-            )
+            statisticsMoney(revenue)
         );
-
 
         statisticsSetTextCompat(
             "statisticsCOD",
-            statisticsMoney(
-                codCost
-            )
+            statisticsMoney(codCost)
         );
-
 
         statisticsSetTextCompat(
             "statisticsExpense",
-            statisticsMoney(
-                expense
-            )
+            statisticsMoney(expense)
         );
-
 
         statisticsSetTextCompat(
             "statisticsShopeeFee",
-            statisticsMoney(
-                shopeeFee
-            )
+            statisticsMoney(shopeeFee)
         );
-
 
         statisticsSetTextCompat(
             "statisticsGrabFee",
-            statisticsMoney(
-                grabFee
-            )
+            statisticsMoney(grabFee)
         );
-
 
         statisticsSetTextCompat(
             "statisticsProfit",
-            statisticsMoney(
-                profit
-            )
+            statisticsMoney(profit)
         );
 
-
-        /*
-         * Thêm class màu cho lợi nhuận.
-         */
 
         const profitElement =
             document.getElementById(
                 "statisticsProfit"
             );
 
-
         if (profitElement) {
-
             profitElement.classList.toggle(
                 "profit-positive",
                 profit >= 0
             );
 
-
             profitElement.classList.toggle(
                 "profit-negative",
                 profit < 0
             );
-
         }
+
+
+        /* =================================================
+           EXTRA OVERVIEW
+        ================================================= */
+
+        statisticsSetTextCompat(
+            "statisticsTotalRevenue",
+            statisticsMoney(revenue)
+        );
+
+        statisticsSetTextCompat(
+            "statisticsTotalExpense",
+            statisticsMoney(expense)
+        );
+
+        statisticsSetTextCompat(
+            "statisticsTotalCost",
+            statisticsMoney(codCost)
+        );
+
+        statisticsSetTextCompat(
+            "statisticsTotalAppFee",
+            statisticsMoney(
+                shopeeFee + grabFee
+            )
+        );
 
 
         /* =================================================
@@ -1140,21 +672,17 @@ function renderStatistics() {
             expenses
         );
 
-
         renderStatisticsDishes(
             income
         );
-
 
         renderStatisticsSources(
             income
         );
 
-
         renderStatisticsChart(
             transactions
         );
-
 
         renderStatisticsPercentWheel(
             revenue,
@@ -1165,136 +693,90 @@ function renderStatistics() {
 
 
         /* =================================================
-           PERIOD LABEL
+           LABEL
         ================================================= */
+
+        const periodLabel =
+            getPeriodLabel();
 
         statisticsSetTextCompat(
             "statisticsPeriodLabel",
-            getPeriodLabel()
+            periodLabel
         );
-
-
-        /*
-         * Một số HTML cũ dùng id khác.
-         */
 
         statisticsSetTextCompat(
             "statisticsDateLabel",
-            getPeriodLabel()
+            periodLabel
+        );
+
+        statisticsSetTextCompat(
+            "statisticsDatePickerLabel",
+            periodLabel
         );
 
 
-        /* =================================================
-           PERIOD BUTTON
-        ================================================= */
-
         document
-            .querySelectorAll(
-                ".period-tab"
-            )
-            .forEach(
-                button => {
-
-                    button.classList.toggle(
-                        "active",
-                        button.dataset.period ===
-                        AppState.statisticsPeriod
-                    );
-
-                }
-            );
+            .querySelectorAll(".period-tab")
+            .forEach(button => {
+                button.classList.toggle(
+                    "active",
+                    button.dataset.period ===
+                    AppState.statisticsPeriod
+                );
+            });
 
 
         hideOldStatisticsModeTabs();
 
-
-        /*
-         * Cập nhật trạng thái nút ngày.
-         */
-
         updateStatisticsNavigationButtons();
 
+        updateStatisticsDateDisplay();
 
     } catch (error) {
-
         console.error(
             "Statistics render error:",
             error
         );
-
     }
-
 }
 
 
 /* =========================================================
-   HIDE OLD TABS
+   OLD TABS
 ========================================================= */
 
 function hideOldStatisticsModeTabs() {
-
     [
         "statisticsIncomeTab",
         "statisticsExpenseTab"
-    ]
-        .forEach(
-            id => {
+    ].forEach(id => {
+        const element =
+            document.getElementById(id);
 
-                const element =
-                    document.getElementById(
-                        id
-                    );
-
-
-                if (element) {
-
-                    element.style.display =
-                        "none";
-
-                }
-
-            }
-        );
-
+        if (element) {
+            element.style.display = "none";
+        }
+    });
 }
 
 
 /* =========================================================
-   COD COST
+   COST
 ========================================================= */
 
-function calculatePeriodCODCost(
-    transactions
-) {
-
-    if (
-        !Array.isArray(
-            transactions
-        )
-    ) {
-
+function calculatePeriodCODCost(transactions) {
+    if (!Array.isArray(transactions)) {
         return 0;
-
     }
 
-
-    let total = 0;
-
-
-    transactions.forEach(
-        transaction => {
-
-            total +=
-                statisticsGetDishCost(
-                    transaction
-                );
-
-        }
+    return transactions.reduce(
+        (total, transaction) =>
+            total +
+            statisticsGetDishCost(
+                transaction
+            ),
+        0
     );
-
-
-    return total;
-
 }
 
 
@@ -1305,173 +787,108 @@ function calculatePeriodCODCost(
 function renderStatisticsDishes(
     transactions
 ) {
-
     const container =
         document.getElementById(
             "statisticsDishList"
         );
 
-
     if (!container) {
-
         return;
-
     }
-
 
     const map = {};
 
-
     (
-        Array.isArray(
-            transactions
-        )
+        Array.isArray(transactions)
             ? transactions
             : []
-    )
-        .forEach(
-            transaction => {
+    ).forEach(transaction => {
+        if (!transaction) {
+            return;
+        }
 
-                if (!transaction) {
+        const name =
+            statisticsSafeText(
+                transaction.dish_name ||
+                transaction.name ||
+                "Không tên"
+            );
 
-                    return;
+        if (!map[name]) {
+            map[name] = {
+                quantity: 0,
+                revenue: 0,
+                fee: 0,
+                cost: 0
+            };
+        }
 
-                }
+        map[name].quantity++;
 
+        map[name].revenue +=
+            statisticsNumber(
+                transaction.amount
+            );
 
-                const name =
-                    statisticsSafeText(
-                        transaction.dish_name ||
-                        transaction.name ||
-                        "Không tên"
-                    );
+        map[name].fee +=
+            statisticsNumber(
+                transaction.app_fee
+            );
 
-
-                if (!map[name]) {
-
-                    map[name] = {
-
-                        quantity: 0,
-
-                        revenue: 0,
-
-                        fee: 0,
-
-                        cost: 0
-
-                    };
-
-                }
-
-
-                map[name].quantity +=
-                    1;
-
-
-                map[name].revenue +=
-                    statisticsNumber(
-                        transaction.amount
-                    );
-
-
-                map[name].fee +=
-                    statisticsNumber(
-                        transaction.app_fee
-                    );
-
-
-                map[name].cost +=
-                    statisticsGetDishCost(
-                        transaction
-                    );
-
-            }
-        );
-
+        map[name].cost +=
+            statisticsGetDishCost(
+                transaction
+            );
+    });
 
     container.innerHTML = "";
 
-
     const entries =
-        Object.entries(
-            map
-        )
+        Object.entries(map)
             .sort(
-                (
-                    a,
-                    b
-                ) =>
+                (a, b) =>
                     b[1].revenue -
                     a[1].revenue
             );
 
-
-    if (
-        !entries.length
-    ) {
-
+    if (!entries.length) {
         container.innerHTML = `
-
             <div class="statistics-empty">
-
                 <div class="statistics-empty-icon">
                     🍜
                 </div>
-
                 <strong>
                     Chưa có đơn bán
                 </strong>
-
                 <span>
                     Không có món nào trong kỳ này.
                 </span>
-
             </div>
-
         `;
-
         return;
-
     }
 
-
     entries.forEach(
-        (
-            [name, item]
-        ) => {
-
+        ([name, item]) => {
             const profit =
                 item.revenue -
                 item.fee -
                 item.cost;
 
-
             const row =
-                document.createElement(
-                    "div"
-                );
-
+                document.createElement("div");
 
             row.className =
                 "statistics-dish-row";
 
-
             row.innerHTML = `
-
                 <div class="statistics-dish-top">
-
                     <span class="statistics-dish-name">
-
                         <span class="statistics-dish-icon">
                             🍜
                         </span>
-
-                        ${statisticsEscapeHTML(
-                            name
-                        )}
-
+                        ${statisticsEscapeHTML(name)}
                     </span>
-
 
                     <strong class="
                         statistics-dish-profit
@@ -1479,55 +896,33 @@ function renderStatisticsDishes(
                             ? "positive"
                             : "negative"}
                     ">
-
-                        ${statisticsMoney(
-                            profit
-                        )}
-
+                        ${statisticsMoney(profit)}
                     </strong>
-
                 </div>
 
-
                 <div class="statistics-dish-detail">
-
-                    <span>
-                        ${item.quantity} đơn
-                    </span>
+                    <span>${item.quantity} đơn</span>
 
                     <span>
                         Thu:
-                        ${statisticsMoney(
-                            item.revenue
-                        )}
+                        ${statisticsMoney(item.revenue)}
                     </span>
 
                     <span>
                         Vốn:
-                        ${statisticsMoney(
-                            item.cost
-                        )}
+                        ${statisticsMoney(item.cost)}
                     </span>
 
                     <span>
                         App:
-                        ${statisticsMoney(
-                            item.fee
-                        )}
+                        ${statisticsMoney(item.fee)}
                     </span>
-
                 </div>
-
             `;
 
-
-            container.appendChild(
-                row
-            );
-
+            container.appendChild(row);
         }
     );
-
 }
 
 
@@ -1538,181 +933,119 @@ function renderStatisticsDishes(
 function renderStatisticsSources(
     transactions
 ) {
-
     const container =
         document.getElementById(
             "statisticsSourceList"
         );
 
-
     if (!container) {
-
         return;
-
     }
 
-
     const sources = [
-
         {
             name: "ShopeeFood",
             icon: "🟠"
         },
-
         {
             name: "GrabFood",
             icon: "🟢"
         },
-
         {
             name: "Ngoài sàn",
             icon: "🔵"
         }
-
     ];
-
 
     container.innerHTML = "";
 
+    sources.forEach(source => {
+        const items =
+            (
+                Array.isArray(transactions)
+                    ? transactions
+                    : []
+            ).filter(
+                transaction =>
+                    transaction &&
+                    transaction.source ===
+                    source.name
+            );
 
-    sources.forEach(
-        source => {
+        const revenue =
+            items.reduce(
+                (sum, transaction) =>
+                    sum +
+                    statisticsNumber(
+                        transaction.amount
+                    ),
+                0
+            );
 
-            const items =
-                (
-                    Array.isArray(
-                        transactions
-                    )
-                        ? transactions
-                        : []
-                )
-                    .filter(
-                        transaction =>
-                            transaction &&
-                            transaction.source ===
-                            source.name
-                    );
+        const fee =
+            items.reduce(
+                (sum, transaction) =>
+                    sum +
+                    statisticsNumber(
+                        transaction.app_fee
+                    ),
+                0
+            );
 
+        const row =
+            document.createElement("div");
 
-            const revenue =
-                items.reduce(
-                    (
-                        sum,
-                        transaction
-                    ) =>
-                        sum +
-                        statisticsNumber(
-                            transaction.amount
-                        ),
-                    0
-                );
+        row.className =
+            "statistics-source-row";
 
+        row.innerHTML = `
+            <div class="statistics-source-left">
+                <span class="statistics-source-icon">
+                    ${source.icon}
+                </span>
 
-            const fee =
-                items.reduce(
-                    (
-                        sum,
-                        transaction
-                    ) =>
-                        sum +
-                        statisticsNumber(
-                            transaction.app_fee
-                        ),
-                    0
-                );
-
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-
-            row.className =
-                "statistics-source-row";
-
-
-            row.innerHTML = `
-
-                <div class="statistics-source-left">
-
-                    <span class="statistics-source-icon">
-                        ${source.icon}
-                    </span>
-
-
-                    <div>
-
-                        <strong>
-                            ${statisticsEscapeHTML(
-                                source.name
-                            )}
-                        </strong>
-
-                        <small>
-                            ${items.length} đơn
-                        </small>
-
-                    </div>
-
-                </div>
-
-
-                <div class="statistics-source-money">
-
+                <div>
                     <strong>
-                        ${statisticsMoney(
-                            revenue
-                        )}
+                        ${statisticsEscapeHTML(source.name)}
                     </strong>
 
                     <small>
-                        Phí:
-                        ${statisticsMoney(
-                            fee
-                        )}
+                        ${items.length} đơn
                     </small>
-
                 </div>
+            </div>
 
-            `;
+            <div class="statistics-source-money">
+                <strong>
+                    ${statisticsMoney(revenue)}
+                </strong>
 
+                <small>
+                    Phí:
+                    ${statisticsMoney(fee)}
+                </small>
+            </div>
+        `;
 
-            container.appendChild(
-                row
-            );
-
-        }
-    );
-
+        container.appendChild(row);
+    });
 }
 
 
 /* =========================================================
-   EXPENSE MAIN
+   EXPENSE
 ========================================================= */
 
 function renderStatisticsExpenses(
     expenses
 ) {
-
-    if (
-        !Array.isArray(
-            expenses
-        )
-    ) {
-
+    if (!Array.isArray(expenses)) {
         expenses = [];
-
     }
-
 
     const total =
         expenses.reduce(
-            (
-                sum,
-                transaction
-            ) =>
+            (sum, transaction) =>
                 sum +
                 statisticsNumber(
                     transaction.amount
@@ -1720,57 +1053,42 @@ function renderStatisticsExpenses(
             0
         );
 
-
     const count =
         expenses.length;
-
 
     const average =
         count > 0
             ? total / count
             : 0;
 
-
     statisticsSetTextCompat(
         "statisticsTotalExpense",
-        statisticsMoney(
-            total
-        )
+        statisticsMoney(total)
     );
-
 
     statisticsSetTextCompat(
         "statisticsExpenseAmount",
-        statisticsMoney(
-            total
-        )
+        statisticsMoney(total)
     );
-
 
     statisticsSetTextCompat(
         "statisticsExpenseCount",
         count
     );
 
-
     statisticsSetTextCompat(
         "statisticsExpenseAverage",
-        statisticsMoney(
-            average
-        )
+        statisticsMoney(average)
     );
-
 
     renderStatisticsExpenseCategories(
         expenses,
         total
     );
 
-
     renderStatisticsExpenseList(
         expenses
     );
-
 }
 
 
@@ -1782,199 +1100,120 @@ function renderStatisticsExpenseCategories(
     expenses,
     total
 ) {
-
     const container =
         document.getElementById(
             "statisticsExpenseCategoryList"
         );
 
-
     if (!container) {
-
         return;
-
     }
-
 
     const map = {};
 
-
-    expenses.forEach(
-        transaction => {
-
-            if (!transaction) {
-
-                return;
-
-            }
-
-
-            const category =
-                statisticsSafeText(
-                    transaction.category_name ||
-                    transaction.category ||
-                    "Khác"
-                );
-
-
-            if (!map[category]) {
-
-                map[category] =
-                    0;
-
-            }
-
-
-            map[category] +=
-                statisticsNumber(
-                    transaction.amount
-                );
-
+    expenses.forEach(transaction => {
+        if (!transaction) {
+            return;
         }
-    );
 
+        const category =
+            statisticsSafeText(
+                transaction.category_name ||
+                transaction.category ||
+                "Khác"
+            );
+
+        if (!map[category]) {
+            map[category] = 0;
+        }
+
+        map[category] +=
+            statisticsNumber(
+                transaction.amount
+            );
+    });
 
     const entries =
-        Object.entries(
-            map
-        )
+        Object.entries(map)
             .sort(
-                (
-                    a,
-                    b
-                ) =>
+                (a, b) =>
                     b[1] -
                     a[1]
             );
 
-
     container.innerHTML = "";
 
-
-    if (
-        !entries.length
-    ) {
-
+    if (!entries.length) {
         container.innerHTML = `
-
             <div class="statistics-empty">
-
                 <div class="statistics-empty-icon">
                     💸
                 </div>
-
                 <strong>
                     Chưa có khoản chi
                 </strong>
-
                 <span>
                     Các khoản chi sẽ xuất hiện ở đây.
                 </span>
-
             </div>
-
         `;
-
         return;
-
     }
 
-
     entries.forEach(
-        (
-            [name, amount]
-        ) => {
-
+        ([name, amount]) => {
             const percent =
                 total > 0
-                    ? (
-                        amount /
-                        total
-                    ) *
-                    100
+                    ? amount / total * 100
                     : 0;
 
-
             const row =
-                document.createElement(
-                    "div"
-                );
-
+                document.createElement("div");
 
             row.className =
                 "statistics-expense-category-row";
 
-
             row.innerHTML = `
-
                 <div class="
                     statistics-expense-category-top
                 ">
-
                     <span class="
                         statistics-expense-category-name
                     ">
-
                         📁
-                        ${statisticsEscapeHTML(
-                            name
-                        )}
-
+                        ${statisticsEscapeHTML(name)}
                     </span>
-
 
                     <strong class="
                         statistics-expense-category-money
                     ">
-
-                        ${statisticsMoney(
-                            amount
-                        )}
-
+                        ${statisticsMoney(amount)}
                     </strong>
-
                 </div>
-
 
                 <div class="
                     statistics-expense-category-bar
                 ">
-
                     <span
                         style="
                             width:${Math.min(
-                                Math.max(
-                                    percent,
-                                    0
-                                ),
+                                Math.max(percent, 0),
                                 100
                             )}%;
                         "
                     ></span>
-
                 </div>
-
 
                 <div class="
                     statistics-expense-category-percent
                 ">
-
-                    ${percent.toFixed(
-                        1
-                    )}%
-
+                    ${percent.toFixed(1)}%
                 </div>
-
             `;
 
-
-            container.appendChild(
-                row
-            );
-
+            container.appendChild(row);
         }
     );
-
 }
 
 
@@ -1985,201 +1224,126 @@ function renderStatisticsExpenseCategories(
 function renderStatisticsExpenseList(
     expenses
 ) {
-
     const container =
         document.getElementById(
             "statisticsExpenseList"
         );
 
-
     if (!container) {
-
         return;
-
     }
-
 
     container.innerHTML = "";
 
-
-    if (
-        !expenses.length
-    ) {
-
+    if (!expenses.length) {
         container.innerHTML = `
-
             <div class="statistics-empty">
-
                 <div class="statistics-empty-icon">
                     🧾
                 </div>
-
                 <strong>
                     Chưa có khoản chi
                 </strong>
-
                 <span>
                     Chưa phát sinh chi phí trong kỳ.
                 </span>
-
             </div>
-
         `;
-
         return;
-
     }
 
-
     const sorted =
-        [...expenses]
-            .sort(
-                (
-                    a,
-                    b
-                ) => {
-
-                    return String(
-                        b.date || ""
+        [...expenses].sort(
+            (a, b) =>
+                String(b.date || "")
+                    .localeCompare(
+                        String(a.date || "")
                     )
-                        .localeCompare(
-                            String(
-                                a.date || ""
-                            )
-                        );
+        );
 
-                }
-            );
-
-
-    sorted.forEach(
-        transaction => {
-
-            if (!transaction) {
-
-                return;
-
-            }
-
-
-            const name =
-                statisticsSafeText(
-                    transaction.dish_name ||
-                    transaction.name ||
-                    "Khoản chi"
-                );
-
-
-            const category =
-                statisticsSafeText(
-                    transaction.category_name ||
-                    transaction.category ||
-                    "Khác"
-                );
-
-
-            let dateLabel =
-                statisticsGetTransactionDate(
-                    transaction
-                );
-
-
-            try {
-
-                if (
-                    typeof formatVietnameseDate ===
-                    "function"
-                ) {
-
-                    dateLabel =
-                        formatVietnameseDate(
-                            transaction.date
-                        );
-
-                }
-
-            } catch (error) {}
-
-
-            const row =
-                document.createElement(
-                    "div"
-                );
-
-
-            row.className =
-                "statistics-expense-row";
-
-
-            row.innerHTML = `
-
-                <div class="
-                    statistics-expense-icon
-                ">
-                    ↓
-                </div>
-
-
-                <div class="
-                    statistics-expense-info
-                ">
-
-                    <div class="
-                        statistics-expense-name
-                    ">
-
-                        ${statisticsEscapeHTML(
-                            name
-                        )}
-
-                    </div>
-
-
-                    <div class="
-                        statistics-expense-category
-                    ">
-
-                        ${statisticsEscapeHTML(
-                            category
-                        )}
-
-                    </div>
-
-
-                    <div class="
-                        statistics-expense-date
-                    ">
-
-                        ${statisticsEscapeHTML(
-                            dateLabel
-                        )}
-
-                    </div>
-
-                </div>
-
-
-                <div class="
-                    statistics-expense-money
-                ">
-
-                    -
-                    ${statisticsMoney(
-                        transaction.amount
-                    )}
-
-                </div>
-
-            `;
-
-
-            container.appendChild(
-                row
-            );
-
+    sorted.forEach(transaction => {
+        if (!transaction) {
+            return;
         }
-    );
 
+        const name =
+            statisticsSafeText(
+                transaction.dish_name ||
+                transaction.name ||
+                "Khoản chi"
+            );
+
+        const category =
+            statisticsSafeText(
+                transaction.category_name ||
+                transaction.category ||
+                "Khác"
+            );
+
+        let dateLabel =
+            statisticsGetTransactionDate(
+                transaction
+            );
+
+        try {
+            if (
+                typeof formatVietnameseDate ===
+                "function"
+            ) {
+                dateLabel =
+                    formatVietnameseDate(
+                        transaction.date
+                    );
+            }
+        } catch (error) {}
+
+        const row =
+            document.createElement("div");
+
+        row.className =
+            "statistics-expense-row";
+
+        row.innerHTML = `
+            <div class="
+                statistics-expense-icon
+            ">
+                ↓
+            </div>
+
+            <div class="
+                statistics-expense-info
+            ">
+                <div class="
+                    statistics-expense-name
+                ">
+                    ${statisticsEscapeHTML(name)}
+                </div>
+
+                <div class="
+                    statistics-expense-category
+                ">
+                    ${statisticsEscapeHTML(category)}
+                </div>
+
+                <div class="
+                    statistics-expense-date
+                ">
+                    ${statisticsEscapeHTML(dateLabel)}
+                </div>
+            </div>
+
+            <div class="
+                statistics-expense-money
+            ">
+                -
+                ${statisticsMoney(
+                    transaction.amount
+                )}
+            </div>
+        `;
+
+        container.appendChild(row);
+    });
 }
 
 
@@ -2190,149 +1354,84 @@ function renderStatisticsExpenseList(
 function renderStatisticsChart(
     transactions
 ) {
-
     const chart =
         document.getElementById(
             "statisticsChart"
         );
 
-
     if (!chart) {
-
         return;
-
     }
-
 
     chart.innerHTML = "";
 
-
-    if (
-        !transactions.length
-    ) {
-
+    if (!transactions.length) {
         chart.innerHTML = `
-
             <div class="empty-chart">
-
-                <span>
-                    📊
-                </span>
-
+                <span>📊</span>
                 <strong>
                     Chưa có dữ liệu
                 </strong>
-
                 <small>
                     Không có giao dịch trong kỳ này.
                 </small>
-
             </div>
-
         `;
-
         return;
-
     }
-
 
     const daily = {};
 
-
-    transactions.forEach(
-        transaction => {
-
-            if (
-                !transaction
-            ) {
-
-                return;
-
-            }
-
-
-            const date =
-                statisticsGetTransactionDate(
-                    transaction
-                );
-
-
-            if (!date) {
-
-                return;
-
-            }
-
-
-            if (
-                !daily[date]
-            ) {
-
-                daily[date] = {
-
-                    thu: 0,
-
-                    chi: 0
-
-                };
-
-            }
-
-
-            const amount =
-                statisticsNumber(
-                    transaction.amount
-                );
-
-
-            if (
-                transaction.type ===
-                "thu"
-            ) {
-
-                daily[date].thu +=
-                    amount;
-
-            }
-
-
-            if (
-                transaction.type ===
-                "chi"
-            ) {
-
-                daily[date].chi +=
-                    amount;
-
-            }
-
+    transactions.forEach(transaction => {
+        if (!transaction) {
+            return;
         }
-    );
 
+        const date =
+            statisticsGetTransactionDate(
+                transaction
+            );
+
+        if (!date) {
+            return;
+        }
+
+        if (!daily[date]) {
+            daily[date] = {
+                thu: 0,
+                chi: 0
+            };
+        }
+
+        const amount =
+            statisticsNumber(
+                transaction.amount
+            );
+
+        if (
+            transaction.type === "thu"
+        ) {
+            daily[date].thu += amount;
+        }
+
+        if (
+            transaction.type === "chi"
+        ) {
+            daily[date].chi += amount;
+        }
+    });
 
     const dates =
-        Object.keys(
-            daily
-        )
-            .sort();
+        Object.keys(daily).sort();
 
-
-    if (
-        !dates.length
-    ) {
-
+    if (!dates.length) {
         chart.innerHTML = `
-
             <div class="empty-chart">
                 📊 Chưa có dữ liệu
             </div>
-
         `;
-
         return;
-
     }
-
 
     const maxValue =
         Math.max(
@@ -2346,209 +1445,136 @@ function renderStatisticsChart(
             1
         );
 
-
     const legend =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     legend.className =
         "statistics-chart-legend";
 
-
     legend.innerHTML = `
-
         <span>
-
             <i class="legend-dot income"></i>
-
             Thu
-
         </span>
-
 
         <span>
-
             <i class="legend-dot expense"></i>
-
             Chi
-
         </span>
-
     `;
 
-
-    chart.appendChild(
-        legend
-    );
-
+    chart.appendChild(legend);
 
     const chartBody =
-        document.createElement(
-            "div"
-        );
-
+        document.createElement("div");
 
     chartBody.className =
         "statistics-chart-body";
 
+    dates.forEach(date => {
+        const data = daily[date];
 
-    dates.forEach(
-        date => {
+        const maxHeight = 145;
 
-            const data =
-                daily[date];
+        const incomeHeight =
+            data.thu > 0
+                ? Math.max(
+                    8,
+                    data.thu /
+                    maxValue *
+                    maxHeight
+                )
+                : 0;
 
+        const expenseHeight =
+            data.chi > 0
+                ? Math.max(
+                    8,
+                    data.chi /
+                    maxValue *
+                    maxHeight
+                )
+                : 0;
 
-            const maxHeight =
-                145;
+        const dateObject =
+            statisticsStringToDate(date);
 
+        let label = date;
 
-            const incomeHeight =
-                data.thu > 0
-                    ? Math.max(
-                        8,
-                        (
-                            data.thu /
-                            maxValue
-                        ) *
-                        maxHeight
-                    )
-                    : 0;
-
-
-            const expenseHeight =
-                data.chi > 0
-                    ? Math.max(
-                        8,
-                        (
-                            data.chi /
-                            maxValue
-                        ) *
-                        maxHeight
-                    )
-                    : 0;
-
-
-            const dateObject =
-                statisticsStringToDate(
-                    date
+        if (dateObject) {
+            label =
+                dateObject.getDate() +
+                "/" +
+                (
+                    dateObject.getMonth() + 1
                 );
-
-
-            let label =
-                date;
-
-
-            if (
-                dateObject
-            ) {
-
-                label =
-                    dateObject.getDate() +
-                    "/" +
-                    (
-                        dateObject.getMonth() +
-                        1
-                    );
-
-            }
-
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-
-            item.className =
-                "chart-day";
-
-
-            item.innerHTML = `
-
-                <div class="chart-bars">
-
-                    <div
-                        class="
-                            chart-bar
-                            income
-                        "
-                        style="
-                            height:${incomeHeight}px;
-                        "
-                        title="Thu: ${statisticsMoney(
-                            data.thu
-                        )}"
-                    ></div>
-
-
-                    <div
-                        class="
-                            chart-bar
-                            expense
-                        "
-                        style="
-                            height:${expenseHeight}px;
-                        "
-                        title="Chi: ${statisticsMoney(
-                            data.chi
-                        )}"
-                    ></div>
-
-                </div>
-
-
-                <div class="chart-date">
-
-                    ${statisticsEscapeHTML(
-                        label
-                    )}
-
-                </div>
-
-            `;
-
-
-            chartBody.appendChild(
-                item
-            );
-
         }
-    );
 
+        const item =
+            document.createElement("div");
 
-    chart.appendChild(
-        chartBody
-    );
+        item.className =
+            "chart-day";
 
+        item.innerHTML = `
+            <div class="chart-bars">
+                <div
+                    class="
+                        chart-bar
+                        income
+                    "
+                    style="
+                        height:${incomeHeight}px;
+                    "
+                    title="Thu: ${statisticsMoney(
+                        data.thu
+                    )}"
+                ></div>
+
+                <div
+                    class="
+                        chart-bar
+                        expense
+                    "
+                    style="
+                        height:${expenseHeight}px;
+                    "
+                    title="Chi: ${statisticsMoney(
+                        data.chi
+                    )}"
+                ></div>
+            </div>
+
+            <div class="chart-date">
+                ${statisticsEscapeHTML(label)}
+            </div>
+        `;
+
+        chartBody.appendChild(item);
+    });
+
+    chart.appendChild(chartBody);
 }
 
 
 /* =========================================================
-   CREATE DONUT
+   DONUT
 ========================================================= */
 
 function statisticsCreateDonut(
     percent,
     type
 ) {
-
     const safePercent =
         Math.min(
             Math.max(
-                Number(
-                    percent
-                ) || 0,
+                Number(percent) || 0,
                 0
             ),
             100
         );
 
-
     return `
-
         <div
             class="
                 statistics-mini-donut
@@ -2558,23 +1584,15 @@ function statisticsCreateDonut(
                 --percent:${safePercent};
             "
         >
-
             <div class="
                 statistics-mini-donut-inner
             ">
-
                 <strong>
-                    ${safePercent.toFixed(
-                        0
-                    )}%
+                    ${safePercent.toFixed(0)}%
                 </strong>
-
             </div>
-
         </div>
-
     `;
-
 }
 
 
@@ -2588,76 +1606,45 @@ function renderStatisticsPercentWheel(
     income,
     expenses
 ) {
-
     let section =
         document.getElementById(
             "statisticsPercentWheel"
         );
 
-
-    /*
-     * Nếu HTML chưa có,
-     * tự tạo section.
-     */
-
     if (!section) {
-
         const page =
             document.getElementById(
                 "statisticsPage"
             );
 
-
         if (!page) {
-
             return;
-
         }
 
-
         section =
-            document.createElement(
-                "section"
-            );
-
+            document.createElement("section");
 
         section.id =
             "statisticsPercentWheel";
 
-
         section.className =
             "card statistics-percent-section";
 
-
-        page.appendChild(
-            section
-        );
-
+        page.appendChild(section);
     }
-
 
     const total =
         revenue +
         expense;
 
-
     const incomePercent =
         total > 0
-            ? (
-                revenue /
-                total
-            ) *
-            100
+            ? revenue / total * 100
             : 0;
-
 
     const expensePercent =
         total > 0
-            ? (
-                expense /
-                total
-            ) *
-            100
+            ? expense / total * 100
             : 0;
 
 
@@ -2667,69 +1654,41 @@ function renderStatisticsPercentWheel(
 
     const dishMap = {};
 
-
     (
-        Array.isArray(
-            income
-        )
+        Array.isArray(income)
             ? income
             : []
-    )
-        .forEach(
-            transaction => {
+    ).forEach(transaction => {
+        if (!transaction) {
+            return;
+        }
 
-                if (!transaction) {
+        const name =
+            statisticsSafeText(
+                transaction.dish_name ||
+                transaction.name ||
+                "Không tên"
+            );
 
-                    return;
+        if (!dishMap[name]) {
+            dishMap[name] = {
+                revenue: 0,
+                quantity: 0
+            };
+        }
 
-                }
+        dishMap[name].revenue +=
+            statisticsNumber(
+                transaction.amount
+            );
 
-
-                const name =
-                    statisticsSafeText(
-                        transaction.dish_name ||
-                        transaction.name ||
-                        "Không tên"
-                    );
-
-
-                if (
-                    !dishMap[name]
-                ) {
-
-                    dishMap[name] = {
-
-                        revenue: 0,
-
-                        quantity: 0
-
-                    };
-
-                }
-
-
-                dishMap[name].revenue +=
-                    statisticsNumber(
-                        transaction.amount
-                    );
-
-
-                dishMap[name].quantity +=
-                    1;
-
-            }
-        );
-
+        dishMap[name].quantity++;
+    });
 
     const dishes =
-        Object.entries(
-            dishMap
-        )
+        Object.entries(dishMap)
             .sort(
-                (
-                    a,
-                    b
-                ) =>
+                (a, b) =>
                     b[1].revenue -
                     a[1].revenue
             );
@@ -2741,77 +1700,45 @@ function renderStatisticsPercentWheel(
 
     const expenseMap = {};
 
-
     (
-        Array.isArray(
-            expenses
-        )
+        Array.isArray(expenses)
             ? expenses
             : []
-    )
-        .forEach(
-            transaction => {
+    ).forEach(transaction => {
+        if (!transaction) {
+            return;
+        }
 
-                if (!transaction) {
+        const category =
+            statisticsSafeText(
+                transaction.category_name ||
+                transaction.category ||
+                "Khác"
+            );
 
-                    return;
+        if (!expenseMap[category]) {
+            expenseMap[category] = 0;
+        }
 
-                }
-
-
-                const category =
-                    statisticsSafeText(
-                        transaction.category_name ||
-                        transaction.category ||
-                        "Khác"
-                    );
-
-
-                if (
-                    !expenseMap[category]
-                ) {
-
-                    expenseMap[category] =
-                        0;
-
-                }
-
-
-                expenseMap[category] +=
-                    statisticsNumber(
-                        transaction.amount
-                    );
-
-            }
-        );
-
+        expenseMap[category] +=
+            statisticsNumber(
+                transaction.amount
+            );
+    });
 
     const expenseCategories =
-        Object.entries(
-            expenseMap
-        )
+        Object.entries(expenseMap)
             .sort(
-                (
-                    a,
-                    b
-                ) =>
+                (a, b) =>
                     b[1] -
                     a[1]
             );
 
-
     const topDishes =
-        dishes.slice(
-            0,
-            8
-        );
-
+        dishes.slice(0, 8);
 
     const topExpenses =
-        expenseCategories.slice(
-            0,
-            8
-        );
+        expenseCategories.slice(0, 8);
 
 
     /* =====================================================
@@ -2820,89 +1747,59 @@ function renderStatisticsPercentWheel(
 
     let dishesHTML = "";
 
-
-    if (
-        topDishes.length
-    ) {
-
+    if (topDishes.length) {
         topDishes.forEach(
-            (
-                [name, item]
-            ) => {
-
+            ([name, item]) => {
                 const percent =
                     revenue > 0
-                        ? (
-                            item.revenue /
-                            revenue
-                        ) *
-                            100
+                        ? item.revenue /
+                          revenue *
+                          100
                         : 0;
 
-
                 dishesHTML += `
-
                     <div class="
                         statistics-detail-wheel-card
                         income
                     ">
-
                         ${statisticsCreateDonut(
                             percent,
                             "income"
                         )}
 
-
                         <div class="
                             statistics-detail-wheel-info
                         ">
-
-                            <div class="
-                                statistics-detail-wheel-name
-                            "
-                            title="${statisticsEscapeHTML(
-                                name
-                            )}">
-
-                                ${statisticsEscapeHTML(
-                                    name
-                                )}
-
+                            <div
+                                class="
+                                    statistics-detail-wheel-name
+                                "
+                                title="${statisticsEscapeHTML(name)}"
+                            >
+                                ${statisticsEscapeHTML(name)}
                             </div>
-
 
                             <div class="
                                 statistics-detail-wheel-money
                             ">
-
                                 ${statisticsMoney(
                                     item.revenue
                                 )}
-
                             </div>
-
 
                             <small>
                                 ${item.quantity} đơn
                             </small>
-
                         </div>
-
                     </div>
-
                 `;
-
             }
         );
-
     }
 
     else {
-
         dishesHTML = `
-
             <div class="statistics-empty">
-
                 <div class="statistics-empty-icon">
                     🍜
                 </div>
@@ -2914,98 +1811,64 @@ function renderStatisticsPercentWheel(
                 <span>
                     Dữ liệu món sẽ xuất hiện tại đây.
                 </span>
-
             </div>
-
         `;
-
     }
 
 
     /* =====================================================
-       EXPENSE WHEEL HTML
+       EXPENSE HTML
     ===================================================== */
 
     let expenseHTML = "";
 
-
-    if (
-        topExpenses.length
-    ) {
-
+    if (topExpenses.length) {
         topExpenses.forEach(
-            (
-                [name, amount]
-            ) => {
-
+            ([name, amount]) => {
                 const percent =
                     expense > 0
-                        ? (
-                            amount /
-                            expense
-                        ) *
-                            100
+                        ? amount /
+                          expense *
+                          100
                         : 0;
 
-
                 expenseHTML += `
-
                     <div class="
                         statistics-detail-wheel-card
                         expense
                     ">
-
                         ${statisticsCreateDonut(
                             percent,
                             "expense"
                         )}
 
-
                         <div class="
                             statistics-detail-wheel-info
                         ">
-
-                            <div class="
-                                statistics-detail-wheel-name
-                            "
-                            title="${statisticsEscapeHTML(
-                                name
-                            )}">
-
-                                ${statisticsEscapeHTML(
-                                    name
-                                )}
-
+                            <div
+                                class="
+                                    statistics-detail-wheel-name
+                                "
+                                title="${statisticsEscapeHTML(name)}"
+                            >
+                                ${statisticsEscapeHTML(name)}
                             </div>
-
 
                             <div class="
                                 statistics-detail-wheel-money
                             ">
-
-                                ${statisticsMoney(
-                                    amount
-                                )}
-
+                                ${statisticsMoney(amount)}
                             </div>
-
                         </div>
-
                     </div>
-
                 `;
-
             }
         );
-
     }
 
     else {
-
         expenseHTML = `
-
             <div class="statistics-empty">
-
                 <div class="statistics-empty-icon">
                     💸
                 </div>
@@ -3017,11 +1880,8 @@ function renderStatisticsPercentWheel(
                 <span>
                     Dữ liệu chi sẽ xuất hiện tại đây.
                 </span>
-
             </div>
-
         `;
-
     }
 
 
@@ -3031,70 +1891,45 @@ function renderStatisticsPercentWheel(
 
     let expenseAnalysisHTML = "";
 
-
-    if (
-        topExpenses.length
-    ) {
-
+    if (topExpenses.length) {
         expenseAnalysisHTML =
             topExpenses
                 .map(
-                    (
-                        [name, amount]
-                    ) => {
-
+                    ([name, amount]) => {
                         const percent =
                             expense > 0
-                                ? (
-                                    amount /
-                                    expense
-                                ) *
-                                    100
+                                ? amount /
+                                  expense *
+                                  100
                                 : 0;
 
-
                         return `
-
                             <div class="
                                 statistics-expense-analysis-row
                             ">
-
                                 <div class="
                                     statistics-expense-analysis-top
                                 ">
-
                                     <span class="
                                         statistics-expense-analysis-name
                                     ">
-
                                         <span>
                                             📁
                                         </span>
 
-                                        ${statisticsEscapeHTML(
-                                            name
-                                        )}
-
+                                        ${statisticsEscapeHTML(name)}
                                     </span>
-
 
                                     <strong class="
                                         statistics-expense-analysis-money
                                     ">
-
-                                        ${statisticsMoney(
-                                            amount
-                                        )}
-
+                                        ${statisticsMoney(amount)}
                                     </strong>
-
                                 </div>
-
 
                                 <div class="
                                     statistics-expense-analysis-bar
                                 ">
-
                                     <span
                                         style="
                                             width:${Math.min(
@@ -3106,36 +1941,23 @@ function renderStatisticsPercentWheel(
                                             )}%;
                                         "
                                     ></span>
-
                                 </div>
-
 
                                 <div class="
                                     statistics-expense-analysis-percent
                                 ">
-
-                                    ${percent.toFixed(
-                                        1
-                                    )}%
-
+                                    ${percent.toFixed(1)}%
                                 </div>
-
                             </div>
-
                         `;
-
                     }
                 )
                 .join("");
-
     }
 
     else {
-
         expenseAnalysisHTML = `
-
             <div class="statistics-empty">
-
                 <div class="statistics-empty-icon">
                     💸
                 </div>
@@ -3147,30 +1969,20 @@ function renderStatisticsPercentWheel(
                 <span>
                     Phân tích chi phí sẽ xuất hiện ở đây.
                 </span>
-
             </div>
-
         `;
-
     }
 
 
     /* =====================================================
-       RENDER SECTION
+       RENDER
     ===================================================== */
 
     section.innerHTML = `
-
-        <!-- =================================================
-             HEADING
-        ================================================= -->
-
         <div class="
             statistics-wheel-heading
         ">
-
             <div>
-
                 <span>
                     TỶ TRỌNG TÀI CHÍNH
                 </span>
@@ -3178,35 +1990,22 @@ function renderStatisticsPercentWheel(
                 <h2>
                     🥧 Thu & Chi
                 </h2>
-
             </div>
-
 
             <small>
                 Tổng
-                ${statisticsMoney(
-                    total
-                )}
+                ${statisticsMoney(total)}
             </small>
-
         </div>
 
-
-        <!-- =================================================
-             TOTAL DONUTS
-        ================================================= -->
 
         <div class="
             statistics-wheel-grid
         ">
-
-            <!-- THU -->
-
             <div class="
                 statistics-wheel-card
                 income
             ">
-
                 <div
                     class="
                         statistics-donut
@@ -3216,52 +2015,37 @@ function renderStatisticsPercentWheel(
                         --percent:${incomePercent};
                     "
                 >
-
                     <div class="
                         statistics-donut-inner
                     ">
-
                         <strong>
-                            ${incomePercent.toFixed(
-                                0
-                            )}%
+                            ${incomePercent.toFixed(0)}%
                         </strong>
 
                         <span>
                             THU
                         </span>
-
                     </div>
-
                 </div>
-
 
                 <div class="
                     statistics-wheel-info
                 ">
-
                     <strong>
                         Doanh thu
                     </strong>
 
                     <span>
-                        ${statisticsMoney(
-                            revenue
-                        )}
+                        ${statisticsMoney(revenue)}
                     </span>
-
                 </div>
-
             </div>
 
-
-            <!-- CHI -->
 
             <div class="
                 statistics-wheel-card
                 expense
             ">
-
                 <div
                     class="
                         statistics-donut
@@ -3271,61 +2055,41 @@ function renderStatisticsPercentWheel(
                         --percent:${expensePercent};
                     "
                 >
-
                     <div class="
                         statistics-donut-inner
                     ">
-
                         <strong>
-                            ${expensePercent.toFixed(
-                                0
-                            )}%
+                            ${expensePercent.toFixed(0)}%
                         </strong>
 
                         <span>
                             CHI
                         </span>
-
                     </div>
-
                 </div>
-
 
                 <div class="
                     statistics-wheel-info
                 ">
-
                     <strong>
                         Chi phí
                     </strong>
 
                     <span>
-                        ${statisticsMoney(
-                            expense
-                        )}
+                        ${statisticsMoney(expense)}
                     </span>
-
                 </div>
-
             </div>
-
         </div>
 
-
-        <!-- =================================================
-             DISH DETAIL
-        ================================================= -->
 
         <div class="
             statistics-detail-wheel-section
         ">
-
             <div class="
                 statistics-detail-wheel-title
             ">
-
                 <div>
-
                     <span>
                         DOANH THU
                     </span>
@@ -3333,49 +2097,34 @@ function renderStatisticsPercentWheel(
                     <strong>
                         🍜 Tỷ trọng từng món
                     </strong>
-
                 </div>
-
 
                 <small>
                     % trên tổng thu
                 </small>
-
             </div>
-
 
             <div class="
                 statistics-detail-wheel-grid
             ">
-
                 ${dishesHTML}
-
             </div>
-
         </div>
 
-
-        <!-- =================================================
-             EXPENSE ANALYSIS
-        ================================================= -->
 
         <div class="
             statistics-expense-analysis
         ">
-
             <div class="
                 statistics-expense-analysis-heading
             ">
-
                 <div class="
                     statistics-expense-analysis-heading-icon
                 ">
                     💸
                 </div>
 
-
                 <div>
-
                     <span>
                         CHI PHÍ
                     </span>
@@ -3383,45 +2132,29 @@ function renderStatisticsPercentWheel(
                     <strong>
                         Phân tích chi phí
                     </strong>
-
                 </div>
 
-
                 <small>
-                    ${statisticsMoney(
-                        expense
-                    )}
+                    ${statisticsMoney(expense)}
                 </small>
-
             </div>
-
 
             <div class="
                 statistics-expense-analysis-list
             ">
-
                 ${expenseAnalysisHTML}
-
             </div>
-
         </div>
 
-
-        <!-- =================================================
-             EXPENSE DETAIL WHEELS
-        ================================================= -->
 
         <div class="
             statistics-detail-wheel-section
             expense-section
         ">
-
             <div class="
                 statistics-detail-wheel-title
             ">
-
                 <div>
-
                     <span>
                         CHI PHÍ
                     </span>
@@ -3429,56 +2162,36 @@ function renderStatisticsPercentWheel(
                     <strong>
                         💸 Tỷ trọng từng nhóm chi
                     </strong>
-
                 </div>
-
 
                 <small>
                     % trên tổng chi
                 </small>
-
             </div>
-
 
             <div class="
                 statistics-detail-wheel-grid
             ">
-
                 ${expenseHTML}
-
             </div>
-
         </div>
-
     `;
-
 }
 
 
 /* =========================================================
    PREVIOUS
-   QUAN TRỌNG:
-   SỬA LỖI CHUYỂN NGÀY / THÁNG
 ========================================================= */
 
 function statisticsPrevious() {
-
     statisticsNormalizeDate();
-
 
     const current =
         AppState.statisticsDate;
 
-
-    /* =====================================================
-       DAY
-    ===================================================== */
-
     if (
-        AppState.statisticsPeriod ===
-        "day"
+        AppState.statisticsPeriod === "day"
     ) {
-
         const previous =
             statisticsCreateLocalDate(
                 current.getFullYear(),
@@ -3486,28 +2199,17 @@ function statisticsPrevious() {
                 current.getDate()
             );
 
-
         previous.setDate(
-            previous.getDate() -
-            1
+            previous.getDate() - 1
         );
-
 
         AppState.statisticsDate =
             previous;
-
     }
-
-
-    /* =====================================================
-       WEEK
-    ===================================================== */
 
     else if (
-        AppState.statisticsPeriod ===
-        "week"
+        AppState.statisticsPeriod === "week"
     ) {
-
         const previous =
             statisticsCreateLocalDate(
                 current.getFullYear(),
@@ -3515,39 +2217,15 @@ function statisticsPrevious() {
                 current.getDate()
             );
 
-
         previous.setDate(
-            previous.getDate() -
-            7
+            previous.getDate() - 7
         );
-
 
         AppState.statisticsDate =
             previous;
-
     }
 
-
-    /* =====================================================
-       MONTH
-    ===================================================== */
-
     else {
-
-        /*
-         * LUÔN đưa về ngày 1 trước khi setMonth.
-         *
-         * Đây là phần sửa lỗi quan trọng.
-         *
-         * Ví dụ:
-         *
-         * 31/03 -> tháng trước
-         *
-         * Không còn:
-         *
-         * 03/03 hoặc 01/03 sai.
-         */
-
         const previous =
             statisticsCreateLocalDate(
                 current.getFullYear(),
@@ -3555,21 +2233,17 @@ function statisticsPrevious() {
                 1
             );
 
-
         previous.setMonth(
-            previous.getMonth() -
-            1
+            previous.getMonth() - 1
         );
-
 
         AppState.statisticsDate =
             previous;
-
     }
 
+    closeStatisticsDatePicker();
 
     renderStatistics();
-
 }
 
 
@@ -3578,23 +2252,14 @@ function statisticsPrevious() {
 ========================================================= */
 
 function statisticsNext() {
-
     statisticsNormalizeDate();
-
 
     const current =
         AppState.statisticsDate;
 
-
-    /* =====================================================
-       DAY
-    ===================================================== */
-
     if (
-        AppState.statisticsPeriod ===
-        "day"
+        AppState.statisticsPeriod === "day"
     ) {
-
         const next =
             statisticsCreateLocalDate(
                 current.getFullYear(),
@@ -3602,28 +2267,17 @@ function statisticsNext() {
                 current.getDate()
             );
 
-
         next.setDate(
-            next.getDate() +
-            1
+            next.getDate() + 1
         );
-
 
         AppState.statisticsDate =
             next;
-
     }
-
-
-    /* =====================================================
-       WEEK
-    ===================================================== */
 
     else if (
-        AppState.statisticsPeriod ===
-        "week"
+        AppState.statisticsPeriod === "week"
     ) {
-
         const next =
             statisticsCreateLocalDate(
                 current.getFullYear(),
@@ -3631,29 +2285,15 @@ function statisticsNext() {
                 current.getDate()
             );
 
-
         next.setDate(
-            next.getDate() +
-            7
+            next.getDate() + 7
         );
-
 
         AppState.statisticsDate =
             next;
-
     }
 
-
-    /* =====================================================
-       MONTH
-    ===================================================== */
-
     else {
-
-        /*
-         * LUÔN dùng ngày 1.
-         */
-
         const next =
             statisticsCreateLocalDate(
                 current.getFullYear(),
@@ -3661,33 +2301,26 @@ function statisticsNext() {
                 1
             );
 
-
         next.setMonth(
-            next.getMonth() +
-            1
+            next.getMonth() + 1
         );
-
 
         AppState.statisticsDate =
             next;
-
     }
 
+    closeStatisticsDatePicker();
 
     renderStatistics();
-
 }
 
 
 /* =========================================================
-   GO TODAY
+   TODAY
 ========================================================= */
 
 function statisticsToday() {
-
-    const now =
-        new Date();
-
+    const now = new Date();
 
     AppState.statisticsDate =
         statisticsCreateLocalDate(
@@ -3696,9 +2329,9 @@ function statisticsToday() {
             now.getDate()
         );
 
+    closeStatisticsDatePicker();
 
     renderStatistics();
-
 }
 
 
@@ -3707,118 +2340,116 @@ function statisticsToday() {
 ========================================================= */
 
 function getPeriodLabel() {
-
     const range =
         getStatisticsRange();
-
 
     const start =
         statisticsStringToDate(
             range.start
         );
 
-
     const end =
         statisticsStringToDate(
             range.end
         );
 
-
     if (
-        AppState.statisticsPeriod ===
-        "day"
+        AppState.statisticsPeriod === "day"
     ) {
-
-        if (
-            typeof formatVietnameseDate ===
-            "function"
-        ) {
-
-            try {
-
-                return formatVietnameseDate(
-                    range.start
-                );
-
-            } catch (error) {}
-
-        }
-
-
-        return range.start;
-
+        return start
+            ? statisticsFormatDayMonthYear(start)
+            : range.start;
     }
 
-
     if (
-        AppState.statisticsPeriod ===
-        "month"
+        AppState.statisticsPeriod === "month"
     ) {
-
-        if (
-            start
-        ) {
-
-            const month =
-                String(
-                    start.getMonth() + 1
-                )
-                    .padStart(
-                        2,
-                        "0"
-                    );
-
-
+        if (start) {
             return (
-                "Tháng " +
-                month +
+                statisticsMonthName(
+                    start.getMonth()
+                ) +
                 "/" +
                 start.getFullYear()
             );
-
         }
-
     }
 
-
-    if (
-        start &&
-        end
-    ) {
-
-        if (
-            typeof formatVietnameseDate ===
-            "function"
-        ) {
-
-            try {
-
-                return (
-                    formatVietnameseDate(
-                        range.start
-                    ) +
-                    " - " +
-                    formatVietnameseDate(
-                        range.end
-                    )
-                );
-
-            } catch (error) {}
-
-        }
-
-
+    if (start && end) {
         return (
-            range.start +
+            statisticsFormatDayMonthYear(start) +
             " - " +
-            range.end
+            statisticsFormatDayMonthYear(end)
         );
-
     }
-
 
     return "";
+}
 
+
+/* =========================================================
+   UPDATE DATE DISPLAY
+========================================================= */
+
+function updateStatisticsDateDisplay() {
+    statisticsNormalizeDate();
+
+    const date =
+        AppState.statisticsDate;
+
+    let label = "";
+
+    if (
+        AppState.statisticsPeriod === "day"
+    ) {
+        label =
+            statisticsFormatDayMonthYear(
+                date
+            );
+    }
+
+    else if (
+        AppState.statisticsPeriod === "month"
+    ) {
+        label =
+            statisticsMonthName(
+                date.getMonth()
+            ) +
+            "/" +
+            date.getFullYear();
+    }
+
+    else {
+        label =
+            getPeriodLabel();
+    }
+
+    const ids = [
+        "statisticsDateLabel",
+        "statisticsPeriodLabel",
+        "statisticsDatePickerLabel"
+    ];
+
+    ids.forEach(id => {
+        statisticsSetTextCompat(
+            id,
+            label
+        );
+    });
+
+
+    /*
+     * Cập nhật tất cả phần tử dùng
+     * data-statistics-date-display
+     */
+
+    document
+        .querySelectorAll(
+            "[data-statistics-date-display]"
+        )
+        .forEach(element => {
+            element.textContent = label;
+        });
 }
 
 
@@ -3827,43 +2458,1019 @@ function getPeriodLabel() {
 ========================================================= */
 
 function updateStatisticsNavigationButtons() {
-
-    /*
-     * Không khóa nút.
-     *
-     * Người dùng có thể xem:
-     *
-     * hôm qua / ngày mai
-     * tuần trước / tuần sau
-     * tháng trước / tháng sau
-     */
-
     document
         .querySelectorAll(
             ".statistics-date-row button"
         )
-        .forEach(
-            button => {
-
-                button.disabled =
-                    false;
-
-                button.removeAttribute(
-                    "aria-disabled"
-                );
-
-            }
-        );
-
+        .forEach(button => {
+            button.disabled = false;
+            button.removeAttribute(
+                "aria-disabled"
+            );
+        });
 }
 
 
 /* =========================================================
-   EVENT DELEGATION
-   Hỗ trợ cả onclick cũ lẫn data-action mới
+   DATE PICKER
+   ---------------------------------------------------------
+   BẤM:
+      22/08/2026
+
+   SẼ HIỆN:
+      Năm
+      Tháng
+      Ngày
+
+   Tất cả đều sinh động theo năm/tháng hiện tại.
+========================================================= */
+
+let statisticsPickerYear = null;
+let statisticsPickerMonth = null;
+
+
+function createStatisticsDatePicker() {
+    let picker =
+        document.getElementById(
+            "statisticsDatePicker"
+        );
+
+    if (picker) {
+        return picker;
+    }
+
+    picker =
+        document.createElement("div");
+
+    picker.id =
+        "statisticsDatePicker";
+
+    picker.className =
+        "statistics-date-picker";
+
+    picker.innerHTML = `
+        <div class="
+            statistics-date-picker-backdrop
+        "></div>
+
+        <div class="
+            statistics-date-picker-panel
+        ">
+            <div class="
+                statistics-date-picker-header
+            ">
+                <div>
+                    <small>
+                        CHỌN THỜI GIAN
+                    </small>
+
+                    <strong
+                        id="
+                            statisticsPickerTitle
+                        "
+                    >
+                        22/08/2026
+                    </strong>
+                </div>
+
+                <button
+                    type="button"
+                    class="
+                        statistics-picker-close
+                    "
+                    data-picker-action="close"
+                    aria-label="Đóng"
+                >
+                    ×
+                </button>
+            </div>
+
+
+            <div class="
+                statistics-picker-periods
+            ">
+                <button
+                    type="button"
+                    data-picker-period="day"
+                >
+                    Ngày
+                </button>
+
+                <button
+                    type="button"
+                    data-picker-period="week"
+                >
+                    Tuần
+                </button>
+
+                <button
+                    type="button"
+                    data-picker-period="month"
+                >
+                    Tháng
+                </button>
+            </div>
+
+
+            <div
+                id="
+                    statisticsPickerContent
+                "
+                class="
+                    statistics-picker-content
+                "
+            ></div>
+
+
+            <div class="
+                statistics-picker-footer
+            ">
+                <button
+                    type="button"
+                    data-picker-action="today"
+                >
+                    Hôm nay
+                </button>
+
+                <button
+                    type="button"
+                    class="
+                        primary
+                    "
+                    data-picker-action="apply"
+                >
+                    Chọn
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(picker);
+
+    return picker;
+}
+
+
+/* =========================================================
+   OPEN PICKER
+========================================================= */
+
+function openStatisticsDatePicker() {
+    statisticsNormalizeDate();
+
+    const picker =
+        createStatisticsDatePicker();
+
+    statisticsPickerYear =
+        AppState.statisticsDate.getFullYear();
+
+    statisticsPickerMonth =
+        AppState.statisticsDate.getMonth();
+
+    picker.classList.add("open");
+
+    renderStatisticsDatePicker();
+
+    setTimeout(() => {
+        document.body.classList.add(
+            "statistics-picker-open"
+        );
+    }, 0);
+}
+
+
+/* =========================================================
+   CLOSE PICKER
+========================================================= */
+
+function closeStatisticsDatePicker() {
+    const picker =
+        document.getElementById(
+            "statisticsDatePicker"
+        );
+
+    if (picker) {
+        picker.classList.remove("open");
+    }
+
+    document.body.classList.remove(
+        "statistics-picker-open"
+    );
+}
+
+
+/* =========================================================
+   RENDER PICKER
+========================================================= */
+
+function renderStatisticsDatePicker() {
+    const picker =
+        document.getElementById(
+            "statisticsDatePicker"
+        );
+
+    if (!picker) {
+        return;
+    }
+
+    const content =
+        document.getElementById(
+            "statisticsPickerContent"
+        );
+
+    if (!content) {
+        return;
+    }
+
+    const selected =
+        AppState.statisticsDate;
+
+    const period =
+        AppState.statisticsPeriod;
+
+    picker
+        .querySelectorAll(
+            "[data-picker-period]"
+        )
+        .forEach(button => {
+            button.classList.toggle(
+                "active",
+                button.dataset.pickerPeriod ===
+                period
+            );
+        });
+
+
+    /*
+     * TITLE
+     */
+
+    const title =
+        document.getElementById(
+            "statisticsPickerTitle"
+        );
+
+    if (title) {
+        title.textContent =
+            statisticsFormatDayMonthYear(
+                selected
+            );
+    }
+
+
+    /* =====================================================
+       DAY
+    ===================================================== */
+
+    if (period === "day") {
+        renderStatisticsDayPicker(
+            content
+        );
+        return;
+    }
+
+
+    /* =====================================================
+       WEEK
+    ===================================================== */
+
+    if (period === "week") {
+        renderStatisticsWeekPicker(
+            content
+        );
+        return;
+    }
+
+
+    /* =====================================================
+       MONTH
+    ===================================================== */
+
+    renderStatisticsMonthPicker(
+        content
+    );
+}
+
+
+/* =========================================================
+   YEAR SELECTOR
+========================================================= */
+
+function renderStatisticsYearSelector(
+    currentYear
+) {
+    let html = `
+        <div class="
+            statistics-picker-section-title
+        ">
+            Năm
+        </div>
+
+        <div class="
+            statistics-year-grid
+        ">
+    `;
+
+    /*
+     * Không cố định.
+     *
+     * Luôn tạo vùng:
+     *
+     * năm hiện tại - 6
+     * đến
+     * năm hiện tại + 6
+     */
+
+    for (
+        let year = currentYear - 6;
+        year <= currentYear + 6;
+        year++
+    ) {
+        html += `
+            <button
+                type="button"
+                class="
+                    statistics-year-item
+                    ${year ===
+                    statisticsPickerYear
+                        ? "active"
+                        : ""}
+                "
+                data-picker-year="${year}"
+            >
+                ${year}
+            </button>
+        `;
+    }
+
+    html += `</div>`;
+
+    return html;
+}
+
+
+/* =========================================================
+   MONTH GRID
+========================================================= */
+
+function renderStatisticsMonthGrid() {
+    let html = `
+        <div class="
+            statistics-picker-section-title
+        ">
+            Tháng
+        </div>
+
+        <div class="
+            statistics-month-grid
+        ">
+    `;
+
+    for (
+        let month = 0;
+        month < 12;
+        month++
+    ) {
+        html += `
+            <button
+                type="button"
+                class="
+                    statistics-month-item
+                    ${month ===
+                    statisticsPickerMonth
+                        ? "active"
+                        : ""}
+                "
+                data-picker-month="${month}"
+            >
+                ${statisticsMonthName(month)}
+            </button>
+        `;
+    }
+
+    html += `</div>`;
+
+    return html;
+}
+
+
+/* =========================================================
+   DAY GRID
+========================================================= */
+
+function renderStatisticsCalendar() {
+    const year =
+        statisticsPickerYear;
+
+    const month =
+        statisticsPickerMonth;
+
+    const firstDay =
+        statisticsCreateLocalDate(
+            year,
+            month,
+            1
+        );
+
+    const lastDay =
+        statisticsCreateLocalDate(
+            year,
+            month + 1,
+            0
+        );
+
+    /*
+     * Monday = 0
+     */
+
+    let startDay =
+        firstDay.getDay() - 1;
+
+    if (startDay < 0) {
+        startDay = 6;
+    }
+
+    const daysInMonth =
+        lastDay.getDate();
+
+    let html = `
+        <div class="
+            statistics-picker-calendar-header
+        ">
+            <button
+                type="button"
+                data-picker-calendar="prev-year"
+            >
+                ‹
+            </button>
+
+            <strong>
+                ${statisticsMonthName(month)}
+                ${year}
+            </strong>
+
+            <button
+                type="button"
+                data-picker-calendar="next-year"
+            >
+                ›
+            </button>
+        </div>
+
+        <div class="
+            statistics-calendar-weekdays
+        ">
+            <span>T2</span>
+            <span>T3</span>
+            <span>T4</span>
+            <span>T5</span>
+            <span>T6</span>
+            <span>T7</span>
+            <span>CN</span>
+        </div>
+
+        <div class="
+            statistics-calendar-grid
+        ">
+    `;
+
+
+    /*
+     * Ô trống đầu tháng
+     */
+
+    for (
+        let i = 0;
+        i < startDay;
+        i++
+    ) {
+        html += `
+            <span
+                class="
+                    statistics-calendar-empty
+                "
+            ></span>
+        `;
+    }
+
+
+    /*
+     * Ngày trong tháng
+     */
+
+    for (
+        let day = 1;
+        day <= daysInMonth;
+        day++
+    ) {
+        const isSelected =
+            AppState.statisticsDate.getFullYear() === year &&
+            AppState.statisticsDate.getMonth() === month &&
+            AppState.statisticsDate.getDate() === day;
+
+        const now =
+            new Date();
+
+        const isToday =
+            now.getFullYear() === year &&
+            now.getMonth() === month &&
+            now.getDate() === day;
+
+        html += `
+            <button
+                type="button"
+                class="
+                    statistics-calendar-day
+                    ${isSelected
+                        ? "active"
+                        : ""}
+                    ${isToday
+                        ? "today"
+                        : ""}
+                "
+                data-picker-day="${day}"
+            >
+                ${day}
+            </button>
+        `;
+    }
+
+    html += `
+        </div>
+    `;
+
+    return html;
+}
+
+
+/* =========================================================
+   DAY PICKER
+========================================================= */
+
+function renderStatisticsDayPicker(
+    content
+) {
+    content.innerHTML = `
+        <div class="
+            statistics-picker-scroll
+        ">
+
+            ${renderStatisticsYearSelector(
+                statisticsPickerYear
+            )}
+
+            ${renderStatisticsMonthGrid()}
+
+            <div
+                class="
+                    statistics-picker-section-title
+                "
+            >
+                Ngày
+            </div>
+
+            ${renderStatisticsCalendar()}
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   WEEK PICKER
+========================================================= */
+
+function renderStatisticsWeekPicker(
+    content
+) {
+    const selected =
+        AppState.statisticsDate;
+
+    const selectedYear =
+        selected.getFullYear();
+
+    const selectedMonth =
+        selected.getMonth();
+
+    content.innerHTML = `
+        <div class="
+            statistics-picker-scroll
+        ">
+
+            ${renderStatisticsYearSelector(
+                selectedYear
+            )}
+
+            ${renderStatisticsMonthGrid()}
+
+            <div
+                class="
+                    statistics-picker-section-title
+                "
+            >
+                Chọn một ngày trong tuần
+            </div>
+
+            ${renderStatisticsCalendar()}
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   MONTH PICKER
+========================================================= */
+
+function renderStatisticsMonthPicker(
+    content
+) {
+    content.innerHTML = `
+        <div class="
+            statistics-picker-scroll
+        ">
+
+            ${renderStatisticsYearSelector(
+                statisticsPickerYear
+            )}
+
+            ${renderStatisticsMonthGrid()}
+
+        </div>
+    `;
+}
+
+
+/* =========================================================
+   APPLY PICKER
+========================================================= */
+
+function applyStatisticsDatePicker() {
+    const selected =
+        AppState.statisticsDate;
+
+    if (
+        AppState.statisticsPeriod ===
+        "month"
+    ) {
+        AppState.statisticsDate =
+            statisticsCreateLocalDate(
+                statisticsPickerYear,
+                statisticsPickerMonth,
+                1
+            );
+    }
+
+    else {
+        const day =
+            selected.getDate();
+
+        /*
+         * Khi đổi tháng:
+         * nếu ngày cũ không tồn tại
+         * trong tháng mới thì đưa về
+         * ngày cuối tháng.
+         */
+
+        const maxDay =
+            statisticsCreateLocalDate(
+                statisticsPickerYear,
+                statisticsPickerMonth + 1,
+                0
+            ).getDate();
+
+        AppState.statisticsDate =
+            statisticsCreateLocalDate(
+                statisticsPickerYear,
+                statisticsPickerMonth,
+                Math.min(
+                    day,
+                    maxDay
+                )
+            );
+    }
+
+    closeStatisticsDatePicker();
+
+    renderStatistics();
+}
+
+
+/* =========================================================
+   PICKER EVENTS
+========================================================= */
+
+function statisticsBindDatePicker() {
+    if (
+        window.__statisticsDatePickerBound
+    ) {
+        return;
+    }
+
+    window.__statisticsDatePickerBound =
+        true;
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            const periodButton =
+                event.target.closest(
+                    "[data-picker-period]"
+                );
+
+            if (periodButton) {
+                event.preventDefault();
+
+                const period =
+                    periodButton.dataset
+                        .pickerPeriod;
+
+                if (
+                    ["day", "week", "month"]
+                        .includes(period)
+                ) {
+                    AppState.statisticsPeriod =
+                        period;
+
+                    renderStatisticsDatePicker();
+                }
+
+                return;
+            }
+
+
+            const yearButton =
+                event.target.closest(
+                    "[data-picker-year]"
+                );
+
+            if (yearButton) {
+                event.preventDefault();
+
+                statisticsPickerYear =
+                    Number(
+                        yearButton.dataset
+                            .pickerYear
+                    );
+
+                renderStatisticsDatePicker();
+
+                return;
+            }
+
+
+            const monthButton =
+                event.target.closest(
+                    "[data-picker-month]"
+                );
+
+            if (monthButton) {
+                event.preventDefault();
+
+                statisticsPickerMonth =
+                    Number(
+                        monthButton.dataset
+                            .pickerMonth
+                    );
+
+                renderStatisticsDatePicker();
+
+                return;
+            }
+
+
+            const dayButton =
+                event.target.closest(
+                    "[data-picker-day]"
+                );
+
+            if (dayButton) {
+                event.preventDefault();
+
+                const day =
+                    Number(
+                        dayButton.dataset
+                            .pickerDay
+                    );
+
+                const maxDay =
+                    statisticsCreateLocalDate(
+                        statisticsPickerYear,
+                        statisticsPickerMonth + 1,
+                        0
+                    ).getDate();
+
+                AppState.statisticsDate =
+                    statisticsCreateLocalDate(
+                        statisticsPickerYear,
+                        statisticsPickerMonth,
+                        Math.min(
+                            day,
+                            maxDay
+                        )
+                    );
+
+                renderStatisticsDatePicker();
+
+                return;
+            }
+
+
+            const calendarButton =
+                event.target.closest(
+                    "[data-picker-calendar]"
+                );
+
+            if (calendarButton) {
+                event.preventDefault();
+
+                const action =
+                    calendarButton.dataset
+                        .pickerCalendar;
+
+                if (
+                    action === "prev-year"
+                ) {
+                    statisticsPickerYear--;
+                }
+
+                if (
+                    action === "next-year"
+                ) {
+                    statisticsPickerYear++;
+                }
+
+                renderStatisticsDatePicker();
+
+                return;
+            }
+
+
+            const actionButton =
+                event.target.closest(
+                    "[data-picker-action]"
+                );
+
+            if (actionButton) {
+                event.preventDefault();
+
+                const action =
+                    actionButton.dataset
+                        .pickerAction;
+
+                if (action === "close") {
+                    closeStatisticsDatePicker();
+                }
+
+                if (action === "today") {
+                    const now =
+                        new Date();
+
+                    statisticsPickerYear =
+                        now.getFullYear();
+
+                    statisticsPickerMonth =
+                        now.getMonth();
+
+                    AppState.statisticsDate =
+                        statisticsCreateLocalDate(
+                            now.getFullYear(),
+                            now.getMonth(),
+                            now.getDate()
+                        );
+
+                    renderStatisticsDatePicker();
+                }
+
+                if (action === "apply") {
+                    applyStatisticsDatePicker();
+                }
+
+                return;
+            }
+
+
+            if (
+                event.target.closest(
+                    ".statistics-date-picker-backdrop"
+                )
+            ) {
+                closeStatisticsDatePicker();
+            }
+        }
+    );
+}
+
+
+/* =========================================================
+   FIND / BIND DATE DISPLAY
+========================================================= */
+
+function statisticsBindDateDisplay() {
+    if (
+        window.__statisticsDateDisplayBound
+    ) {
+        return;
+    }
+
+    window.__statisticsDateDisplayBound =
+        true;
+
+    document.addEventListener(
+        "click",
+        event => {
+
+            /*
+             * Hỗ trợ:
+             *
+             * data-statistics-date-picker
+             *
+             * và các id cũ.
+             */
+
+            const target =
+                event.target.closest(
+                    "[data-statistics-date-picker]"
+                );
+
+            if (target) {
+                event.preventDefault();
+                openStatisticsDatePicker();
+                return;
+            }
+
+
+            const ids = [
+                "statisticsDateLabel",
+                "statisticsDatePickerLabel"
+            ];
+
+            const idTarget =
+                event.target.closest(
+                    ids
+                        .map(
+                            id =>
+                                "#" + id
+                        )
+                        .join(",")
+                );
+
+            if (idTarget) {
+                event.preventDefault();
+                openStatisticsDatePicker();
+                return;
+            }
+
+
+            /*
+             * Nếu HTML có cấu trúc:
+             *
+             * <div class="statistics-date-row">
+             *    <button>‹</button>
+             *    <strong>22/08/2026</strong>
+             *    <button>›</button>
+             * </div>
+             *
+             * thì click vào phần giữa cũng mở picker.
+             */
+
+            const row =
+                event.target.closest(
+                    ".statistics-date-row"
+                );
+
+            if (!row) {
+                return;
+            }
+
+            const middle =
+                event.target.closest(
+                    "strong, span, .statistics-date-label, .statistics-period-label"
+                );
+
+            if (middle) {
+                event.preventDefault();
+                openStatisticsDatePicker();
+            }
+        }
+    );
+}
+
+
+/* =========================================================
+   NAVIGATION
 ========================================================= */
 
 function statisticsBindNavigation() {
+    if (
+        window.__statisticsNavigationBound
+    ) {
+        return;
+    }
+
+    window.__statisticsNavigationBound =
+        true;
 
     document.addEventListener(
         "click",
@@ -3874,57 +3481,492 @@ function statisticsBindNavigation() {
                     "[data-statistics-action]"
                 );
 
-
             if (!target) {
-
                 return;
-
             }
-
 
             const action =
                 target.dataset
                     .statisticsAction;
 
-
             if (
-                action ===
-                "previous"
+                action === "previous"
             ) {
-
                 event.preventDefault();
-
                 statisticsPrevious();
-
             }
 
-
             if (
-                action ===
-                "next"
+                action === "next"
             ) {
-
                 event.preventDefault();
-
                 statisticsNext();
-
             }
-
 
             if (
-                action ===
-                "today"
+                action === "today"
             ) {
-
                 event.preventDefault();
-
                 statisticsToday();
-
             }
-
         }
     );
+}
 
+
+/* =========================================================
+   AUTO CREATE CSS
+   ---------------------------------------------------------
+   JS tự thêm CSS để không cần sửa HTML.
+========================================================= */
+
+function statisticsInjectDatePickerCSS() {
+    if (
+        document.getElementById(
+            "statisticsDatePickerCSS"
+        )
+    ) {
+        return;
+    }
+
+    const style =
+        document.createElement("style");
+
+    style.id =
+        "statisticsDatePickerCSS";
+
+    style.textContent = `
+
+        body.statistics-picker-open {
+            overflow: hidden;
+        }
+
+        .statistics-date-picker {
+            position: fixed;
+            inset: 0;
+            z-index: 999999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .statistics-date-picker.open {
+            display: flex;
+        }
+
+        .statistics-date-picker-backdrop {
+            position: absolute;
+            inset: 0;
+            background:
+                rgba(8, 15, 30, .58);
+            backdrop-filter:
+                blur(7px);
+        }
+
+        .statistics-date-picker-panel {
+            position: relative;
+            width: min(
+                480px,
+                100%
+            );
+            max-height:
+                min(760px, 92vh);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border-radius: 24px;
+            background:
+                var(
+                    --card-bg,
+                    #ffffff
+                );
+            color:
+                var(
+                    --text-color,
+                    #111827
+                );
+            box-shadow:
+                0 30px 90px
+                rgba(0,0,0,.28);
+            animation:
+                statisticsPickerIn
+                .22s
+                ease;
+        }
+
+        @keyframes statisticsPickerIn {
+            from {
+                opacity: 0;
+                transform:
+                    translateY(16px)
+                    scale(.97);
+            }
+
+            to {
+                opacity: 1;
+                transform:
+                    translateY(0)
+                    scale(1);
+            }
+        }
+
+        .statistics-date-picker-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding:
+                20px 20px 14px;
+        }
+
+        .statistics-date-picker-header > div {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .statistics-date-picker-header small {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .12em;
+            opacity: .55;
+        }
+
+        .statistics-date-picker-header strong {
+            font-size: 24px;
+            line-height: 1.15;
+        }
+
+        .statistics-picker-close {
+            width: 38px;
+            height: 38px;
+            flex: 0 0 38px;
+            border: 0;
+            border-radius: 50%;
+            background:
+                rgba(127,127,127,.12);
+            color: inherit;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        .statistics-picker-periods {
+            display: grid;
+            grid-template-columns:
+                repeat(3, 1fr);
+            gap: 7px;
+            margin:
+                0 20px 12px;
+            padding: 5px;
+            border-radius: 14px;
+            background:
+                rgba(127,127,127,.10);
+        }
+
+        .statistics-picker-periods button {
+            border: 0;
+            border-radius: 10px;
+            padding: 10px 8px;
+            background: transparent;
+            color: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .statistics-picker-periods button.active {
+            background:
+                #2563eb;
+            color: #fff;
+            box-shadow:
+                0 5px 14px
+                rgba(37,99,235,.28);
+        }
+
+        .statistics-picker-content {
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .statistics-picker-scroll {
+            overflow-y: auto;
+            max-height:
+                58vh;
+            padding:
+                0 20px 10px;
+        }
+
+        .statistics-picker-section-title {
+            margin:
+                12px 0 9px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            opacity: .58;
+        }
+
+        .statistics-year-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(5, 1fr);
+            gap: 7px;
+        }
+
+        .statistics-year-item,
+        .statistics-month-item {
+            min-height: 40px;
+            border: 1px solid
+                rgba(127,127,127,.15);
+            border-radius: 11px;
+            background:
+                rgba(127,127,127,.055);
+            color: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .statistics-year-item:hover,
+        .statistics-month-item:hover,
+        .statistics-calendar-day:hover {
+            border-color:
+                #2563eb;
+            color:
+                #2563eb;
+        }
+
+        .statistics-year-item.active,
+        .statistics-month-item.active {
+            background:
+                #2563eb;
+            color: #fff;
+            border-color:
+                #2563eb;
+            box-shadow:
+                0 5px 13px
+                rgba(37,99,235,.25);
+        }
+
+        .statistics-month-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .statistics-picker-calendar-header {
+            display: grid;
+            grid-template-columns:
+                42px 1fr 42px;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .statistics-picker-calendar-header strong {
+            text-align: center;
+            font-size: 15px;
+        }
+
+        .statistics-picker-calendar-header button {
+            width: 38px;
+            height: 38px;
+            border: 0;
+            border-radius: 10px;
+            background:
+                rgba(127,127,127,.08);
+            color: inherit;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+        .statistics-calendar-weekdays {
+            display: grid;
+            grid-template-columns:
+                repeat(7, 1fr);
+            margin-bottom: 4px;
+        }
+
+        .statistics-calendar-weekdays span {
+            text-align: center;
+            padding: 6px 0;
+            font-size: 10px;
+            font-weight: 800;
+            opacity: .5;
+        }
+
+        .statistics-calendar-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .statistics-calendar-day,
+        .statistics-calendar-empty {
+            aspect-ratio: 1;
+            min-height: 40px;
+        }
+
+        .statistics-calendar-day {
+            border: 1px solid
+                rgba(127,127,127,.12);
+            border-radius: 11px;
+            background:
+                rgba(127,127,127,.045);
+            color: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .statistics-calendar-day.today {
+            box-shadow:
+                inset 0 0 0 2px
+                rgba(37,99,235,.32);
+        }
+
+        .statistics-calendar-day.active {
+            background:
+                #2563eb;
+            border-color:
+                #2563eb;
+            color: #fff;
+            box-shadow:
+                0 5px 13px
+                rgba(37,99,235,.28);
+        }
+
+        .statistics-picker-footer {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            padding:
+                14px 20px 18px;
+            border-top:
+                1px solid
+                rgba(127,127,127,.12);
+        }
+
+        .statistics-picker-footer button {
+            min-width: 100px;
+            border: 0;
+            border-radius: 12px;
+            padding: 11px 16px;
+            background:
+                rgba(127,127,127,.10);
+            color: inherit;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .statistics-picker-footer button.primary {
+            background:
+                #2563eb;
+            color: #fff;
+            box-shadow:
+                0 6px 16px
+                rgba(37,99,235,.25);
+        }
+
+        @media (max-width: 520px) {
+
+            .statistics-date-picker {
+                padding: 8px;
+            }
+
+            .statistics-date-picker-panel {
+                border-radius: 20px;
+                max-height: 96vh;
+            }
+
+            .statistics-picker-scroll {
+                max-height: 62vh;
+                padding-left: 14px;
+                padding-right: 14px;
+            }
+
+            .statistics-date-picker-header {
+                padding:
+                    16px 14px 10px;
+            }
+
+            .statistics-picker-periods {
+                margin:
+                    0 14px 10px;
+            }
+
+            .statistics-picker-footer {
+                padding:
+                    12px 14px 14px;
+            }
+
+            .statistics-year-grid {
+                grid-template-columns:
+                    repeat(4, 1fr);
+            }
+
+            .statistics-month-grid {
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+            .statistics-calendar-day,
+            .statistics-calendar-empty {
+                min-height: 36px;
+            }
+        }
+
+        @media (prefers-color-scheme: dark) {
+
+            .statistics-date-picker-panel {
+                background:
+                    #111827;
+                color:
+                    #f3f4f6;
+            }
+
+            .statistics-date-picker-backdrop {
+                background:
+                    rgba(0,0,0,.70);
+            }
+        }
+
+    `;
+
+    document.head.appendChild(style);
+}
+
+
+/* =========================================================
+   AUTO MAKE DATE LABEL CLICKABLE
+========================================================= */
+
+function statisticsMakeDateLabelClickable() {
+    const selectors = [
+        "#statisticsDateLabel",
+        "#statisticsDatePickerLabel",
+        ".statistics-date-label",
+        ".statistics-period-label"
+    ];
+
+    document
+        .querySelectorAll(
+            selectors.join(",")
+        )
+        .forEach(element => {
+            element.style.cursor =
+                "pointer";
+
+            element.setAttribute(
+                "data-statistics-date-picker",
+                "true"
+            );
+
+            element.setAttribute(
+                "title",
+                "Bấm để chọn ngày / tháng / năm"
+            );
+        });
 }
 
 
@@ -3938,34 +3980,31 @@ document.addEventListener(
 
         statisticsNormalizeDate();
 
-
         hideOldStatisticsModeTabs();
 
+        statisticsInjectDatePickerCSS();
 
         statisticsBindNavigation();
 
+        statisticsBindDatePicker();
 
-        /*
-         * Cho toàn bộ HTML render xong.
-         */
+        statisticsBindDateDisplay();
+
+        statisticsMakeDateLabelClickable();
 
         setTimeout(
             () => {
-
                 renderStatistics();
-
+                statisticsMakeDateLabelClickable();
             },
             0
         );
-
     }
 );
 
 
 /* =========================================================
    GLOBAL COMPATIBILITY
-   ---------------------------------------------------------
-   Đảm bảo HTML onclick cũ vẫn chạy.
 ========================================================= */
 
 window.setStatisticsMode =
@@ -3995,1631 +4034,11 @@ window.statisticsToday =
 window.getPeriodLabel =
     getPeriodLabel;
 
-/* =========================================================
-   STATISTICS DATE PICKER
-   ---------------------------------------------------------
-   ✓ Click vào ngày / tháng / năm để mở bảng chọn
-   ✓ Chọn ngày
-   ✓ Chọn tháng
-   ✓ Chọn năm
-   ✓ Có nút Hôm nay
-   ✓ Tự cập nhật statistics
-   ✓ Không dùng new Date("YYYY-MM-DD")
-   ✓ Không lỗi ngày 29/30/31
-========================================================= */
+window.openStatisticsDatePicker =
+    openStatisticsDatePicker;
 
-(function () {
+window.closeStatisticsDatePicker =
+    closeStatisticsDatePicker;
 
-    /* =====================================================
-       CSS
-    ===================================================== */
-
-    function statisticsInjectDatePickerCSS() {
-
-        if (
-            document.getElementById(
-                "statisticsDatePickerCSS"
-            )
-        ) {
-            return;
-        }
-
-        const style =
-            document.createElement("style");
-
-        style.id =
-            "statisticsDatePickerCSS";
-
-        style.textContent = `
-
-            .statistics-date-picker {
-                position: fixed;
-                z-index: 999999;
-                width: 320px;
-                max-width: calc(100vw - 24px);
-                background: var(--card-bg, #ffffff);
-                color: var(--text-color, #111827);
-                border: 1px solid rgba(0,0,0,.08);
-                border-radius: 20px;
-                padding: 16px;
-                box-shadow:
-                    0 20px 60px rgba(0,0,0,.18),
-                    0 4px 16px rgba(0,0,0,.08);
-                animation:
-                    statisticsDatePickerShow
-                    .18s ease;
-            }
-
-            @keyframes statisticsDatePickerShow {
-
-                from {
-                    opacity: 0;
-                    transform: translateY(-6px) scale(.98);
-                }
-
-                to {
-                    opacity: 1;
-                    transform: translateY(0) scale(1);
-                }
-
-            }
-
-
-            .statistics-date-picker-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 10px;
-                margin-bottom: 14px;
-            }
-
-
-            .statistics-date-picker-title {
-                font-size: 16px;
-                font-weight: 800;
-            }
-
-
-            .statistics-date-picker-close {
-                width: 32px;
-                height: 32px;
-                border: 0;
-                border-radius: 10px;
-                background: rgba(0,0,0,.06);
-                cursor: pointer;
-                font-size: 18px;
-                line-height: 1;
-            }
-
-
-            .statistics-date-picker-tabs {
-                display: grid;
-                grid-template-columns:
-                    repeat(3, 1fr);
-                gap: 6px;
-                margin-bottom: 14px;
-                padding: 4px;
-                background: rgba(0,0,0,.05);
-                border-radius: 12px;
-            }
-
-
-            .statistics-date-picker-tab {
-                border: 0;
-                background: transparent;
-                border-radius: 9px;
-                padding: 9px 6px;
-                font-weight: 700;
-                cursor: pointer;
-                color: inherit;
-            }
-
-
-            .statistics-date-picker-tab.active {
-                background: #ffffff;
-                color: #2563eb;
-                box-shadow:
-                    0 2px 8px rgba(0,0,0,.08);
-            }
-
-
-            .statistics-date-picker-nav {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-bottom: 12px;
-            }
-
-
-            .statistics-date-picker-nav button {
-                width: 36px;
-                height: 36px;
-                border: 0;
-                border-radius: 10px;
-                background: rgba(37,99,235,.09);
-                color: #2563eb;
-                cursor: pointer;
-                font-size: 18px;
-                font-weight: 800;
-            }
-
-
-            .statistics-date-picker-current {
-                font-weight: 800;
-                font-size: 15px;
-                text-align: center;
-            }
-
-
-            .statistics-date-picker-grid {
-                display: grid;
-                grid-template-columns:
-                    repeat(7, 1fr);
-                gap: 5px;
-            }
-
-
-            .statistics-date-picker-grid.year-grid {
-                grid-template-columns:
-                    repeat(4, 1fr);
-            }
-
-
-            .statistics-date-picker-day-name {
-                text-align: center;
-                font-size: 11px;
-                font-weight: 800;
-                color: #9ca3af;
-                padding: 4px 0;
-            }
-
-
-            .statistics-date-picker-cell {
-                min-height: 36px;
-                border: 0;
-                border-radius: 10px;
-                background: transparent;
-                cursor: pointer;
-                font-weight: 700;
-                color: inherit;
-            }
-
-
-            .statistics-date-picker-cell:hover {
-                background: rgba(37,99,235,.10);
-                color: #2563eb;
-            }
-
-
-            .statistics-date-picker-cell.selected {
-                background: #2563eb;
-                color: #ffffff;
-            }
-
-
-            .statistics-date-picker-cell.today {
-                box-shadow:
-                    inset 0 0 0 2px #2563eb;
-            }
-
-
-            .statistics-date-picker-cell.muted {
-                color: #c4c9d1;
-                cursor: default;
-            }
-
-
-            .statistics-date-picker-footer {
-                display: flex;
-                gap: 8px;
-                margin-top: 14px;
-            }
-
-
-            .statistics-date-picker-footer button {
-                flex: 1;
-                border: 0;
-                border-radius: 12px;
-                padding: 10px;
-                font-weight: 800;
-                cursor: pointer;
-            }
-
-
-            .statistics-date-picker-today {
-                background: #2563eb;
-                color: white;
-            }
-
-
-            .statistics-date-picker-cancel {
-                background: rgba(0,0,0,.06);
-                color: inherit;
-            }
-
-
-            /* Phần ngày hiện tại có thể click */
-
-            #statisticsPeriodLabel,
-            #statisticsDateLabel,
-            .statistics-date-clickable {
-                cursor: pointer;
-                user-select: none;
-            }
-
-
-            #statisticsPeriodLabel:hover,
-            #statisticsDateLabel:hover,
-            .statistics-date-clickable:hover {
-                color: #2563eb;
-            }
-
-
-            /* Dark mode */
-
-            .dark .statistics-date-picker,
-            [data-theme="dark"] .statistics-date-picker,
-            body.dark-mode .statistics-date-picker {
-                background: #171a21;
-                color: #f3f4f6;
-                border-color: rgba(255,255,255,.08);
-                box-shadow:
-                    0 20px 60px rgba(0,0,0,.55);
-            }
-
-
-            .dark .statistics-date-picker-tabs,
-            [data-theme="dark"] .statistics-date-picker-tabs,
-            body.dark-mode .statistics-date-picker-tabs {
-                background: rgba(255,255,255,.06);
-            }
-
-
-            .dark .statistics-date-picker-tab.active,
-            [data-theme="dark"] .statistics-date-picker-tab.active,
-            body.dark-mode .statistics-date-picker-tab.active {
-                background: #252a34;
-            }
-
-
-            .dark .statistics-date-picker-close,
-            [data-theme="dark"] .statistics-date-picker-close,
-            body.dark-mode .statistics-date-picker-close {
-                background: rgba(255,255,255,.08);
-                color: #fff;
-            }
-
-        `;
-
-        document.head.appendChild(style);
-
-    }
-
-
-    /* =====================================================
-       STATE
-    ===================================================== */
-
-    let picker = null;
-
-    let pickerView =
-        "day";
-
-    let pickerMonth =
-        null;
-
-    let pickerYear =
-        null;
-
-
-    /* =====================================================
-       CREATE
-    ===================================================== */
-
-    function statisticsCreateDatePicker() {
-
-        if (picker) {
-
-            return picker;
-
-        }
-
-        picker =
-            document.createElement("div");
-
-        picker.id =
-            "statisticsDatePicker";
-
-        picker.className =
-            "statistics-date-picker";
-
-        picker.style.display =
-            "none";
-
-        document.body.appendChild(
-            picker
-        );
-
-        return picker;
-
-    }
-
-
-    /* =====================================================
-       FORMAT
-    ===================================================== */
-
-    function statisticsPickerMonthName(
-        month
-    ) {
-
-        const names = [
-            "Tháng 1",
-            "Tháng 2",
-            "Tháng 3",
-            "Tháng 4",
-            "Tháng 5",
-            "Tháng 6",
-            "Tháng 7",
-            "Tháng 8",
-            "Tháng 9",
-            "Tháng 10",
-            "Tháng 11",
-            "Tháng 12"
-        ];
-
-        return names[month] || "";
-
-    }
-
-
-    /* =====================================================
-       RENDER
-    ===================================================== */
-
-    function statisticsRenderDatePicker() {
-
-        const box =
-            statisticsCreateDatePicker();
-
-        if (
-            !pickerMonth &&
-            pickerMonth !== 0
-        ) {
-
-            pickerMonth =
-                AppState.statisticsDate.getMonth();
-
-        }
-
-        if (!pickerYear) {
-
-            pickerYear =
-                AppState.statisticsDate.getFullYear();
-
-        }
-
-
-        const selected =
-            AppState.statisticsDate;
-
-
-        const selectedDay =
-            selected.getDate();
-
-        const selectedMonth =
-            selected.getMonth();
-
-        const selectedYear =
-            selected.getFullYear();
-
-
-        let content = "";
-
-
-        /* =================================================
-           HEADER
-        ================================================= */
-
-        content += `
-
-            <div class="
-                statistics-date-picker-header
-            ">
-
-                <div class="
-                    statistics-date-picker-title
-                ">
-                    Chọn thời gian
-                </div>
-
-                <button
-                    type="button"
-                    class="
-                        statistics-date-picker-close
-                    "
-                    data-picker-action="close"
-                >
-                    ×
-                </button>
-
-            </div>
-
-        `;
-
-
-        /* =================================================
-           TABS
-        ================================================= */
-
-        content += `
-
-            <div class="
-                statistics-date-picker-tabs
-            ">
-
-                <button
-                    type="button"
-                    class="
-                        statistics-date-picker-tab
-                        ${pickerView === "day"
-                            ? "active"
-                            : ""}
-                    "
-                    data-picker-view="day"
-                >
-                    Ngày
-                </button>
-
-                <button
-                    type="button"
-                    class="
-                        statistics-date-picker-tab
-                        ${pickerView === "month"
-                            ? "active"
-                            : ""}
-                    "
-                    data-picker-view="month"
-                >
-                    Tháng
-                </button>
-
-                <button
-                    type="button"
-                    class="
-                        statistics-date-picker-tab
-                        ${pickerView === "year"
-                            ? "active"
-                            : ""}
-                    "
-                    data-picker-view="year"
-                >
-                    Năm
-                </button>
-
-            </div>
-
-        `;
-
-
-        /* =================================================
-           DAY
-        ================================================= */
-
-        if (
-            pickerView === "day"
-        ) {
-
-            content += `
-
-                <div class="
-                    statistics-date-picker-nav
-                ">
-
-                    <button
-                        type="button"
-                        data-picker-action="prev-month"
-                    >
-                        ‹
-                    </button>
-
-                    <div class="
-                        statistics-date-picker-current
-                    ">
-                        ${statisticsPickerMonthName(
-                            pickerMonth
-                        )}
-                        ${pickerYear}
-                    </div>
-
-                    <button
-                        type="button"
-                        data-picker-action="next-month"
-                    >
-                        ›
-                    </button>
-
-                </div>
-
-            `;
-
-
-            const firstDay =
-                new Date(
-                    pickerYear,
-                    pickerMonth,
-                    1
-                );
-
-
-            /*
-             * Monday = 0
-             */
-
-            let startDay =
-                firstDay.getDay();
-
-            startDay =
-                startDay === 0
-                    ? 6
-                    : startDay - 1;
-
-
-            const daysInMonth =
-                new Date(
-                    pickerYear,
-                    pickerMonth + 1,
-                    0
-                ).getDate();
-
-
-            const daysInPreviousMonth =
-                new Date(
-                    pickerYear,
-                    pickerMonth,
-                    0
-                ).getDate();
-
-
-            content += `
-
-                <div class="
-                    statistics-date-picker-grid
-                ">
-
-                    <div class="
-                        statistics-date-picker-day-name
-                    ">
-                        T2
-                    </div>
-
-                    <div class="
-                        statistics-date-picker-day-name
-                    ">
-                        T3
-                    </div>
-
-                    <div class="
-                        statistics-date-picker-day-name
-                    ">
-                        T4
-                    </div>
-
-                    <div class="
-                        statistics-date-picker-day-name
-                    ">
-                        T5
-                    </div>
-
-                    <div class="
-                        statistics-date-picker-day-name
-                    ">
-                        T6
-                    </div>
-
-                    <div class="
-                        statistics-date-picker-day-name
-                    ">
-                        T7
-                    </div>
-
-                    <div class="
-                        statistics-date-picker-day-name
-                    ">
-                        CN
-                    </div>
-
-            `;
-
-
-            /* Ngày tháng trước */
-
-            for (
-                let i = startDay - 1;
-                i >= 0;
-                i--
-            ) {
-
-                const day =
-                    daysInPreviousMonth - i;
-
-                content += `
-
-                    <button
-                        type="button"
-                        class="
-                            statistics-date-picker-cell
-                            muted
-                        "
-                        disabled
-                    >
-                        ${day}
-                    </button>
-
-                `;
-
-            }
-
-
-            /* Ngày hiện tại */
-
-            for (
-                let day = 1;
-                day <= daysInMonth;
-                day++
-            ) {
-
-                const isSelected =
-                    day === selectedDay &&
-                    pickerMonth === selectedMonth &&
-                    pickerYear === selectedYear;
-
-
-                const now =
-                    new Date();
-
-                const isToday =
-                    day === now.getDate() &&
-                    pickerMonth === now.getMonth() &&
-                    pickerYear === now.getFullYear();
-
-
-                content += `
-
-                    <button
-                        type="button"
-                        class="
-                            statistics-date-picker-cell
-                            ${isSelected
-                                ? "selected"
-                                : ""}
-                            ${isToday
-                                ? "today"
-                                : ""}
-                        "
-                        data-picker-day="${day}"
-                    >
-                        ${day}
-                    </button>
-
-                `;
-
-            }
-
-
-            content += `
-
-                </div>
-
-            `;
-
-        }
-
-
-        /* =================================================
-           MONTH
-        ================================================= */
-
-        if (
-            pickerView === "month"
-        ) {
-
-            content += `
-
-                <div class="
-                    statistics-date-picker-nav
-                ">
-
-                    <button
-                        type="button"
-                        data-picker-action="prev-year"
-                    >
-                        ‹
-                    </button>
-
-                    <div class="
-                        statistics-date-picker-current
-                    ">
-                        ${pickerYear}
-                    </div>
-
-                    <button
-                        type="button"
-                        data-picker-action="next-year"
-                    >
-                        ›
-                    </button>
-
-                </div>
-
-            `;
-
-
-            content += `
-
-                <div
-                    class="
-                        statistics-date-picker-grid
-                        year-grid
-                    "
-                >
-
-            `;
-
-
-            for (
-                let month = 0;
-                month < 12;
-                month++
-            ) {
-
-                const isSelected =
-                    month === selectedMonth &&
-                    pickerYear === selectedYear;
-
-
-                content += `
-
-                    <button
-                        type="button"
-                        class="
-                            statistics-date-picker-cell
-                            ${isSelected
-                                ? "selected"
-                                : ""}
-                        "
-                        data-picker-month="${month}"
-                    >
-                        ${statisticsPickerMonthName(
-                            month
-                        ).replace(
-                            "Tháng ",
-                            "T"
-                        )}
-                    </button>
-
-                `;
-
-            }
-
-
-            content += `
-
-                </div>
-
-            `;
-
-        }
-
-
-        /* =================================================
-           YEAR
-        ================================================= */
-
-        if (
-            pickerView === "year"
-        ) {
-
-            const startYear =
-                Math.floor(
-                    pickerYear / 12
-                ) * 12;
-
-
-            content += `
-
-                <div class="
-                    statistics-date-picker-nav
-                ">
-
-                    <button
-                        type="button"
-                        data-picker-action="prev-year-page"
-                    >
-                        ‹
-                    </button>
-
-                    <div class="
-                        statistics-date-picker-current
-                    ">
-                        ${startYear}
-                        -
-                        ${startYear + 11}
-                    </div>
-
-                    <button
-                        type="button"
-                        data-picker-action="next-year-page"
-                    >
-                        ›
-                    </button>
-
-                </div>
-
-            `;
-
-
-            content += `
-
-                <div
-                    class="
-                        statistics-date-picker-grid
-                        year-grid
-                    "
-                >
-
-            `;
-
-
-            for (
-                let year = startYear;
-                year <= startYear + 11;
-                year++
-            ) {
-
-                const isSelected =
-                    year === selectedYear;
-
-
-                content += `
-
-                    <button
-                        type="button"
-                        class="
-                            statistics-date-picker-cell
-                            ${isSelected
-                                ? "selected"
-                                : ""}
-                        "
-                        data-picker-year="${year}"
-                    >
-                        ${year}
-                    </button>
-
-                `;
-
-            }
-
-
-            content += `
-
-                </div>
-
-            `;
-
-        }
-
-
-        /* =================================================
-           FOOTER
-        ================================================= */
-
-        content += `
-
-            <div class="
-                statistics-date-picker-footer
-            ">
-
-                <button
-                    type="button"
-                    class="
-                        statistics-date-picker-cancel
-                    "
-                    data-picker-action="close"
-                >
-                    Đóng
-                </button>
-
-                <button
-                    type="button"
-                    class="
-                        statistics-date-picker-today
-                    "
-                    data-picker-action="today"
-                >
-                    Hôm nay
-                </button>
-
-            </div>
-
-        `;
-
-
-        box.innerHTML =
-            content;
-
-
-        statisticsPositionDatePicker();
-
-    }
-
-
-    /* =====================================================
-       POSITION
-    ===================================================== */
-
-    function statisticsPositionDatePicker() {
-
-        if (
-            !picker ||
-            picker.style.display === "none"
-        ) {
-
-            return;
-
-        }
-
-
-        const target =
-            document.getElementById(
-                "statisticsPeriodLabel"
-            ) ||
-            document.getElementById(
-                "statisticsDateLabel"
-            );
-
-
-        if (!target) {
-
-            picker.style.left =
-                "50%";
-
-            picker.style.top =
-                "50%";
-
-            picker.style.transform =
-                "translate(-50%, -50%)";
-
-            return;
-
-        }
-
-
-        const rect =
-            target.getBoundingClientRect();
-
-
-        picker.style.transform =
-            "none";
-
-
-        let left =
-            rect.left +
-            rect.width / 2 -
-            160;
-
-
-        let top =
-            rect.bottom +
-            10;
-
-
-        const maxLeft =
-            window.innerWidth -
-            picker.offsetWidth -
-            12;
-
-
-        const maxTop =
-            window.innerHeight -
-            picker.offsetHeight -
-            12;
-
-
-        left =
-            Math.max(
-                12,
-                Math.min(
-                    left,
-                    maxLeft
-                )
-            );
-
-
-        if (
-            top > maxTop
-        ) {
-
-            top =
-                rect.top -
-                picker.offsetHeight -
-                10;
-
-        }
-
-
-        top =
-            Math.max(
-                12,
-                top
-            );
-
-
-        picker.style.left =
-            left + "px";
-
-        picker.style.top =
-            top + "px";
-
-    }
-
-
-    /* =====================================================
-       OPEN
-    ===================================================== */
-
-    function statisticsOpenDatePicker() {
-
-        statisticsInjectDatePickerCSS();
-
-        statisticsCreateDatePicker();
-
-
-        statisticsNormalizeDate();
-
-
-        pickerMonth =
-            AppState.statisticsDate.getMonth();
-
-
-        pickerYear =
-            AppState.statisticsDate.getFullYear();
-
-
-        /*
-         * Nếu đang xem tháng
-         * thì mở tab tháng.
-         */
-
-        if (
-            AppState.statisticsPeriod ===
-            "month"
-        ) {
-
-            pickerView =
-                "month";
-
-        } else {
-
-            pickerView =
-                "day";
-
-        }
-
-
-        picker.style.display =
-            "block";
-
-
-        statisticsRenderDatePicker();
-
-
-        setTimeout(
-            () => {
-
-                statisticsPositionDatePicker();
-
-            },
-            0
-        );
-
-    }
-
-
-    /* =====================================================
-       CLOSE
-    ===================================================== */
-
-    function statisticsCloseDatePicker() {
-
-        if (!picker) {
-
-            return;
-
-        }
-
-
-        picker.style.display =
-            "none";
-
-    }
-
-
-    /* =====================================================
-       SELECT DAY
-    ===================================================== */
-
-    function statisticsSelectDay(
-        day
-    ) {
-
-        const safeDay =
-            Math.min(
-                Number(day),
-                new Date(
-                    pickerYear,
-                    pickerMonth + 1,
-                    0
-                ).getDate()
-            );
-
-
-        AppState.statisticsDate =
-            statisticsCreateLocalDate(
-                pickerYear,
-                pickerMonth,
-                safeDay
-            );
-
-
-        /*
-         * Chọn ngày => chế độ ngày
-         */
-
-        AppState.statisticsPeriod =
-            "day";
-
-
-        statisticsCloseDatePicker();
-
-        renderStatistics();
-
-    }
-
-
-    /* =====================================================
-       SELECT MONTH
-    ===================================================== */
-
-    function statisticsSelectMonth(
-        month
-    ) {
-
-        pickerMonth =
-            Number(month);
-
-
-        /*
-         * Đưa về ngày 1 để không lỗi
-         * 29 / 30 / 31.
-         */
-
-        AppState.statisticsDate =
-            statisticsCreateLocalDate(
-                pickerYear,
-                pickerMonth,
-                1
-            );
-
-
-        AppState.statisticsPeriod =
-            "month";
-
-
-        statisticsCloseDatePicker();
-
-        renderStatistics();
-
-    }
-
-
-    /* =====================================================
-       SELECT YEAR
-    ===================================================== */
-
-    function statisticsSelectYear(
-        year
-    ) {
-
-        pickerYear =
-            Number(year);
-
-
-        /*
-         * Nếu đang chọn năm,
-         * giữ tháng hiện tại.
-         */
-
-        AppState.statisticsDate =
-            statisticsCreateLocalDate(
-                pickerYear,
-                pickerMonth,
-                1
-            );
-
-
-        /*
-         * Sau khi chọn năm,
-         * chuyển sang chọn tháng.
-         */
-
-        pickerView =
-            "month";
-
-
-        statisticsRenderDatePicker();
-
-    }
-
-
-    /* =====================================================
-       EVENTS PICKER
-    ===================================================== */
-
-    document.addEventListener(
-        "click",
-        function (event) {
-
-            const target =
-                event.target;
-
-
-            if (
-                target.closest(
-                    "[data-picker-view]"
-                )
-            ) {
-
-                const button =
-                    target.closest(
-                        "[data-picker-view]"
-                    );
-
-
-                pickerView =
-                    button.dataset
-                        .pickerView;
-
-
-                statisticsRenderDatePicker();
-
-                return;
-
-            }
-
-
-            if (
-                target.closest(
-                    "[data-picker-action]"
-                )
-            ) {
-
-                const button =
-                    target.closest(
-                        "[data-picker-action]"
-                    );
-
-
-                const action =
-                    button.dataset
-                        .pickerAction;
-
-
-                /* Đóng */
-
-                if (
-                    action === "close"
-                ) {
-
-                    statisticsCloseDatePicker();
-
-                    return;
-
-                }
-
-
-                /* Hôm nay */
-
-                if (
-                    action === "today"
-                ) {
-
-                    statisticsToday();
-
-                    statisticsCloseDatePicker();
-
-                    return;
-
-                }
-
-
-                /* Tháng trước */
-
-                if (
-                    action === "prev-month"
-                ) {
-
-                    pickerMonth--;
-
-                    if (
-                        pickerMonth < 0
-                    ) {
-
-                        pickerMonth = 11;
-                        pickerYear--;
-
-                    }
-
-                    statisticsRenderDatePicker();
-
-                    return;
-
-                }
-
-
-                /* Tháng sau */
-
-                if (
-                    action === "next-month"
-                ) {
-
-                    pickerMonth++;
-
-                    if (
-                        pickerMonth > 11
-                    ) {
-
-                        pickerMonth = 0;
-                        pickerYear++;
-
-                    }
-
-                    statisticsRenderDatePicker();
-
-                    return;
-
-                }
-
-
-                /* Năm trước */
-
-                if (
-                    action === "prev-year"
-                ) {
-
-                    pickerYear--;
-
-                    statisticsRenderDatePicker();
-
-                    return;
-
-                }
-
-
-                /* Năm sau */
-
-                if (
-                    action === "next-year"
-                ) {
-
-                    pickerYear++;
-
-                    statisticsRenderDatePicker();
-
-                    return;
-
-                }
-
-
-                /* Trang năm trước */
-
-                if (
-                    action ===
-                    "prev-year-page"
-                ) {
-
-                    pickerYear -= 12;
-
-                    statisticsRenderDatePicker();
-
-                    return;
-
-                }
-
-
-                /* Trang năm sau */
-
-                if (
-                    action ===
-                    "next-year-page"
-                ) {
-
-                    pickerYear += 12;
-
-                    statisticsRenderDatePicker();
-
-                    return;
-
-                }
-
-            }
-
-
-            /* Chọn ngày */
-
-            const dayButton =
-                target.closest(
-                    "[data-picker-day]"
-                );
-
-
-            if (dayButton) {
-
-                statisticsSelectDay(
-                    dayButton.dataset
-                        .pickerDay
-                );
-
-                return;
-
-            }
-
-
-            /* Chọn tháng */
-
-            const monthButton =
-                target.closest(
-                    "[data-picker-month]"
-                );
-
-
-            if (monthButton) {
-
-                statisticsSelectMonth(
-                    monthButton.dataset
-                        .pickerMonth
-                );
-
-                return;
-
-            }
-
-
-            /* Chọn năm */
-
-            const yearButton =
-                target.closest(
-                    "[data-picker-year]"
-                );
-
-
-            if (yearButton) {
-
-                statisticsSelectYear(
-                    yearButton.dataset
-                        .pickerYear
-                );
-
-                return;
-
-            }
-
-
-            /*
-             * Click bên ngoài => đóng.
-             */
-
-            if (
-                picker &&
-                picker.style.display !== "none" &&
-                !target.closest(
-                    "#statisticsDatePicker"
-                )
-            ) {
-
-                const periodLabel =
-                    document.getElementById(
-                        "statisticsPeriodLabel"
-                    );
-
-
-                const dateLabel =
-                    document.getElementById(
-                        "statisticsDateLabel"
-                    );
-
-
-                if (
-                    target !== periodLabel &&
-                    !periodLabel?.contains(target) &&
-                    target !== dateLabel &&
-                    !dateLabel?.contains(target)
-                ) {
-
-                    statisticsCloseDatePicker();
-
-                }
-
-            }
-
-        }
-    );
-
-
-    /* =====================================================
-       CLICK LABEL
-    ===================================================== */
-
-    document.addEventListener(
-        "click",
-        function (event) {
-
-            const label =
-                event.target.closest(
-                    "#statisticsPeriodLabel, #statisticsDateLabel, .statistics-date-clickable"
-                );
-
-
-            if (!label) {
-
-                return;
-
-            }
-
-
-            event.preventDefault();
-            event.stopPropagation();
-
-
-            statisticsOpenDatePicker();
-
-        }
-    );
-
-
-    /* =====================================================
-       RESIZE / SCROLL
-    ===================================================== */
-
-    window.addEventListener(
-        "resize",
-        function () {
-
-            statisticsPositionDatePicker();
-
-        }
-    );
-
-
-    window.addEventListener(
-        "scroll",
-        function () {
-
-            statisticsPositionDatePicker();
-
-        },
-        true
-    );
-
-
-    /* =====================================================
-       PUBLIC
-    ===================================================== */
-
-    window.statisticsOpenDatePicker =
-        statisticsOpenDatePicker;
-
-    window.statisticsCloseDatePicker =
-        statisticsCloseDatePicker;
-
-})();
+window.applyStatisticsDatePicker =
+    applyStatisticsDatePicker;
