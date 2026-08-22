@@ -1,12 +1,7 @@
 /* =========================================================
    STATISTICS
    PREMIUM MOBILE UI
-   FULL REBUILD
-========================================================= */
-
-
-/* =========================================================
-   ROOT
+   FULL CSS
 ========================================================= */
 
 .statistics-page,
@@ -35,7 +30,6 @@
 
     --stats-border: #edf0f5;
     --stats-bg: #f7f8fb;
-
 }
 
 
@@ -46,11 +40,9 @@
 .statistics-hero {
 
     position: relative;
-
     overflow: hidden;
 
     margin-bottom: 16px;
-
     padding: 24px;
 
     border-radius: 26px;
@@ -77,7 +69,6 @@
 
     box-shadow:
         0 18px 40px rgba(39,70,130,.22);
-
 }
 
 .statistics-hero::before {
@@ -100,7 +91,6 @@
     box-shadow:
         0 0 0 25px rgba(255,255,255,.035),
         0 0 0 50px rgba(255,255,255,.025);
-
 }
 
 .statistics-hero::after {
@@ -119,15 +109,12 @@
 
     background:
         rgba(255,255,255,.08);
-
 }
 
 .statistics-hero > * {
 
     position: relative;
-
     z-index: 2;
-
 }
 
 .statistics-hero span {
@@ -135,13 +122,11 @@
     display: block;
 
     font-size: 11px;
-
     font-weight: 900;
 
     letter-spacing: 1.8px;
 
     opacity: .78;
-
 }
 
 .statistics-hero h2 {
@@ -149,18 +134,16 @@
     margin: 5px 0 0;
 
     font-size: 28px;
-
     line-height: 1.15;
 
     font-weight: 900;
 
     letter-spacing: -.6px;
-
 }
 
 
 /* =========================================================
-   PERIOD
+   PERIOD TABS
 ========================================================= */
 
 .period-tabs {
@@ -179,45 +162,42 @@
     border-radius: 17px;
 
     background: #f1f3f8;
-
 }
 
 .period-tab {
 
     min-height: 42px;
 
+    padding: 0 8px;
+
     border: 0;
 
     border-radius: 12px;
 
-    color: #697386;
+    color: #70798b;
 
     background: transparent;
 
-    font-size: 14px;
-
-    font-weight: 800;
+    font-size: 13px;
+    font-weight: 850;
 
     cursor: pointer;
 
     transition:
         transform .18s ease,
-        background .2s ease,
-        color .2s ease,
-        box-shadow .2s ease;
-
+        background .18s ease,
+        color .18s ease,
+        box-shadow .18s ease;
 }
 
 .period-tab:hover {
 
     color: #3857a8;
-
 }
 
 .period-tab:active {
 
     transform: scale(.96);
-
 }
 
 .period-tab.active {
@@ -234,7 +214,6 @@
     box-shadow:
         0 7px 18px
         rgba(55,89,180,.24);
-
 }
 
 
@@ -254,13 +233,11 @@
     gap: 10px;
 
     margin-bottom: 18px;
-
 }
 
 .statistics-date-row button {
 
     display: grid;
-
     place-items: center;
 
     width: 44px;
@@ -269,35 +246,25 @@
     padding: 0;
 
     border: 0;
-
     border-radius: 14px;
 
-    color: #34415a;
+    color: #29344b;
 
-    background:
-        linear-gradient(
-            145deg,
-            #f7f8fb,
-            #edf0f5
-        );
-
-    font-size: 24px;
-
-    font-weight: 800;
-
-    line-height: 1;
-
-    cursor: pointer;
+    background: #f3f5f9;
 
     box-shadow:
         0 5px 14px
-        rgba(35,48,75,.07);
+        rgba(35,50,85,.055);
+
+    font-size: 24px;
+    line-height: 1;
+
+    cursor: pointer;
 
     transition:
         transform .18s ease,
         background .18s ease,
         box-shadow .18s ease;
-
 }
 
 .statistics-date-row button:hover {
@@ -306,14 +273,18 @@
 
     box-shadow:
         0 7px 17px
-        rgba(35,48,75,.10);
-
+        rgba(35,50,85,.09);
 }
 
 .statistics-date-row button:active {
 
-    transform: scale(.90);
+    transform: scale(.91);
+}
 
+.statistics-date-row button:disabled {
+
+    opacity: .5;
+    cursor: default;
 }
 
 .statistics-date-row strong {
@@ -324,83 +295,62 @@
 
     overflow: hidden;
 
-    color: #25304a;
+    color: #29344b;
 
     font-size: 15px;
-
-    font-weight: 900;
+    font-weight: 950;
 
     text-align: center;
 
     white-space: nowrap;
-
     text-overflow: ellipsis;
-
 }
 
 
 /* =========================================================
-   PROFIT
    LỢI NHUẬN THỰC
-========================================================= */
-
-/* =========================================================
-   STATISTICS
-   PREMIUM UI REBUILD
-   FROM PROFIT TO BOTTOM
-========================================================= */
-
-
-/* =========================================================
-   PROFIT SUMMARY
-   LỢI NHUẬN THỰC
+   PREMIUM PROFIT CARD
 ========================================================= */
 
 .profit-summary {
 
     position: relative;
-
-    overflow: hidden;
-
     isolation: isolate;
+    overflow: hidden;
 
     margin-bottom: 18px;
 
-    padding: 24px;
+    padding: 22px 20px 18px;
 
-    border-radius: 26px;
+    border-radius: 25px;
 
     color: #fff;
 
     background:
-
         radial-gradient(
-            circle at 88% 12%,
+            circle at 92% 8%,
             rgba(255,255,255,.22),
             transparent 28%
         ),
-
         radial-gradient(
-            circle at 5% 100%,
-            rgba(156,125,255,.30),
-            transparent 35%
+            circle at 0% 100%,
+            rgba(170,140,255,.28),
+            transparent 38%
         ),
-
         linear-gradient(
             135deg,
-            #35227f 0%,
+            #34217d 0%,
             #5b3eb6 48%,
-            #855ef3 100%
+            #805bea 100%
         );
 
     box-shadow:
         0 18px 42px
-        rgba(86,60,184,.27);
-
+        rgba(86,60,184,.25);
 }
 
 
-/* vòng tròn trang trí */
+/* vòng trang trí */
 
 .profit-summary::before {
 
@@ -411,27 +361,21 @@
     width: 170px;
     height: 170px;
 
-    right: -70px;
-    top: -82px;
+    right: -72px;
+    top: -85px;
 
     border-radius: 50%;
 
     border:
-        1px solid
-        rgba(255,255,255,.14);
+        1px solid rgba(255,255,255,.14);
 
     box-shadow:
-
-        0 0 0 22px
-        rgba(255,255,255,.035),
-
-        0 0 0 44px
-        rgba(255,255,255,.025);
-
+        0 0 0 22px rgba(255,255,255,.035),
+        0 0 0 44px rgba(255,255,255,.025);
 }
 
 
-/* ánh sáng phía dưới */
+/* ánh sáng dưới */
 
 .profit-summary::after {
 
@@ -439,88 +383,280 @@
 
     position: absolute;
 
-    right: 18px;
-    bottom: -30px;
+    right: 14px;
+    bottom: -34px;
 
     z-index: 0;
 
     color: #fff;
 
     font-size: 100px;
-
     font-weight: 900;
 
     line-height: 1;
 
-    opacity: .075;
-
+    opacity: .07;
 }
-
 
 .profit-summary > * {
 
     position: relative;
 
     z-index: 2;
-
 }
 
 
-.profit-summary span {
+/* =========================================================
+   TIÊU ĐỀ
+========================================================= */
+
+.profit-summary > span:first-child {
 
     display: block;
+
+    margin-bottom: 5px;
 
     color:
-        rgba(255,255,255,.76);
+        rgba(255,255,255,.72);
 
-    font-size: 11px;
+    font-size: 10px;
 
-    font-weight: 900;
+    font-weight: 950;
 
-    letter-spacing: 1.7px;
+    letter-spacing: 1.8px;
 
+    text-transform: uppercase;
 }
 
 
-.profit-summary strong {
+/* =========================================================
+   SỐ LỢI NHUẬN
+========================================================= */
+
+.profit-summary > strong {
 
     display: block;
 
-    margin-top: 8px;
+    margin: 0 0 18px;
 
     color: #fff;
 
-    font-size: 32px;
+    font-size: 30px;
 
     line-height: 1.1;
 
     font-weight: 950;
 
-    letter-spacing: -.8px;
+    letter-spacing: -.7px;
 
     text-shadow:
         0 4px 15px
         rgba(38,20,100,.22);
-
 }
 
 
-.profit-summary strong.profit-positive {
+/* lợi nhuận dương */
 
-    color: #fff;
+.profit-summary > strong.profit-positive {
 
+    color: #ffffff;
 }
 
 
-.profit-summary strong.profit-negative {
+/* lợi nhuận âm */
 
-    color: #ffd7da;
+.profit-summary > strong.profit-negative {
+
+    color: #ffd9dd;
 
 }
 
 
 /* =========================================================
    BREAKDOWN
+   THU - CHI - PHÍ APP - GIÁ VỐN
+========================================================= */
+
+.profit-summary .breakdown-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    margin: 0;
+
+    padding: 0;
+
+    border-top:
+        1px solid
+        rgba(255,255,255,.12);
+}
+
+
+/* từng dòng */
+
+.profit-summary .breakdown-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    min-height: 45px;
+
+    padding: 10px 0;
+
+    border-bottom:
+        1px solid
+        rgba(255,255,255,.10);
+}
+
+
+/* dòng cuối */
+
+.profit-summary .breakdown-row:last-child {
+
+    border-bottom: 0;
+
+    padding-bottom: 4px;
+}
+
+
+/* tên */
+
+.profit-summary .breakdown-row span {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color:
+        rgba(255,255,255,.68);
+
+    font-size: 12px;
+
+    font-weight: 750;
+}
+
+
+/* giá trị */
+
+.profit-summary .breakdown-row strong {
+
+    flex: 0 0 auto;
+
+    margin: 0;
+
+    color: #fff;
+
+    font-size: 13px;
+
+    font-weight: 900;
+
+    text-align: right;
+
+    letter-spacing: -.1px;
+}
+
+
+/* Thu */
+
+.profit-summary .breakdown-row:nth-child(1) strong {
+
+    color: #72efb6;
+}
+
+
+/* Chi */
+
+.profit-summary .breakdown-row:nth-child(2) strong {
+
+    color: #ff9da4;
+}
+
+
+/* Phí app */
+
+.profit-summary .breakdown-row:nth-child(3) strong {
+
+    color: #ffb86b;
+}
+
+
+/* Giá vốn */
+
+.profit-summary .breakdown-row:nth-child(4) strong {
+
+    color: #ffc477;
+}
+
+
+/* =========================================================
+   ICON NHỎ CHO BREAKDOWN
+   Nếu HTML có icon thì tự động làm đẹp
+========================================================= */
+
+.profit-summary .breakdown-row span::before {
+
+    content: "";
+
+    display: block;
+
+    width: 6px;
+    height: 6px;
+
+    flex: 0 0 auto;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.45);
+}
+
+.profit-summary .breakdown-row:nth-child(1)
+span::before {
+
+    background: #58e4a3;
+
+    box-shadow:
+        0 0 8px rgba(88,228,163,.45);
+}
+
+.profit-summary .breakdown-row:nth-child(2)
+span::before {
+
+    background: #ff747e;
+
+    box-shadow:
+        0 0 8px rgba(255,116,126,.40);
+}
+
+.profit-summary .breakdown-row:nth-child(3)
+span::before {
+
+    background: #ffb15e;
+
+    box-shadow:
+        0 0 8px rgba(255,177,94,.35);
+}
+
+.profit-summary .breakdown-row:nth-child(4)
+span::before {
+
+    background: #ffc66e;
+
+    box-shadow:
+        0 0 8px rgba(255,198,110,.35);
+}
+
+
+/* =========================================================
+   BREAKDOWN NGOÀI CARD
 ========================================================= */
 
 .breakdown-list {
@@ -530,9 +666,7 @@
     flex-direction: column;
 
     gap: 0;
-
 }
-
 
 .breakdown-row {
 
@@ -550,16 +684,12 @@
 
     border-bottom:
         1px solid #edf0f5;
-
 }
-
 
 .breakdown-row:last-child {
 
     border-bottom: 0;
-
 }
-
 
 .breakdown-row span {
 
@@ -568,9 +698,7 @@
     font-size: 13px;
 
     font-weight: 700;
-
 }
-
 
 .breakdown-row strong {
 
@@ -581,36 +709,27 @@
     font-weight: 900;
 
     text-align: right;
-
 }
-
 
 .breakdown-row:nth-child(1) strong {
 
     color: #12aa70;
-
 }
-
 
 .breakdown-row:nth-child(2) strong {
 
     color: #ed5864;
-
 }
-
 
 .breakdown-row:nth-child(3) strong {
 
     color: #e95561;
-
 }
-
 
 .breakdown-row:nth-child(4) strong,
 .breakdown-row:nth-child(5) strong {
 
     color: #ed9a35;
-
 }
 
 
@@ -625,7 +744,6 @@
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 6px;
@@ -637,14 +755,11 @@
     color: #8d96a7;
 
     text-align: center;
-
 }
-
 
 .statistics-empty-icon {
 
     display: grid;
-
     place-items: center;
 
     width: 56px;
@@ -666,9 +781,7 @@
         rgba(40,55,85,.035);
 
     font-size: 25px;
-
 }
-
 
 .statistics-empty strong {
 
@@ -677,16 +790,13 @@
     font-size: 14px;
 
     font-weight: 900;
-
 }
-
 
 .statistics-empty span {
 
     color: #969eae;
 
     font-size: 12px;
-
 }
 
 
@@ -702,29 +812,22 @@
 
     border-bottom:
         1px solid #edf0f5;
-
 }
-
 
 .statistics-dish-row:last-child {
 
     border-bottom: 0;
-
 }
-
 
 .statistics-dish-top {
 
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
     gap: 12px;
-
 }
-
 
 .statistics-dish-name {
 
@@ -741,25 +844,11 @@
     font-size: 14px;
 
     font-weight: 850;
-
 }
-
-
-.statistics-dish-name:not(
-    .statistics-dish-icon
-) {
-
-    white-space: nowrap;
-
-    text-overflow: ellipsis;
-
-}
-
 
 .statistics-dish-icon {
 
     display: grid;
-
     place-items: center;
 
     flex: 0 0 auto;
@@ -783,9 +872,7 @@
         rgba(236,145,62,.10);
 
     font-size: 19px;
-
 }
-
 
 .statistics-dish-profit {
 
@@ -798,29 +885,21 @@
     font-size: 12px;
 
     font-weight: 950;
-
 }
-
 
 .statistics-dish-profit.positive {
 
     color: #7046d8;
 
-    background:
-        #f1edff;
-
+    background: #f1edff;
 }
-
 
 .statistics-dish-profit.negative {
 
     color: #df4e5b;
 
-    background:
-        #fff0f1;
-
+    background: #fff0f1;
 }
-
 
 .statistics-dish-detail {
 
@@ -833,9 +912,7 @@
     margin-top: 10px;
 
     padding-left: 52px;
-
 }
-
 
 .statistics-dish-detail span {
 
@@ -850,7 +927,6 @@
     font-size: 10px;
 
     font-weight: 750;
-
 }
 
 
@@ -872,16 +948,12 @@
 
     border-bottom:
         1px solid #edf0f5;
-
 }
-
 
 .statistics-source-row:last-child {
 
     border-bottom: 0;
-
 }
-
 
 .statistics-source-left {
 
@@ -892,14 +964,11 @@
     gap: 11px;
 
     min-width: 0;
-
 }
-
 
 .statistics-source-icon {
 
     display: grid;
-
     place-items: center;
 
     flex: 0 0 auto;
@@ -909,17 +978,14 @@
 
     border-radius: 14px;
 
-    background:
-        #f5f7fb;
+    background: #f5f7fb;
 
     box-shadow:
         inset 0 0 0 1px
         rgba(40,55,85,.035);
 
     font-size: 20px;
-
 }
-
 
 .statistics-source-left strong {
 
@@ -930,9 +996,7 @@
     font-size: 13px;
 
     font-weight: 850;
-
 }
-
 
 .statistics-source-left small {
 
@@ -943,18 +1007,14 @@
     color: #929aaa;
 
     font-size: 11px;
-
 }
-
 
 .statistics-source-money {
 
     flex: 0 0 auto;
 
     text-align: right;
-
 }
-
 
 .statistics-source-money strong {
 
@@ -965,9 +1025,7 @@
     font-size: 13px;
 
     font-weight: 900;
-
 }
-
 
 .statistics-source-money small {
 
@@ -980,7 +1038,6 @@
     font-size: 10px;
 
     font-weight: 700;
-
 }
 
 
@@ -994,16 +1051,12 @@
 
     border-bottom:
         1px solid #edf0f5;
-
 }
-
 
 .statistics-expense-category-row:last-child {
 
     border-bottom: 0;
-
 }
-
 
 .statistics-expense-category-top {
 
@@ -1014,9 +1067,7 @@
     justify-content: space-between;
 
     gap: 10px;
-
 }
-
 
 .statistics-expense-category-name {
 
@@ -1027,9 +1078,7 @@
     font-size: 13px;
 
     font-weight: 850;
-
 }
-
 
 .statistics-expense-category-money {
 
@@ -1040,27 +1089,21 @@
     font-size: 13px;
 
     font-weight: 900;
-
 }
-
 
 .statistics-expense-category-bar {
 
     overflow: hidden;
 
     width: 100%;
-
     height: 8px;
 
     margin-top: 10px;
 
     border-radius: 99px;
 
-    background:
-        #f0f2f6;
-
+    background: #f0f2f6;
 }
-
 
 .statistics-expense-category-bar span {
 
@@ -1084,9 +1127,7 @@
     transition:
         width .55s
         cubic-bezier(.2,.8,.2,1);
-
 }
-
 
 .statistics-expense-category-percent {
 
@@ -1099,7 +1140,6 @@
     font-weight: 800;
 
     text-align: right;
-
 }
 
 
@@ -1119,21 +1159,16 @@
 
     border-bottom:
         1px solid #edf0f5;
-
 }
-
 
 .statistics-expense-row:last-child {
 
     border-bottom: 0;
-
 }
-
 
 .statistics-expense-icon {
 
     display: grid;
-
     place-items: center;
 
     flex: 0 0 auto;
@@ -1153,20 +1188,14 @@
         );
 
     font-size: 18px;
-
     font-weight: 900;
-
 }
-
 
 .statistics-expense-info {
 
     min-width: 0;
-
     flex: 1;
-
 }
-
 
 .statistics-expense-name {
 
@@ -1181,9 +1210,7 @@
     white-space: nowrap;
 
     text-overflow: ellipsis;
-
 }
-
 
 .statistics-expense-category {
 
@@ -1194,9 +1221,7 @@
     font-size: 10px;
 
     font-weight: 700;
-
 }
-
 
 .statistics-expense-date {
 
@@ -1205,9 +1230,7 @@
     color: #a1a8b5;
 
     font-size: 10px;
-
 }
-
 
 .statistics-expense-money {
 
@@ -1220,7 +1243,6 @@
     font-weight: 950;
 
     text-align: right;
-
 }
 
 
@@ -1237,31 +1259,24 @@
     border-radius: 18px;
 
     scrollbar-width: none;
-
 }
-
 
 .statistics-chart::-webkit-scrollbar {
 
     display: none;
-
 }
-
 
 .statistics-chart-legend {
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 24px;
 
     margin-bottom: 18px;
-
 }
-
 
 .statistics-chart-legend span {
 
@@ -1276,9 +1291,7 @@
     font-size: 11px;
 
     font-weight: 850;
-
 }
-
 
 .legend-dot {
 
@@ -1292,25 +1305,17 @@
     box-shadow:
         0 2px 6px
         rgba(0,0,0,.12);
-
 }
-
 
 .legend-dot.income {
 
-    background:
-        #18b979;
-
+    background: #18b979;
 }
-
 
 .legend-dot.expense {
 
-    background:
-        #ef5965;
-
+    background: #ef5965;
 }
-
 
 .statistics-chart-body {
 
@@ -1324,11 +1329,8 @@
 
     min-height: 190px;
 
-    padding:
-        0 8px 4px;
-
+    padding: 0 8px 4px;
 }
-
 
 .chart-day {
 
@@ -1337,32 +1339,25 @@
     flex-direction: column;
 
     align-items: center;
-
     justify-content: flex-end;
 
     width: 30px;
 
     min-height: 180px;
-
 }
-
 
 .chart-bars {
 
     display: flex;
 
     align-items: flex-end;
-
     justify-content: center;
 
     gap: 4px;
 
     width: 100%;
-
     height: 150px;
-
 }
-
 
 .chart-bar {
 
@@ -1380,9 +1375,7 @@
     transition:
         height .45s
         cubic-bezier(.2,.8,.2,1);
-
 }
-
 
 .chart-bar.income {
 
@@ -1392,9 +1385,7 @@
             #43dda0,
             #0eaa6c
         );
-
 }
-
 
 .chart-bar.expense {
 
@@ -1404,9 +1395,7 @@
             #ff8187,
             #e54b58
         );
-
 }
-
 
 .chart-date {
 
@@ -1417,9 +1406,7 @@
     font-size: 10px;
 
     font-weight: 750;
-
 }
-
 
 .empty-chart {
 
@@ -1428,7 +1415,6 @@
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
 
     gap: 7px;
@@ -1438,37 +1424,30 @@
     color: #9aa2b1;
 
     text-align: center;
-
 }
-
 
 .empty-chart span {
 
     font-size: 31px;
-
 }
-
 
 .empty-chart strong {
 
     color: #6d7789;
 
     font-size: 13px;
-
 }
-
 
 .empty-chart small {
 
     color: #a0a7b4;
 
     font-size: 11px;
-
 }
 
 
 /* =========================================================
-   TOTAL PERCENT SECTION
+   TOTAL PERCENT
 ========================================================= */
 
 .statistics-percent-section {
@@ -1497,13 +1476,7 @@
     box-shadow:
         0 13px 32px
         rgba(32,47,80,.075);
-
 }
-
-
-/* =========================================================
-   HEADING
-========================================================= */
 
 .statistics-wheel-heading {
 
@@ -1516,16 +1489,12 @@
     gap: 14px;
 
     margin-bottom: 22px;
-
 }
-
 
 .statistics-wheel-heading > div {
 
     min-width: 0;
-
 }
-
 
 .statistics-wheel-heading span {
 
@@ -1538,9 +1507,7 @@
     font-weight: 950;
 
     letter-spacing: 1.5px;
-
 }
-
 
 .statistics-wheel-heading h2 {
 
@@ -1553,9 +1520,7 @@
     line-height: 1.2;
 
     font-weight: 950;
-
 }
-
 
 .statistics-wheel-heading > small {
 
@@ -1567,18 +1532,16 @@
 
     color: #707a8d;
 
-    background:
-        #f1f3f7;
+    background: #f1f3f7;
 
     font-size: 10px;
 
     font-weight: 850;
-
 }
 
 
 /* =========================================================
-   TOTAL DONUT GRID
+   DONUT GRID
 ========================================================= */
 
 .statistics-wheel-grid {
@@ -1589,9 +1552,7 @@
         repeat(2, minmax(0,1fr));
 
     gap: 12px;
-
 }
-
 
 .statistics-wheel-card {
 
@@ -1613,11 +1574,8 @@
         1px solid
         rgba(35,48,75,.045);
 
-    background:
-        #f8f9fb;
-
+    background: #f8f9fb;
 }
-
 
 .statistics-wheel-card.income {
 
@@ -1627,9 +1585,7 @@
             #ecfff6,
             #f9fffc
         );
-
 }
-
 
 .statistics-wheel-card.expense {
 
@@ -1639,12 +1595,11 @@
             #fff1f3,
             #fffafa
         );
-
 }
 
 
 /* =========================================================
-   LARGE DONUT
+   DONUT
 ========================================================= */
 
 .statistics-donut {
@@ -1660,15 +1615,12 @@
 
     border-radius: 50%;
 
-    transform:
-        rotate(-90deg);
+    transform: rotate(-90deg);
 
     box-shadow:
         0 11px 26px
         rgba(30,40,70,.10);
-
 }
-
 
 .statistics-donut::before {
 
@@ -1685,9 +1637,7 @@
     box-shadow:
         inset 0 0 0 1px
         rgba(30,40,70,.045);
-
 }
-
 
 .statistics-donut.income-donut {
 
@@ -1695,18 +1645,12 @@
         conic-gradient(
             #11b877 0deg,
             #49dfa0
-            calc(
-                var(--percent) * 3.6deg
-            ),
+            calc(var(--percent) * 3.6deg),
             #dff5eb
-            calc(
-                var(--percent) * 3.6deg
-            ),
+            calc(var(--percent) * 3.6deg),
             #dff5eb 360deg
         );
-
 }
-
 
 .statistics-donut.expense-donut {
 
@@ -1714,18 +1658,12 @@
         conic-gradient(
             #ef5662 0deg,
             #ff858c
-            calc(
-                var(--percent) * 3.6deg
-            ),
+            calc(var(--percent) * 3.6deg),
             #fbe0e2
-            calc(
-                var(--percent) * 3.6deg
-            ),
+            calc(var(--percent) * 3.6deg),
             #fbe0e2 360deg
         );
-
 }
-
 
 .statistics-donut-inner {
 
@@ -1738,17 +1676,13 @@
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
 
     width: 100%;
     height: 100%;
 
-    transform:
-        rotate(90deg);
-
+    transform: rotate(90deg);
 }
-
 
 .statistics-donut-inner strong {
 
@@ -1759,9 +1693,7 @@
     line-height: 1;
 
     font-weight: 950;
-
 }
-
 
 .statistics-donut-inner span {
 
@@ -1774,7 +1706,6 @@
     font-weight: 900;
 
     letter-spacing: 1px;
-
 }
 
 
@@ -1791,9 +1722,7 @@
     align-items: center;
 
     margin-top: 13px;
-
 }
-
 
 .statistics-wheel-info strong {
 
@@ -1802,9 +1731,7 @@
     font-size: 13px;
 
     font-weight: 900;
-
 }
-
 
 .statistics-wheel-info span {
 
@@ -1813,28 +1740,23 @@
     font-size: 12px;
 
     font-weight: 900;
-
 }
-
 
 .statistics-wheel-card.income
 .statistics-wheel-info span {
 
     color: #11a66c;
-
 }
-
 
 .statistics-wheel-card.expense
 .statistics-wheel-info span {
 
     color: #e65360;
-
 }
 
 
 /* =========================================================
-   DETAIL WHEEL SECTION
+   DETAIL WHEEL
 ========================================================= */
 
 .statistics-detail-wheel-section {
@@ -1859,9 +1781,7 @@
     box-shadow:
         0 12px 30px
         rgba(32,47,80,.065);
-
 }
-
 
 .statistics-detail-wheel-section.expense-section {
 
@@ -1874,13 +1794,7 @@
             #ffffff,
             #fffafa
         );
-
 }
-
-
-/* =========================================================
-   DETAIL TITLE
-========================================================= */
 
 .statistics-detail-wheel-title {
 
@@ -1893,16 +1807,12 @@
     gap: 12px;
 
     margin-bottom: 17px;
-
 }
-
 
 .statistics-detail-wheel-title > div {
 
     min-width: 0;
-
 }
-
 
 .statistics-detail-wheel-title span {
 
@@ -1917,9 +1827,7 @@
     font-weight: 950;
 
     letter-spacing: 1.3px;
-
 }
-
 
 .statistics-detail-wheel-title strong {
 
@@ -1930,9 +1838,7 @@
     font-size: 15px;
 
     font-weight: 950;
-
 }
-
 
 .statistics-detail-wheel-title > small {
 
@@ -1944,13 +1850,11 @@
 
     color: #8d96a5;
 
-    background:
-        #f3f5f8;
+    background: #f3f5f8;
 
     font-size: 9px;
 
     font-weight: 800;
-
 }
 
 
@@ -1966,13 +1870,7 @@
         repeat(2, minmax(0,1fr));
 
     gap: 11px;
-
 }
-
-
-/* =========================================================
-   DETAIL CARD
-========================================================= */
 
 .statistics-detail-wheel-card {
 
@@ -1988,15 +1886,12 @@
 
     border-radius: 20px;
 
-    background:
-        #f7f8fb;
+    background: #f7f8fb;
 
     border:
         1px solid
         rgba(35,48,75,.035);
-
 }
-
 
 .statistics-detail-wheel-card.income {
 
@@ -2006,9 +1901,7 @@
             #f0fff8,
             #f8fffb
         );
-
 }
-
 
 .statistics-detail-wheel-card.expense {
 
@@ -2018,12 +1911,11 @@
             #fff4f5,
             #fffafa
         );
-
 }
 
 
 /* =========================================================
-   SMALL DONUT
+   MINI DONUT
 ========================================================= */
 
 .statistics-mini-donut {
@@ -2038,9 +1930,7 @@
     height: 92px;
 
     border-radius: 50%;
-
 }
-
 
 .statistics-mini-donut::before {
 
@@ -2059,39 +1949,27 @@
     box-shadow:
         inset 0 0 0 1px
         rgba(30,40,70,.04);
-
 }
-
 
 .statistics-mini-donut.income {
 
     background:
         conic-gradient(
             #7657e8
-            calc(
-                var(--percent) * 3.6deg
-            ),
-            #e9e4fb
-            0deg
+            calc(var(--percent) * 3.6deg),
+            #e9e4fb 0deg
         );
-
 }
-
 
 .statistics-mini-donut.expense {
 
     background:
         conic-gradient(
             #ef5662
-            calc(
-                var(--percent) * 3.6deg
-            ),
-            #f9e1e4
-            0deg
+            calc(var(--percent) * 3.6deg),
+            #f9e1e4 0deg
         );
-
 }
-
 
 .statistics-mini-donut-inner {
 
@@ -2105,9 +1983,7 @@
 
     width: 100%;
     height: 100%;
-
 }
-
 
 .statistics-mini-donut-inner strong {
 
@@ -2116,15 +1992,12 @@
     font-size: 18px;
 
     font-weight: 950;
-
 }
-
 
 .statistics-mini-donut.expense
 .statistics-mini-donut-inner strong {
 
     color: #d84956;
-
 }
 
 
@@ -2139,9 +2012,7 @@
     margin-top: 10px;
 
     text-align: center;
-
 }
-
 
 .statistics-detail-wheel-name {
 
@@ -2158,9 +2029,7 @@
     white-space: nowrap;
 
     text-overflow: ellipsis;
-
 }
-
 
 .statistics-detail-wheel-money {
 
@@ -2171,17 +2040,13 @@
     font-size: 11px;
 
     font-weight: 900;
-
 }
-
 
 .statistics-detail-wheel-card.expense
 .statistics-detail-wheel-money {
 
     color: #e65360;
-
 }
-
 
 .statistics-detail-wheel-info small {
 
@@ -2194,7 +2059,6 @@
     font-size: 9px;
 
     font-weight: 800;
-
 }
 
 
@@ -2224,9 +2088,7 @@
     box-shadow:
         0 12px 30px
         rgba(60,35,45,.065);
-
 }
-
 
 .statistics-expense-analysis-heading {
 
@@ -2237,14 +2099,11 @@
     gap: 11px;
 
     margin-bottom: 19px;
-
 }
-
 
 .statistics-expense-analysis-heading-icon {
 
     display: grid;
-
     place-items: center;
 
     flex: 0 0 auto;
@@ -2262,18 +2121,13 @@
         );
 
     font-size: 19px;
-
 }
-
 
 .statistics-expense-analysis-heading > div:nth-child(2) {
 
     min-width: 0;
-
     flex: 1;
-
 }
-
 
 .statistics-expense-analysis-heading span {
 
@@ -2286,9 +2140,7 @@
     font-weight: 950;
 
     letter-spacing: 1.3px;
-
 }
-
 
 .statistics-expense-analysis-heading strong {
 
@@ -2301,9 +2153,7 @@
     font-size: 15px;
 
     font-weight: 950;
-
 }
-
 
 .statistics-expense-analysis-heading > small {
 
@@ -2314,9 +2164,7 @@
     font-size: 11px;
 
     font-weight: 900;
-
 }
-
 
 .statistics-expense-analysis-list {
 
@@ -2325,9 +2173,7 @@
     flex-direction: column;
 
     gap: 0;
-
 }
-
 
 .statistics-expense-analysis-row {
 
@@ -2335,16 +2181,12 @@
 
     border-bottom:
         1px solid #f0e6e8;
-
 }
-
 
 .statistics-expense-analysis-row:last-child {
 
     border-bottom: 0;
-
 }
-
 
 .statistics-expense-analysis-top {
 
@@ -2355,9 +2197,7 @@
     justify-content: space-between;
 
     gap: 10px;
-
 }
-
 
 .statistics-expense-analysis-name {
 
@@ -2380,16 +2220,12 @@
     white-space: nowrap;
 
     text-overflow: ellipsis;
-
 }
-
 
 .statistics-expense-analysis-name > span {
 
     flex: 0 0 auto;
-
 }
-
 
 .statistics-expense-analysis-money {
 
@@ -2400,9 +2236,7 @@
     font-size: 12px;
 
     font-weight: 950;
-
 }
-
 
 .statistics-expense-analysis-bar {
 
@@ -2414,11 +2248,8 @@
 
     border-radius: 99px;
 
-    background:
-        #f4e9eb;
-
+    background: #f4e9eb;
 }
-
 
 .statistics-expense-analysis-bar span {
 
@@ -2442,9 +2273,7 @@
     transition:
         width .55s
         cubic-bezier(.2,.8,.2,1);
-
 }
-
 
 .statistics-expense-analysis-percent {
 
@@ -2457,7 +2286,6 @@
     font-weight: 800;
 
     text-align: right;
-
 }
 
 
@@ -2476,209 +2304,11 @@
     box-shadow:
         0 8px 25px
         rgba(30,45,80,.055);
-
 }
-
 
 #statisticsPage .card + .card {
 
     margin-top: 16px;
-
-}
-
-
-/* =========================================================
-   DATE NAVIGATION
-   SỬA GIAO DIỆN NÚT < >
-========================================================= */
-
-.statistics-date-row {
-
-    display: grid;
-
-    grid-template-columns:
-        44px minmax(0,1fr) 44px;
-
-    align-items: center;
-
-    gap: 10px;
-
-    margin-bottom: 18px;
-
-}
-
-
-.statistics-date-row button {
-
-    display: grid;
-
-    place-items: center;
-
-    width: 44px;
-    height: 44px;
-
-    padding: 0;
-
-    border: 0;
-
-    border-radius: 14px;
-
-    color: #29344b;
-
-    background:
-        #f3f5f9;
-
-    box-shadow:
-        0 5px 14px
-        rgba(35,50,85,.055);
-
-    font-size: 24px;
-
-    line-height: 1;
-
-    cursor: pointer;
-
-    transition:
-        transform .18s ease,
-        background .18s ease,
-        box-shadow .18s ease;
-
-}
-
-
-.statistics-date-row button:hover {
-
-    background:
-        #e9edf5;
-
-    box-shadow:
-        0 7px 17px
-        rgba(35,50,85,.09);
-
-}
-
-
-.statistics-date-row button:active {
-
-    transform:
-        scale(.91);
-
-}
-
-
-.statistics-date-row button:disabled {
-
-    opacity: .5;
-
-    cursor: default;
-
-}
-
-
-.statistics-date-row strong {
-
-    overflow: hidden;
-
-    color: #29344b;
-
-    font-size: 15px;
-
-    font-weight: 950;
-
-    text-align: center;
-
-    white-space: nowrap;
-
-    text-overflow: ellipsis;
-
-}
-
-
-/* =========================================================
-   PERIOD TABS
-========================================================= */
-
-.period-tabs {
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(3,1fr);
-
-    gap: 7px;
-
-    padding: 5px;
-
-    margin-bottom: 18px;
-
-    border-radius: 17px;
-
-    background:
-        #f1f3f8;
-
-}
-
-
-.period-tab {
-
-    min-height: 42px;
-
-    padding: 0 8px;
-
-    border: 0;
-
-    border-radius: 12px;
-
-    color: #70798b;
-
-    background:
-        transparent;
-
-    font-size: 13px;
-
-    font-weight: 850;
-
-    cursor: pointer;
-
-    transition:
-        transform .18s ease,
-        background .18s ease,
-        color .18s ease,
-        box-shadow .18s ease;
-
-}
-
-
-.period-tab:hover {
-
-    color: #3857a8;
-
-}
-
-
-.period-tab:active {
-
-    transform:
-        scale(.96);
-
-}
-
-
-.period-tab.active {
-
-    color: #fff;
-
-    background:
-        linear-gradient(
-            135deg,
-            #4776e6,
-            #3559b7
-        );
-
-    box-shadow:
-        0 7px 18px
-        rgba(55,89,180,.24);
-
 }
 
 
@@ -2691,199 +2321,152 @@ body.dark .profit-summary {
     box-shadow:
         0 18px 42px
         rgba(0,0,0,.28);
-
 }
 
+body.dark .profit-summary .breakdown-row {
+
+    border-color:
+        rgba(255,255,255,.08);
+}
+
+body.dark .profit-summary .breakdown-row span {
+
+    color:
+        rgba(255,255,255,.65);
+}
+
+body.dark .profit-summary .breakdown-row strong {
+
+    color: #fff;
+}
+
+body.dark .profit-summary > strong.profit-negative {
+
+    color: #ff9ca4;
+}
 
 body.dark .breakdown-row {
 
-    border-color:
-        #2c3442;
-
+    border-color: #2c3442;
 }
-
 
 body.dark .breakdown-row span {
 
-    color:
-        #9ba4b5;
-
+    color: #9ba4b5;
 }
-
 
 body.dark .breakdown-row strong {
 
-    color:
-        #e8ecf4;
-
+    color: #e8ecf4;
 }
-
 
 body.dark .statistics-empty-icon {
 
-    background:
-        #252c39;
-
+    background: #252c39;
 }
-
 
 body.dark .statistics-empty strong {
 
-    color:
-        #dce2eb;
-
+    color: #dce2eb;
 }
-
 
 body.dark .statistics-empty span {
 
-    color:
-        #929cad;
-
+    color: #929cad;
 }
-
 
 body.dark .statistics-dish-row,
 body.dark .statistics-source-row,
 body.dark .statistics-expense-row,
 body.dark .statistics-expense-category-row {
 
-    border-color:
-        #2c3442;
-
+    border-color: #2c3442;
 }
-
 
 body.dark .statistics-dish-name,
 body.dark .statistics-source-left strong,
 body.dark .statistics-expense-name {
 
-    color:
-        #e8ecf4;
-
+    color: #e8ecf4;
 }
-
 
 body.dark .statistics-dish-profit.positive {
 
-    color:
-        #b79cff;
+    color: #b79cff;
 
-    background:
-        #302750;
-
+    background: #302750;
 }
-
 
 body.dark .statistics-dish-profit.negative {
 
-    color:
-        #ff9299;
+    color: #ff9299;
 
-    background:
-        #38252a;
-
+    background: #38252a;
 }
-
 
 body.dark .statistics-dish-detail span {
 
-    color:
-        #a7afbd;
+    color: #a7afbd;
 
-    background:
-        #242b38;
-
+    background: #242b38;
 }
-
 
 body.dark .statistics-dish-icon,
 body.dark .statistics-source-icon {
 
-    background:
-        #252c39;
-
+    background: #252c39;
 }
-
 
 body.dark .statistics-source-left small {
 
-    color:
-        #929cad;
-
+    color: #929cad;
 }
-
 
 body.dark .statistics-source-money small {
 
-    color:
-        #d69a4e;
-
+    color: #d69a4e;
 }
-
 
 body.dark .statistics-expense-category-name {
 
-    color:
-        #d8deea;
-
+    color: #d8deea;
 }
-
 
 body.dark .statistics-expense-category-bar {
 
-    background:
-        #303641;
-
+    background: #303641;
 }
-
 
 body.dark .statistics-expense-category-percent {
 
-    color:
-        #8f98a9;
-
+    color: #8f98a9;
 }
-
 
 body.dark .statistics-expense-icon {
 
-    background:
-        #38252a;
-
+    background: #38252a;
 }
-
 
 body.dark .statistics-expense-category,
 body.dark .statistics-expense-date {
 
-    color:
-        #8e98a9;
-
+    color: #8e98a9;
 }
-
 
 body.dark .statistics-chart-legend span {
 
-    color:
-        #9aa3b2;
-
+    color: #9aa3b2;
 }
-
 
 body.dark .statistics-chart .chart-date {
 
-    color:
-        #9099a9;
-
+    color: #9099a9;
 }
-
 
 body.dark .statistics-percent-section,
 body.dark .statistics-detail-wheel-section {
 
-    border-color:
-        #2c3442;
+    border-color: #2c3442;
 
     background:
         linear-gradient(
@@ -2895,9 +2478,7 @@ body.dark .statistics-detail-wheel-section {
     box-shadow:
         0 12px 30px
         rgba(0,0,0,.18);
-
 }
-
 
 body.dark .statistics-detail-wheel-section.expense-section {
 
@@ -2908,196 +2489,129 @@ body.dark .statistics-detail-wheel-section.expense-section {
             #292024
         );
 
-    border-color:
-        #443039;
-
+    border-color: #443039;
 }
-
 
 body.dark .statistics-wheel-heading h2,
 body.dark .statistics-detail-wheel-title strong {
 
-    color:
-        #e8ecf4;
-
+    color: #e8ecf4;
 }
-
 
 body.dark .statistics-wheel-heading span,
 body.dark .statistics-detail-wheel-title span {
 
-    color:
-        #8f98a8;
-
+    color: #8f98a8;
 }
-
 
 body.dark .statistics-wheel-heading > small,
 body.dark .statistics-detail-wheel-title > small {
 
-    color:
-        #aab2c0;
+    color: #aab2c0;
 
-    background:
-        #292f3b;
-
+    background: #292f3b;
 }
-
 
 body.dark .statistics-wheel-card {
 
-    background:
-        #202632;
+    background: #202632;
 
-    border-color:
-        #303846;
-
+    border-color: #303846;
 }
-
 
 body.dark .statistics-wheel-card.income {
 
-    background:
-        #192b26;
-
+    background: #192b26;
 }
-
 
 body.dark .statistics-wheel-card.expense {
 
-    background:
-        #302124;
-
+    background: #302124;
 }
-
 
 body.dark .statistics-donut::before {
 
-    background:
-        #202632;
+    background: #202632;
 
     box-shadow:
         inset 0 0 0 1px
         rgba(255,255,255,.045);
-
 }
-
 
 body.dark .statistics-wheel-card.income
 .statistics-donut::before {
 
-    background:
-        #192b26;
-
+    background: #192b26;
 }
-
 
 body.dark .statistics-wheel-card.expense
 .statistics-donut::before {
 
-    background:
-        #302124;
-
+    background: #302124;
 }
-
 
 body.dark .statistics-donut-inner strong {
 
-    color:
-        #eef2f7;
-
+    color: #eef2f7;
 }
-
 
 body.dark .statistics-donut-inner span {
 
-    color:
-        #a1a9b8;
-
+    color: #a1a9b8;
 }
-
 
 body.dark .statistics-wheel-info strong {
 
-    color:
-        #e8ecf4;
-
+    color: #e8ecf4;
 }
-
 
 body.dark .statistics-detail-wheel-card {
 
-    background:
-        #252b37;
+    background: #252b37;
 
-    border-color:
-        #303746;
-
+    border-color: #303746;
 }
-
 
 body.dark .statistics-detail-wheel-card.income {
 
-    background:
-        #1b2b26;
-
+    background: #1b2b26;
 }
-
 
 body.dark .statistics-detail-wheel-card.expense {
 
-    background:
-        #302124;
-
+    background: #302124;
 }
-
 
 body.dark .statistics-mini-donut::before {
 
-    background:
-        #202632;
-
+    background: #202632;
 }
-
 
 body.dark .statistics-detail-wheel-card.income
 .statistics-mini-donut::before {
 
-    background:
-        #1b2b26;
-
+    background: #1b2b26;
 }
-
 
 body.dark .statistics-detail-wheel-card.expense
 .statistics-mini-donut::before {
 
-    background:
-        #302124;
-
+    background: #302124;
 }
-
 
 body.dark .statistics-detail-wheel-name {
 
-    color:
-        #e5eaf2;
-
+    color: #e5eaf2;
 }
-
 
 body.dark .statistics-detail-wheel-info small {
 
-    color:
-        #919aaa;
-
+    color: #919aaa;
 }
-
 
 body.dark .statistics-expense-analysis {
 
-    border-color:
-        #443039;
+    border-color: #443039;
 
     background:
         linear-gradient(
@@ -3105,106 +2619,68 @@ body.dark .statistics-expense-analysis {
             #282125,
             #241f23
         );
-
 }
-
 
 body.dark .statistics-expense-analysis-heading-icon {
 
-    background:
-        #38252a;
-
+    background: #38252a;
 }
-
 
 body.dark .statistics-expense-analysis-heading strong {
 
-    color:
-        #e8ecf4;
-
+    color: #e8ecf4;
 }
-
 
 body.dark .statistics-expense-analysis-name {
 
-    color:
-        #dce1ea;
-
+    color: #dce1ea;
 }
-
 
 body.dark .statistics-expense-analysis-row {
 
-    border-color:
-        #3a3034;
-
+    border-color: #3a3034;
 }
-
 
 body.dark .statistics-expense-analysis-bar {
 
-    background:
-        #3b3034;
-
+    background: #3b3034;
 }
-
 
 body.dark .statistics-expense-analysis-percent {
 
-    color:
-        #919aaa;
-
+    color: #919aaa;
 }
-
 
 body.dark .statistics-date-row button {
 
-    color:
-        #e7ebf3;
+    color: #e7ebf3;
 
-    background:
-        #202632;
-
+    background: #202632;
 }
-
 
 body.dark .statistics-date-row button:hover {
 
-    background:
-        #29303c;
-
+    background: #29303c;
 }
-
 
 body.dark .statistics-date-row strong {
 
-    color:
-        #e7ebf3;
-
+    color: #e7ebf3;
 }
-
 
 body.dark .period-tabs {
 
-    background:
-        #202632;
-
+    background: #202632;
 }
-
 
 body.dark .period-tab {
 
-    color:
-        #9da6b8;
-
+    color: #9da6b8;
 }
-
 
 body.dark .period-tab.active {
 
-    color:
-        #fff;
-
+    color: #fff;
 }
 
 
@@ -3216,19 +2692,43 @@ body.dark .period-tab.active {
 
     .profit-summary {
 
-        padding: 21px;
+        padding: 20px 18px 16px;
 
         border-radius: 23px;
-
     }
 
+    .profit-summary > span:first-child {
 
-    .profit-summary strong {
+        font-size: 9px;
 
-        font-size: 28px;
-
+        letter-spacing: 1.5px;
     }
 
+    .profit-summary > strong {
+
+        margin-bottom: 15px;
+
+        font-size: 27px;
+
+        letter-spacing: -.5px;
+    }
+
+    .profit-summary .breakdown-row {
+
+        min-height: 43px;
+
+        padding: 9px 0;
+    }
+
+    .profit-summary .breakdown-row span {
+
+        font-size: 11px;
+    }
+
+    .profit-summary .breakdown-row strong {
+
+        font-size: 12px;
+    }
 
     .statistics-percent-section,
     .statistics-detail-wheel-section,
@@ -3237,56 +2737,41 @@ body.dark .period-tab.active {
         padding: 17px;
 
         border-radius: 21px;
-
     }
-
 
     .statistics-donut {
 
         width: 112px;
         height: 112px;
-
     }
-
 
     .statistics-donut-inner strong {
 
         font-size: 22px;
-
     }
-
 
     .statistics-detail-wheel-grid {
 
         gap: 9px;
-
     }
-
 
     .statistics-detail-wheel-card {
 
-        padding:
-            14px 7px;
+        padding: 14px 7px;
 
         border-radius: 18px;
-
     }
-
 
     .statistics-mini-donut {
 
         width: 86px;
         height: 86px;
-
     }
-
 
     .statistics-wheel-heading h2 {
 
         font-size: 18px;
-
     }
-
 
     .statistics-date-row {
 
@@ -3294,9 +2779,7 @@ body.dark .period-tab.active {
             42px minmax(0,1fr) 42px;
 
         gap: 8px;
-
     }
-
 
     .statistics-date-row button {
 
@@ -3304,16 +2787,12 @@ body.dark .period-tab.active {
         height: 42px;
 
         border-radius: 13px;
-
     }
-
 
     .statistics-date-row strong {
 
         font-size: 14px;
-
     }
-
 }
 
 
@@ -3323,61 +2802,76 @@ body.dark .period-tab.active {
 
 @media (max-width: 360px) {
 
+    .profit-summary {
+
+        padding: 18px 16px 15px;
+
+        border-radius: 21px;
+    }
+
+    .profit-summary > strong {
+
+        font-size: 25px;
+
+        margin-bottom: 13px;
+    }
+
+    .profit-summary .breakdown-row {
+
+        min-height: 41px;
+
+        padding: 8px 0;
+    }
+
+    .profit-summary .breakdown-row span {
+
+        font-size: 10.5px;
+    }
+
+    .profit-summary .breakdown-row strong {
+
+        font-size: 11.5px;
+    }
+
     .statistics-wheel-grid {
 
         gap: 8px;
-
     }
-
 
     .statistics-detail-wheel-grid {
 
         gap: 8px;
-
     }
-
 
     .statistics-donut {
 
         width: 100px;
         height: 100px;
-
     }
-
 
     .statistics-donut-inner strong {
 
         font-size: 20px;
-
     }
-
 
     .statistics-mini-donut {
 
         width: 78px;
         height: 78px;
-
     }
-
 
     .statistics-mini-donut-inner strong {
 
         font-size: 16px;
-
     }
-
 
     .statistics-detail-wheel-name {
 
         font-size: 11px;
-
     }
-
 
     .statistics-detail-wheel-money {
 
         font-size: 10px;
-
     }
-
 }
