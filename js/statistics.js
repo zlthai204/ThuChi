@@ -1,9 +1,11 @@
+javascript
 /* =========================================================
    STATISTICS.JS
    PREMIUM STATISTICS
    FULL REBUILD
    + DATE PICKER NGÀY / TUẦN / THÁNG
    + RESPONSIVE MOBILE
+   + FIX DATE PICKER DAY / MONTH / YEAR
 ========================================================= */
 
 if (typeof AppState === "undefined") {
@@ -42,6 +44,7 @@ function statisticsCreateLocalDate(year, month, day) {
     );
 }
 
+
 function statisticsDateToString(date) {
     if (
         !(date instanceof Date) ||
@@ -58,6 +61,7 @@ function statisticsDateToString(date) {
         String(date.getDate()).padStart(2, "0")
     );
 }
+
 
 function statisticsStringToDate(value) {
     if (!value) {
@@ -84,6 +88,7 @@ function statisticsStringToDate(value) {
         ? null
         : date;
 }
+
 
 function statisticsNormalizeDate() {
     if (
@@ -125,8 +130,12 @@ function statisticsMonthName(month) {
     return months[month] || "";
 }
 
+
 function statisticsFormatDayMonthYear(date) {
-    if (!(date instanceof Date)) {
+    if (
+        !(date instanceof Date) ||
+        isNaN(date.getTime())
+    ) {
         return "";
     }
 
@@ -330,6 +339,7 @@ function statisticsSafeText(value) {
     return String(value);
 }
 
+
 function statisticsEscapeHTML(value) {
     const text =
         statisticsSafeText(value);
@@ -414,6 +424,7 @@ function statisticsSetText(id, value) {
     element.textContent =
         statisticsSafeText(value);
 }
+
 
 function statisticsSetTextCompat(id, value) {
     if (typeof setText === "function") {
@@ -808,6 +819,7 @@ function renderStatisticsDishes(
                 </span>
             </div>
         `;
+
         return;
     }
 
@@ -1080,8 +1092,7 @@ function renderStatisticsExpenseCategories(
         Object.entries(map)
             .sort(
                 (a, b) =>
-                    b[1] -
-                    a[1]
+                    b[1] - a[1]
             );
 
     container.innerHTML = "";
@@ -1100,6 +1111,7 @@ function renderStatisticsExpenseCategories(
                 </span>
             </div>
         `;
+
         return;
     }
 
@@ -1192,6 +1204,7 @@ function renderStatisticsExpenseList(
                 </span>
             </div>
         `;
+
         return;
     }
 
@@ -1320,6 +1333,7 @@ function renderStatisticsChart(
                 </small>
             </div>
         `;
+
         return;
     }
 
@@ -1373,6 +1387,7 @@ function renderStatisticsChart(
                 📊 Chưa có dữ liệu
             </div>
         `;
+
         return;
     }
 
@@ -1663,8 +1678,7 @@ function renderStatisticsPercentWheel(
         Object.entries(expenseMap)
             .sort(
                 (a, b) =>
-                    b[1] -
-                    a[1]
+                    b[1] - a[1]
             );
 
     const topDishes =
@@ -2423,12 +2437,8 @@ function createStatisticsDatePicker() {
                     </small>
 
                     <strong
-                        id="
-                            statisticsPickerTitle
-                        "
-                    >
-                        22/08/2026
-                    </strong>
+                        id="statisticsPickerTitle"
+                    ></strong>
                 </div>
 
                 <button
@@ -2469,9 +2479,7 @@ function createStatisticsDatePicker() {
             </div>
 
             <div
-                id="
-                    statisticsPickerContent
-                "
+                id="statisticsPickerContent"
                 class="
                     statistics-picker-content
                 "
@@ -2515,6 +2523,10 @@ function openStatisticsDatePicker() {
     const picker =
         createStatisticsDatePicker();
 
+    /*
+     * LUÔN lấy năm/tháng từ ngày hiện tại.
+     * Không giữ state cũ của picker.
+     */
     statisticsPickerYear =
         AppState.statisticsDate.getFullYear();
 
@@ -2552,6 +2564,34 @@ function closeStatisticsDatePicker() {
 
 
 /* =========================================================
+   GET PICKER SELECTED DATE
+========================================================= */
+
+function statisticsGetPickerSelectedDate() {
+    statisticsNormalizeDate();
+
+    const currentDay =
+        AppState.statisticsDate.getDate();
+
+    const maxDay =
+        statisticsCreateLocalDate(
+            statisticsPickerYear,
+            statisticsPickerMonth + 1,
+            0
+        ).getDate();
+
+    return statisticsCreateLocalDate(
+        statisticsPickerYear,
+        statisticsPickerMonth,
+        Math.min(
+            currentDay,
+            maxDay
+        )
+    );
+}
+
+
+/* =========================================================
    RENDER PICKER
 ========================================================= */
 
@@ -2574,8 +2614,25 @@ function renderStatisticsDatePicker() {
         return;
     }
 
-    const selected =
-        AppState.statisticsDate;
+    statisticsNormalizeDate();
+
+    /*
+     * Nếu state picker chưa có thì lấy từ AppState.
+     */
+    if (
+        !Number.isInteger(
+            statisticsPickerYear
+        ) ||
+        !Number.isInteger(
+            statisticsPickerMonth
+        )
+    ) {
+        statisticsPickerYear =
+            AppState.statisticsDate.getFullYear();
+
+        statisticsPickerMonth =
+            AppState.statisticsDate.getMonth();
+    }
 
     const period =
         AppState.statisticsPeriod;
@@ -2592,32 +2649,50 @@ function renderStatisticsDatePicker() {
             );
         });
 
+    /*
+     * TIÊU ĐỀ
+     * Luôn hiện ngày/tháng/năm đang xem.
+     */
     const title =
         document.getElementById(
             "statisticsPickerTitle"
         );
 
     if (title) {
+        const selectedDate =
+            statisticsGetPickerSelectedDate();
+
         title.textContent =
             statisticsFormatDayMonthYear(
-                selected
+                selectedDate
             );
     }
 
+    /*
+     * DAY
+     */
     if (period === "day") {
         renderStatisticsDayPicker(
             content
         );
+
         return;
     }
 
+    /*
+     * WEEK
+     */
     if (period === "week") {
         renderStatisticsWeekPicker(
             content
         );
+
         return;
     }
 
+    /*
+     * MONTH
+     */
     renderStatisticsMonthPicker(
         content
     );
@@ -2653,8 +2728,7 @@ function renderStatisticsYearSelector(
                 type="button"
                 class="
                     statistics-year-item
-                    ${year ===
-                    statisticsPickerYear
+                    ${year === statisticsPickerYear
                         ? "active"
                         : ""}
                 "
@@ -2700,8 +2774,7 @@ function renderStatisticsMonthGrid() {
                 type="button"
                 class="
                     statistics-month-item
-                    ${month ===
-                    statisticsPickerMonth
+                    ${month === statisticsPickerMonth
                         ? "active"
                         : ""}
                 "
@@ -2745,6 +2818,14 @@ function renderStatisticsCalendar() {
             0
         );
 
+    /*
+     * JS:
+     * 0 = CN
+     * 1 = T2
+     *
+     * Calendar:
+     * T2 -> CN
+     */
     let startDay =
         firstDay.getDay() - 1;
 
@@ -2798,6 +2879,9 @@ function renderStatisticsCalendar() {
         ">
     `;
 
+    /*
+     * Ô trống trước ngày 1.
+     */
     for (
         let i = 0;
         i < startDay;
@@ -2813,7 +2897,7 @@ function renderStatisticsCalendar() {
     }
 
     const selected =
-        AppState.statisticsDate;
+        statisticsGetPickerSelectedDate();
 
     const now =
         new Date();
@@ -2954,8 +3038,7 @@ function renderStatisticsMonthPicker(
 ========================================================= */
 
 function applyStatisticsDatePicker() {
-    const selected =
-        AppState.statisticsDate;
+    statisticsNormalizeDate();
 
     if (
         AppState.statisticsPeriod ===
@@ -2970,24 +3053,14 @@ function applyStatisticsDatePicker() {
     }
 
     else {
-        const day =
-            selected.getDate();
-
-        const maxDay =
-            statisticsCreateLocalDate(
-                statisticsPickerYear,
-                statisticsPickerMonth + 1,
-                0
-            ).getDate();
+        const selectedDate =
+            statisticsGetPickerSelectedDate();
 
         AppState.statisticsDate =
             statisticsCreateLocalDate(
-                statisticsPickerYear,
-                statisticsPickerMonth,
-                Math.min(
-                    day,
-                    maxDay
-                )
+                selectedDate.getFullYear(),
+                selectedDate.getMonth(),
+                selectedDate.getDate()
             );
     }
 
@@ -3015,6 +3088,9 @@ function statisticsBindDatePicker() {
         "click",
         event => {
 
+            /*
+             * PERIOD
+             */
             const periodButton =
                 event.target.closest(
                     "[data-picker-period]"
@@ -3028,8 +3104,11 @@ function statisticsBindDatePicker() {
                         .pickerPeriod;
 
                 if (
-                    ["day", "week", "month"]
-                        .includes(period)
+                    [
+                        "day",
+                        "week",
+                        "month"
+                    ].includes(period)
                 ) {
                     AppState.statisticsPeriod =
                         period;
@@ -3041,6 +3120,9 @@ function statisticsBindDatePicker() {
             }
 
 
+            /*
+             * YEAR
+             */
             const yearButton =
                 event.target.closest(
                     "[data-picker-year]"
@@ -3055,12 +3137,38 @@ function statisticsBindDatePicker() {
                             .pickerYear
                     );
 
+                /*
+                 * Đồng bộ ngày với năm mới.
+                 */
+                const currentDay =
+                    AppState.statisticsDate.getDate();
+
+                const maxDay =
+                    statisticsCreateLocalDate(
+                        statisticsPickerYear,
+                        statisticsPickerMonth + 1,
+                        0
+                    ).getDate();
+
+                AppState.statisticsDate =
+                    statisticsCreateLocalDate(
+                        statisticsPickerYear,
+                        statisticsPickerMonth,
+                        Math.min(
+                            currentDay,
+                            maxDay
+                        )
+                    );
+
                 renderStatisticsDatePicker();
 
                 return;
             }
 
 
+            /*
+             * MONTH
+             */
             const monthButton =
                 event.target.closest(
                     "[data-picker-month]"
@@ -3075,12 +3183,38 @@ function statisticsBindDatePicker() {
                             .pickerMonth
                     );
 
+                /*
+                 * Đồng bộ ngày với tháng mới.
+                 */
+                const currentDay =
+                    AppState.statisticsDate.getDate();
+
+                const maxDay =
+                    statisticsCreateLocalDate(
+                        statisticsPickerYear,
+                        statisticsPickerMonth + 1,
+                        0
+                    ).getDate();
+
+                AppState.statisticsDate =
+                    statisticsCreateLocalDate(
+                        statisticsPickerYear,
+                        statisticsPickerMonth,
+                        Math.min(
+                            currentDay,
+                            maxDay
+                        )
+                    );
+
                 renderStatisticsDatePicker();
 
                 return;
             }
 
 
+            /*
+             * DAY
+             */
             const dayButton =
                 event.target.closest(
                     "[data-picker-day]"
@@ -3102,15 +3236,27 @@ function statisticsBindDatePicker() {
                         0
                     ).getDate();
 
+                const safeDay =
+                    Math.min(
+                        day,
+                        maxDay
+                    );
+
                 AppState.statisticsDate =
                     statisticsCreateLocalDate(
                         statisticsPickerYear,
                         statisticsPickerMonth,
-                        Math.min(
-                            day,
-                            maxDay
-                        )
+                        safeDay
                     );
+
+                /*
+                 * Đồng bộ lại picker.
+                 */
+                statisticsPickerYear =
+                    AppState.statisticsDate.getFullYear();
+
+                statisticsPickerMonth =
+                    AppState.statisticsDate.getMonth();
 
                 renderStatisticsDatePicker();
 
@@ -3118,6 +3264,9 @@ function statisticsBindDatePicker() {
             }
 
 
+            /*
+             * CALENDAR PREV / NEXT
+             */
             const calendarButton =
                 event.target.closest(
                     "[data-picker-calendar]"
@@ -3156,12 +3305,39 @@ function statisticsBindDatePicker() {
                     }
                 }
 
+                /*
+                 * Đồng bộ ngày nếu tháng mới
+                 * không có ngày hiện tại.
+                 */
+                const currentDay =
+                    AppState.statisticsDate.getDate();
+
+                const maxDay =
+                    statisticsCreateLocalDate(
+                        statisticsPickerYear,
+                        statisticsPickerMonth + 1,
+                        0
+                    ).getDate();
+
+                AppState.statisticsDate =
+                    statisticsCreateLocalDate(
+                        statisticsPickerYear,
+                        statisticsPickerMonth,
+                        Math.min(
+                            currentDay,
+                            maxDay
+                        )
+                    );
+
                 renderStatisticsDatePicker();
 
                 return;
             }
 
 
+            /*
+             * ACTION
+             */
             const actionButton =
                 event.target.closest(
                     "[data-picker-action]"
@@ -3206,6 +3382,9 @@ function statisticsBindDatePicker() {
             }
 
 
+            /*
+             * BACKDROP
+             */
             if (
                 event.target.closest(
                     ".statistics-date-picker-backdrop"
@@ -3503,7 +3682,6 @@ function statisticsInjectDatePickerCSS() {
             display: flex;
 
             align-items: center;
-
             justify-content: space-between;
 
             gap: 12px;
@@ -3909,6 +4087,7 @@ function statisticsInjectDatePickerCSS() {
 
         /* =====================================================
            CALENDAR
+           FIX: KHÔNG DÙNG aspect-ratio + min-height 0
         ===================================================== */
 
         .statistics-calendar-grid {
@@ -3928,15 +4107,19 @@ function statisticsInjectDatePickerCSS() {
 
             min-width: 0;
 
-            min-height: 0;
-
-            aspect-ratio: 1 / 1;
+            height: 42px;
+            min-height: 42px;
 
             box-sizing: border-box;
         }
 
         .statistics-calendar-day {
             padding: 0;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
 
             border:
                 1px solid
@@ -3988,7 +4171,6 @@ function statisticsInjectDatePickerCSS() {
             display: flex;
 
             align-items: center;
-
             justify-content: space-between;
 
             gap: 10px;
@@ -4207,7 +4389,8 @@ function statisticsInjectDatePickerCSS() {
 
             .statistics-calendar-day,
             .statistics-calendar-empty {
-                min-height: 34px;
+                height: 38px;
+                min-height: 38px;
             }
 
             .statistics-calendar-day {
@@ -4318,7 +4501,8 @@ function statisticsInjectDatePickerCSS() {
 
             .statistics-calendar-day,
             .statistics-calendar-empty {
-                min-height: 31px;
+                height: 34px;
+                min-height: 34px;
             }
 
             .statistics-calendar-day {
@@ -4475,3 +4659,4 @@ window.closeStatisticsDatePicker =
 
 window.applyStatisticsDatePicker =
     applyStatisticsDatePicker;
+
