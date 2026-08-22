@@ -1,4 +1,4 @@
-javascript
+
 /* =========================================================
    STATISTICS.JS
    PREMIUM STATISTICS
@@ -4660,3 +4660,350 @@ window.closeStatisticsDatePicker =
 window.applyStatisticsDatePicker =
     applyStatisticsDatePicker;
 
+/* =========================================================
+   CLICK NGÀY / THÁNG / NĂM -> MỞ LỊCH CHỌN
+   ---------------------------------------------------------
+   Không cần sửa HTML
+   Không cần CSS
+========================================================= */
+
+(function () {
+
+    /* =====================================================
+       TẠO INPUT PICKER TỰ ĐỘNG
+    ===================================================== */
+
+    function createStatisticsDatePicker() {
+
+        let input =
+            document.getElementById(
+                "statisticsAutoDatePicker"
+            );
+
+        if (input) {
+            return input;
+        }
+
+        input =
+            document.createElement("input");
+
+        input.id =
+            "statisticsAutoDatePicker";
+
+        input.type =
+            "date";
+
+        /*
+         * Ẩn input nhưng vẫn cho phép
+         * trình duyệt mở calendar.
+         */
+
+        input.style.position = "fixed";
+        input.style.left = "-9999px";
+        input.style.top = "-9999px";
+        input.style.width = "1px";
+        input.style.height = "1px";
+        input.style.opacity = "0";
+
+        document.body.appendChild(input);
+
+        return input;
+
+    }
+
+
+    /* =====================================================
+       MỞ DATE PICKER
+    ===================================================== */
+
+    function openStatisticsAutoPicker() {
+
+        statisticsNormalizeDate();
+
+        const current =
+            AppState.statisticsDate;
+
+        /*
+         * ================================================
+         * THÁNG
+         * ================================================
+         */
+
+        if (
+            AppState.statisticsPeriod === "month"
+        ) {
+
+            const input =
+                createStatisticsDatePicker();
+
+            /*
+             * Một số trình duyệt hỗ trợ month.
+             */
+
+            input.type = "month";
+
+            input.value =
+                current.getFullYear() +
+                "-" +
+                String(
+                    current.getMonth() + 1
+                ).padStart(2, "0");
+
+
+            input.onchange =
+                function () {
+
+                    const value =
+                        input.value;
+
+                    const match =
+                        value.match(
+                            /^(\d{4})-(\d{2})$/
+                        );
+
+                    if (!match) {
+                        return;
+                    }
+
+                    const year =
+                        Number(match[1]);
+
+                    const month =
+                        Number(match[2]) - 1;
+
+                    /*
+                     * Luôn ngày 1.
+                     */
+
+                    AppState.statisticsDate =
+                        statisticsCreateLocalDate(
+                            year,
+                            month,
+                            1
+                        );
+
+                    renderStatistics();
+
+                };
+
+
+            openNativePicker(input);
+
+            return;
+
+        }
+
+
+        /* ================================================
+           NGÀY / TUẦN
+        ================================================ */
+
+        const input =
+            createStatisticsDatePicker();
+
+        input.type = "date";
+
+        input.value =
+            statisticsDateToString(
+                current
+            );
+
+
+        input.onchange =
+            function () {
+
+                const selected =
+                    statisticsStringToDate(
+                        input.value
+                    );
+
+                if (!selected) {
+                    return;
+                }
+
+                /*
+                 * DAY:
+                 * Chọn đúng ngày.
+                 */
+
+                if (
+                    AppState.statisticsPeriod === "day"
+                ) {
+
+                    AppState.statisticsDate =
+                        statisticsCreateLocalDate(
+                            selected.getFullYear(),
+                            selected.getMonth(),
+                            selected.getDate()
+                        );
+
+                }
+
+                /*
+                 * WEEK:
+                 * Chọn ngày bất kỳ trong tuần.
+                 * getStatisticsRange() tự tính
+                 * Thứ 2 -> Chủ nhật.
+                 */
+
+                else if (
+                    AppState.statisticsPeriod === "week"
+                ) {
+
+                    AppState.statisticsDate =
+                        statisticsCreateLocalDate(
+                            selected.getFullYear(),
+                            selected.getMonth(),
+                            selected.getDate()
+                        );
+
+                }
+
+                renderStatistics();
+
+            };
+
+
+        openNativePicker(input);
+
+    }
+
+
+    /* =====================================================
+       MỞ CALENDAR NATIVE
+    ===================================================== */
+
+    function openNativePicker(input) {
+
+        try {
+
+            /*
+             * Chrome / Edge / Android mới
+             */
+
+            if (
+                typeof input.showPicker === "function"
+            ) {
+
+                input.showPicker();
+
+                return;
+
+            }
+
+        } catch (error) {}
+
+        /*
+         * Fallback
+         */
+
+        input.focus();
+
+        input.click();
+
+    }
+
+
+    /* =====================================================
+       CLICK VÀO LABEL
+       -----------------------------------------------------
+       Không cần sửa HTML
+    ===================================================== */
+
+    function bindStatisticsDateClick() {
+
+        const ids = [
+            "statisticsPeriodLabel",
+            "statisticsDateLabel"
+        ];
+
+        ids.forEach(
+            id => {
+
+                const element =
+                    document.getElementById(id);
+
+                if (!element) {
+                    return;
+                }
+
+                if (
+                    element.dataset
+                        .statisticsDatePickerBound === "true"
+                ) {
+                    return;
+                }
+
+                element.dataset
+                    .statisticsDatePickerBound = "true";
+
+
+                element.style.cursor =
+                    "pointer";
+
+
+                element.addEventListener(
+                    "click",
+                    function (event) {
+
+                        event.preventDefault();
+
+                        openStatisticsAutoPicker();
+
+                    }
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       DOM READY
+    ===================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            createStatisticsDatePicker();
+
+            bindStatisticsDateClick();
+
+        }
+    );
+
+
+    /* =====================================================
+       SAU MỖI LẦN RENDER
+       -----------------------------------------------------
+       Vì HTML cũ có thể render lại label.
+    ===================================================== */
+
+    const oldRenderStatistics =
+        window.renderStatistics;
+
+
+    if (
+        typeof oldRenderStatistics === "function"
+    ) {
+
+        window.renderStatistics =
+            function () {
+
+                oldRenderStatistics.apply(
+                    this,
+                    arguments
+                );
+
+                setTimeout(
+                    bindStatisticsDateClick,
+                    0
+                );
+
+            };
+
+    }
+
+})();
