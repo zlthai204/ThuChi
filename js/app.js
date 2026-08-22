@@ -1,280 +1,130 @@
-/* =========================================================
-   APP.JS
-   GLOBAL APP STATE + NAVIGATION + INIT
-========================================================= */
-
 const AppState = {
+
     currentPage: "home",
 
     transactions: [],
+
     categories: [],
+
     dishes: [],
+
     codParts: [],
 
     editingTransactionId: null,
+
     transactionType: "thu",
+
     orderSource: "ShopeeFood",
 
     statisticsPeriod: "day",
+
     statisticsDate: new Date()
+
 };
 
 
-/* =========================================================
-   DOM HELPERS
-========================================================= */
-
-function $(selector, parent = document) {
-    return parent.querySelector(selector);
-}
-
-function $$(selector, parent = document) {
-    return [...parent.querySelectorAll(selector)];
-}
-
-
-/* FIX: setText is used by home.js/statistics.js/etc */
-function setText(selector, value) {
-    const element =
-        typeof selector === "string"
-            ? document.querySelector(selector)
-            : selector;
-
-    if (!element) return;
-
-    element.textContent =
-        value === null ||
-        value === undefined
-            ? ""
-            : String(value);
-}
-
-
-/* =========================================================
+/* =========================
    INIT
-========================================================= */
+========================= */
 
 document.addEventListener(
     "DOMContentLoaded",
     async () => {
 
-        try {
+        setToday();
 
-            setToday();
+        loadTheme();
 
-            loadTheme();
+        await loadInitialData();
 
-            await loadInitialData();
-
-            ensurePages();
-
-            navigateTo("home");
-
-        } catch (error) {
-
-            console.error(
-                "APP INIT ERROR:",
-                error
-            );
-
-        }
+        navigateTo("home");
 
     }
 );
 
 
-/* =========================================================
+/* =========================
    INITIAL DATA
-========================================================= */
+========================= */
 
 async function loadInitialData() {
 
     try {
 
-        if (typeof dbGet !== "function") {
-
-            console.warn(
-                "dbGet() chưa được load."
-            );
-
-            renderAll();
-
-            return;
-
-        }
-
-
         AppState.categories =
-            await dbGet(
-                "categories",
-                {
-                    order: {
-                        column: "created_at",
-                        ascending: true
-                    }
+            await dbGet("categories", {
+                order: {
+                    column: "created_at",
+                    ascending: true
                 }
-            ) || [];
-
+            });
 
         AppState.dishes =
-            await dbGet(
-                "dishes",
-                {
-                    order: {
-                        column: "created_at",
-                        ascending: true
-                    }
+            await dbGet("dishes", {
+                order: {
+                    column: "created_at",
+                    ascending: true
                 }
-            ) || [];
-
+            });
 
         AppState.transactions =
-            await dbGet(
-                "transactions",
-                {
-                    order: {
-                        column: "date",
-                        ascending: false
-                    }
+            await dbGet("transactions", {
+                order: {
+                    column: "date",
+                    ascending: false
                 }
-            ) || [];
-
+            });
 
         renderAll();
 
     } catch (error) {
 
-        console.error(
-            "LOAD DATA ERROR:",
-            error
-        );
-
-        AppState.categories = [];
-        AppState.dishes = [];
-        AppState.transactions = [];
-
-        renderAll();
+        console.error(error);
 
     }
-
 }
 
 
-/* =========================================================
-   PAGE CHECK
-========================================================= */
-
-function ensurePages() {
-
-    const pages = [
-        "home",
-        "statistics",
-        "history",
-        "restaurant",
-        "cod"
-    ];
-
-    pages.forEach(page => {
-
-        const id = `${page}Page`;
-
-        if (!document.getElementById(id)) {
-
-            console.warn(
-                `Không tìm thấy #${id}`
-            );
-
-        }
-
-    });
-
-}
-
-
-/* =========================================================
+/* =========================
    NAVIGATION
-========================================================= */
+========================= */
 
 function navigateTo(page) {
 
-    const validPages = [
-        "home",
-        "statistics",
-        "history",
-        "restaurant",
-        "cod"
-    ];
-
-
-    if (!validPages.includes(page)) {
-
-        console.warn(
-            "Trang không hợp lệ:",
-            page
-        );
-
-        return;
-
-    }
-
-
     AppState.currentPage = page;
 
+    document
+        .querySelectorAll(".page")
+        .forEach(element => {
 
-    /* ---------------------------------
-       Hide all pages
-    --------------------------------- */
+            element.classList.remove(
+                "active-page"
+            );
 
-    $$(".page").forEach(element => {
+        });
 
-        element.classList.remove(
-            "active-page"
-        );
-
-        element.hidden = true;
-
-    });
-
-
-    /* ---------------------------------
-       Show selected page
-    --------------------------------- */
 
     const pageElement =
         document.getElementById(
             `${page}Page`
         );
 
+    if (pageElement) {
 
-    if (!pageElement) {
-
-        console.error(
-            `Không tìm thấy #${page}Page`
+        pageElement.classList.add(
+            "active-page"
         );
-
-        return;
 
     }
 
 
-    pageElement.hidden = false;
+    document
+        .querySelectorAll(".nav-button")
+        .forEach(button => {
 
-    pageElement.classList.add(
-        "active-page"
-    );
+            button.classList.remove("active");
 
-
-    /* ---------------------------------
-       Navigation button
-    --------------------------------- */
-
-    $$(".nav-button").forEach(button => {
-
-        button.classList.remove(
-            "active"
-        );
-
-    });
+        });
 
 
     const navMap = {
@@ -301,90 +151,10 @@ function navigateTo(page) {
             navMap[page]
         );
 
-
     if (navButton) {
 
         navButton.classList.add(
             "active"
-        );
-
-    }
-
-
-    /* ---------------------------------
-       Render page
-    --------------------------------- */
-
-    try {
-
-        switch (page) {
-
-            case "home":
-
-                if (
-                    typeof renderHome ===
-                    "function"
-                ) {
-                    renderHome();
-                }
-
-                break;
-
-
-            case "statistics":
-
-                if (
-                    typeof renderStatistics ===
-                    "function"
-                ) {
-                    renderStatistics();
-                }
-
-                break;
-
-
-            case "history":
-
-                if (
-                    typeof renderHistory ===
-                    "function"
-                ) {
-                    renderHistory();
-                }
-
-                break;
-
-
-            case "restaurant":
-
-                if (
-                    typeof renderRestaurant ===
-                    "function"
-                ) {
-                    renderRestaurant();
-                }
-
-                break;
-
-
-            case "cod":
-
-                if (
-                    typeof renderCOD ===
-                    "function"
-                ) {
-                    renderCOD();
-                }
-
-                break;
-
-        }
-
-    } catch (error) {
-
-        console.error(
-            `RENDER ${page} ERROR:`,
-            error
         );
 
     }
@@ -395,95 +165,77 @@ function navigateTo(page) {
         behavior: "smooth"
     });
 
+
+    if (page === "home") {
+
+        renderHome();
+
+    }
+
+    if (page === "statistics") {
+
+        renderStatistics();
+
+    }
+
+    if (page === "history") {
+
+        renderHistory();
+
+    }
+
+    if (page === "restaurant") {
+
+        renderRestaurant();
+
+    }
+
+    if (page === "cod") {
+
+        renderCOD();
+
+    }
+
 }
 
 
-/* =========================================================
+/* =========================
    RENDER ALL
-========================================================= */
+========================= */
 
 function renderAll() {
 
-    const renderers = [
-        ["home", renderHome],
-        ["statistics", renderStatistics],
-        ["history", renderHistory],
-        ["restaurant", renderRestaurant],
-        ["cod", renderCOD]
-    ];
+    renderHome();
 
+    renderStatistics();
 
-    renderers.forEach(
-        ([name, renderer]) => {
+    renderHistory();
 
-            if (
-                typeof renderer !==
-                "function"
-            ) {
+    renderRestaurant();
 
-                console.warn(
-                    `Chưa có ${name}.js`
-                );
-
-                return;
-
-            }
-
-
-            try {
-
-                renderer();
-
-            } catch (error) {
-
-                console.error(
-                    `Render ${name} lỗi:`,
-                    error
-                );
-
-            }
-
-        }
-    );
+    renderCOD();
 
 }
 
 
-/* =========================================================
+/* =========================
    TOAST
-========================================================= */
+========================= */
 
-let toastTimer = null;
+let toastTimer;
 
 function showToast(message) {
 
     const toast =
-        document.getElementById(
-            "toast"
-        );
+        document.getElementById("toast");
 
-    if (!toast) {
+    if (!toast) return;
 
-        console.log(message);
+    toast.textContent = message;
 
-        return;
+    toast.classList.add("show");
 
-    }
-
-
-    toast.textContent =
-        message || "";
-
-
-    toast.classList.add(
-        "show"
-    );
-
-
-    clearTimeout(
-        toastTimer
-    );
-
+    clearTimeout(toastTimer);
 
     toastTimer =
         setTimeout(() => {
@@ -493,25 +245,24 @@ function showToast(message) {
             );
 
         }, 2200);
-
 }
 
 
-/* =========================================================
+/* =========================
    THEME
-========================================================= */
+========================= */
 
 function toggleDarkMode() {
 
-    const enabled =
-        document.body.classList.toggle(
-            "dark"
-        );
-
+    document.body.classList.toggle(
+        "dark"
+    );
 
     localStorage.setItem(
         "bep_nha_duyen_dark",
-        enabled
+        document.body.classList.contains(
+            "dark"
+        )
     );
 
 }
@@ -524,7 +275,6 @@ function loadTheme() {
             "bep_nha_duyen_dark"
         );
 
-
     if (dark === "true") {
 
         document.body.classList.add(
@@ -536,50 +286,30 @@ function loadTheme() {
 }
 
 
-/* =========================================================
+/* =========================
    DATE
-========================================================= */
+========================= */
 
 function setToday() {
-
-    const now = new Date();
-
 
     const input =
         document.getElementById(
             "transactionDate"
         );
 
+    if (!input) return;
 
-    if (input) {
+    const now = new Date();
 
-        const year =
-            now.getFullYear();
-
-
-        const month =
-            String(
-                now.getMonth() + 1
-            ).padStart(2, "0");
-
-
-        const day =
-            String(
-                now.getDate()
-            ).padStart(2, "0");
-
-
-        input.value =
-            `${year}-${month}-${day}`;
-
-    }
+    input.value =
+        now.toISOString()
+            .split("T")[0];
 
 
     const label =
         document.getElementById(
             "todayLabel"
         );
-
 
     if (label) {
 
@@ -591,112 +321,3 @@ function setToday() {
     }
 
 }
-
-
-/* =========================================================
-   GLOBAL FORMATTERS
-========================================================= */
-
-function formatMoney(value) {
-
-    const number =
-        Number(value) || 0;
-
-
-    return number.toLocaleString(
-        "vi-VN"
-    ) + " ₫";
-
-}
-
-
-function formatNumber(value) {
-
-    return (
-        Number(value) || 0
-    ).toLocaleString(
-        "vi-VN"
-    );
-
-}
-
-
-function formatDate(date) {
-
-    if (!date) return "";
-
-
-    const d =
-        new Date(date);
-
-
-    if (
-        Number.isNaN(
-            d.getTime()
-        )
-    ) {
-        return "";
-    }
-
-
-    return d.toLocaleDateString(
-        "vi-VN"
-    );
-
-}
-
-
-/* =========================================================
-   SAFE HTML
-========================================================= */
-
-function escapeHTML(value) {
-
-    return String(
-        value ?? ""
-    )
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-
-}
-
-
-/* =========================================================
-   ACTIVE PAGE
-========================================================= */
-
-function getCurrentPage() {
-
-    return AppState.currentPage;
-
-}
-
-
-/* =========================================================
-   BACKWARD COMPATIBILITY
-========================================================= */
-
-window.AppState = AppState;
-
-window.$ = $;
-window.$$ = $$;
-
-window.setText = setText;
-
-window.formatMoney = formatMoney;
-window.formatNumber = formatNumber;
-window.formatDate = formatDate;
-
-window.escapeHTML = escapeHTML;
-
-window.navigateTo = navigateTo;
-window.showToast = showToast;
-
-window.toggleDarkMode =
-    toggleDarkMode;
-
-window.loadTheme = loadTheme;
-window.setToday = setToday;
