@@ -4661,281 +4661,637 @@ window.applyStatisticsDatePicker =
     applyStatisticsDatePicker;
 
 /* =========================================================
-   CLICK NGÀY / THÁNG / NĂM -> MỞ LỊCH CHỌN
+   STATISTICS DATE PICKER
    ---------------------------------------------------------
-   Không cần sửa HTML
+   Chọn:
+   DAY   -> Ngày / Tháng / Năm
+   WEEK  -> Ngày / Tháng / Năm
+   MONTH -> Tháng / Năm
+
+   Không cần HTML
    Không cần CSS
 ========================================================= */
 
 (function () {
 
+    let pickerOverlay = null;
+
+
     /* =====================================================
-       TẠO INPUT PICKER TỰ ĐỘNG
+       TẠO PICKER
     ===================================================== */
 
-    function createStatisticsDatePicker() {
+    function createStatisticsPicker() {
 
-        let input =
-            document.getElementById(
-                "statisticsAutoDatePicker"
-            );
-
-        if (input) {
-            return input;
+        if (pickerOverlay) {
+            return pickerOverlay;
         }
 
-        input =
-            document.createElement("input");
+        pickerOverlay =
+            document.createElement("div");
 
-        input.id =
-            "statisticsAutoDatePicker";
+        pickerOverlay.id =
+            "statisticsDatePickerOverlay";
 
-        input.type =
-            "date";
-
-        /*
-         * Ẩn input nhưng vẫn cho phép
-         * trình duyệt mở calendar.
-         */
-
-        input.style.position = "fixed";
-        input.style.left = "-9999px";
-        input.style.top = "-9999px";
-        input.style.width = "1px";
-        input.style.height = "1px";
-        input.style.opacity = "0";
-
-        document.body.appendChild(input);
-
-        return input;
-
-    }
+        Object.assign(
+            pickerOverlay.style,
+            {
+                position: "fixed",
+                inset: "0",
+                zIndex: "999999",
+                display: "none",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "rgba(0,0,0,.45)",
+                padding: "20px",
+                boxSizing: "border-box"
+            }
+        );
 
 
-    /* =====================================================
-       MỞ DATE PICKER
-    ===================================================== */
+        const box =
+            document.createElement("div");
 
-    function openStatisticsAutoPicker() {
+        box.id =
+            "statisticsDatePickerBox";
 
-        statisticsNormalizeDate();
-
-        const current =
-            AppState.statisticsDate;
-
-        /*
-         * ================================================
-         * THÁNG
-         * ================================================
-         */
-
-        if (
-            AppState.statisticsPeriod === "month"
-        ) {
-
-            const input =
-                createStatisticsDatePicker();
-
-            /*
-             * Một số trình duyệt hỗ trợ month.
-             */
-
-            input.type = "month";
-
-            input.value =
-                current.getFullYear() +
-                "-" +
-                String(
-                    current.getMonth() + 1
-                ).padStart(2, "0");
+        Object.assign(
+            box.style,
+            {
+                width: "min(360px, 100%)",
+                background: "#fff",
+                color: "#222",
+                borderRadius: "20px",
+                padding: "20px",
+                boxSizing: "border-box",
+                boxShadow:
+                    "0 20px 60px rgba(0,0,0,.25)"
+            }
+        );
 
 
-            input.onchange =
-                function () {
+        /* =================================================
+           TIÊU ĐỀ
+        ================================================= */
 
-                    const value =
-                        input.value;
+        const title =
+            document.createElement("div");
 
-                    const match =
-                        value.match(
-                            /^(\d{4})-(\d{2})$/
-                        );
+        title.textContent =
+            "Chọn thời gian";
 
-                    if (!match) {
+        Object.assign(
+            title.style,
+            {
+                fontSize: "20px",
+                fontWeight: "800",
+                marginBottom: "18px",
+                textAlign: "center"
+            }
+        );
+
+        box.appendChild(title);
+
+
+        /* =================================================
+           CONTAINER
+        ================================================= */
+
+        const fields =
+            document.createElement("div");
+
+        Object.assign(
+            fields.style,
+            {
+                display: "flex",
+                flexDirection: "column",
+                gap: "12px"
+            }
+        );
+
+        box.appendChild(fields);
+
+
+        /* =================================================
+           NGÀY
+        ================================================= */
+
+        const dayGroup =
+            createPickerField(
+                "Ngày"
+            );
+
+        fields.appendChild(
+            dayGroup.wrapper
+        );
+
+
+        /* =================================================
+           THÁNG
+        ================================================= */
+
+        const monthGroup =
+            createPickerField(
+                "Tháng"
+            );
+
+        fields.appendChild(
+            monthGroup.wrapper
+        );
+
+
+        /* =================================================
+           NĂM
+        ================================================= */
+
+        const yearGroup =
+            createPickerField(
+                "Năm"
+            );
+
+        fields.appendChild(
+            yearGroup.wrapper
+        );
+
+
+        /* =================================================
+           BUTTON
+        ================================================= */
+
+        const buttons =
+            document.createElement("div");
+
+        Object.assign(
+            buttons.style,
+            {
+                display: "flex",
+                gap: "10px",
+                marginTop: "20px"
+            }
+        );
+
+
+        const cancelButton =
+            document.createElement("button");
+
+        cancelButton.type =
+            "button";
+
+        cancelButton.textContent =
+            "Hủy";
+
+        Object.assign(
+            cancelButton.style,
+            {
+                flex: "1",
+                padding: "12px",
+                border: "0",
+                borderRadius: "12px",
+                background: "#eee",
+                cursor: "pointer",
+                fontWeight: "700"
+            }
+        );
+
+
+        const confirmButton =
+            document.createElement("button");
+
+        confirmButton.type =
+            "button";
+
+        confirmButton.textContent =
+            "Chọn";
+
+        Object.assign(
+            confirmButton.style,
+            {
+                flex: "1",
+                padding: "12px",
+                border: "0",
+                borderRadius: "12px",
+                background: "#2563eb",
+                color: "#fff",
+                cursor: "pointer",
+                fontWeight: "700"
+            }
+        );
+
+
+        buttons.appendChild(
+            cancelButton
+        );
+
+        buttons.appendChild(
+            confirmButton
+        );
+
+        box.appendChild(buttons);
+
+
+        pickerOverlay.appendChild(box);
+
+        document.body.appendChild(
+            pickerOverlay
+        );
+
+
+        /* =================================================
+           HỦY
+        ================================================= */
+
+        cancelButton.onclick =
+            function () {
+
+                closeStatisticsPicker();
+
+            };
+
+
+        /* =================================================
+           CLICK NỀN -> ĐÓNG
+        ================================================= */
+
+        pickerOverlay.addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target ===
+                    pickerOverlay
+                ) {
+
+                    closeStatisticsPicker();
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           XÁC NHẬN
+        ================================================= */
+
+        confirmButton.onclick =
+            function () {
+
+                const day =
+                    Number(
+                        dayGroup.input.value
+                    );
+
+                const month =
+                    Number(
+                        monthGroup.input.value
+                    );
+
+                const year =
+                    Number(
+                        yearGroup.input.value
+                    );
+
+
+                if (
+                    AppState.statisticsPeriod ===
+                    "month"
+                ) {
+
+                    /*
+                     * Tháng chỉ cần tháng + năm.
+                     */
+
+                    if (
+                        !year ||
+                        !month
+                    ) {
                         return;
                     }
 
-                    const year =
-                        Number(match[1]);
-
-                    const month =
-                        Number(match[2]) - 1;
-
-                    /*
-                     * Luôn ngày 1.
-                     */
 
                     AppState.statisticsDate =
                         statisticsCreateLocalDate(
                             year,
-                            month,
+                            month - 1,
                             1
                         );
 
-                    renderStatistics();
-
-                };
-
-
-            openNativePicker(input);
-
-            return;
-
-        }
-
-
-        /* ================================================
-           NGÀY / TUẦN
-        ================================================ */
-
-        const input =
-            createStatisticsDatePicker();
-
-        input.type = "date";
-
-        input.value =
-            statisticsDateToString(
-                current
-            );
-
-
-        input.onchange =
-            function () {
-
-                const selected =
-                    statisticsStringToDate(
-                        input.value
-                    );
-
-                if (!selected) {
-                    return;
                 }
 
-                /*
-                 * DAY:
-                 * Chọn đúng ngày.
-                 */
+                else {
 
-                if (
-                    AppState.statisticsPeriod === "day"
-                ) {
+                    /*
+                     * Ngày + tháng + năm.
+                     */
 
-                    AppState.statisticsDate =
+                    if (
+                        !day ||
+                        !month ||
+                        !year
+                    ) {
+                        return;
+                    }
+
+
+                    /*
+                     * Kiểm tra ngày hợp lệ.
+                     *
+                     * Ví dụ:
+                     * 31/02 -> không cho chọn.
+                     */
+
+                    const testDate =
                         statisticsCreateLocalDate(
-                            selected.getFullYear(),
-                            selected.getMonth(),
-                            selected.getDate()
+                            year,
+                            month - 1,
+                            day
                         );
 
-                }
 
-                /*
-                 * WEEK:
-                 * Chọn ngày bất kỳ trong tuần.
-                 * getStatisticsRange() tự tính
-                 * Thứ 2 -> Chủ nhật.
-                 */
+                    if (
+                        testDate.getFullYear() !==
+                            year ||
+                        testDate.getMonth() !==
+                            month - 1 ||
+                        testDate.getDate() !==
+                            day
+                    ) {
 
-                else if (
-                    AppState.statisticsPeriod === "week"
-                ) {
-
-                    AppState.statisticsDate =
-                        statisticsCreateLocalDate(
-                            selected.getFullYear(),
-                            selected.getMonth(),
-                            selected.getDate()
+                        alert(
+                            "Ngày không hợp lệ."
                         );
 
+                        return;
+
+                    }
+
+
+                    AppState.statisticsDate =
+                        testDate;
+
                 }
+
+
+                closeStatisticsPicker();
 
                 renderStatistics();
 
             };
 
 
-        openNativePicker(input);
+        return pickerOverlay;
 
     }
 
 
     /* =====================================================
-       MỞ CALENDAR NATIVE
+       TẠO FIELD
     ===================================================== */
 
-    function openNativePicker(input) {
+    function createPickerField(
+        labelText
+    ) {
 
-        try {
+        const wrapper =
+            document.createElement("div");
 
-            /*
-             * Chrome / Edge / Android mới
-             */
-
-            if (
-                typeof input.showPicker === "function"
-            ) {
-
-                input.showPicker();
-
-                return;
-
+        Object.assign(
+            wrapper.style,
+            {
+                display: "flex",
+                flexDirection: "column",
+                gap: "5px"
             }
+        );
 
-        } catch (error) {}
+
+        const label =
+            document.createElement("label");
+
+        label.textContent =
+            labelText;
+
+        Object.assign(
+            label.style,
+            {
+                fontSize: "13px",
+                fontWeight: "700",
+                color: "#666"
+            }
+        );
+
+
+        const input =
+            document.createElement("input");
+
+        input.type =
+            "number";
+
+        input.inputMode =
+            "numeric";
+
+        input.placeholder =
+            labelText;
+
+
+        Object.assign(
+            input.style,
+            {
+                width: "100%",
+                boxSizing: "border-box",
+                padding: "12px",
+                border: "1px solid #ddd",
+                borderRadius: "12px",
+                fontSize: "17px",
+                fontWeight: "700",
+                outline: "none"
+            }
+        );
+
+
+        wrapper.appendChild(
+            label
+        );
+
+        wrapper.appendChild(
+            input
+        );
+
+
+        return {
+            wrapper,
+            input
+        };
+
+    }
+
+
+    /* =====================================================
+       MỞ PICKER
+    ===================================================== */
+
+    function openStatisticsPicker() {
+
+        statisticsNormalizeDate();
+
+        const overlay =
+            createStatisticsPicker();
+
+        const box =
+            document.getElementById(
+                "statisticsDatePickerBox"
+            );
+
+        if (!box) {
+            return;
+        }
+
 
         /*
-         * Fallback
+         * Lấy toàn bộ input
          */
 
-        input.focus();
+        const inputs =
+            box.querySelectorAll(
+                "input"
+            );
 
-        input.click();
+
+        const dayInput =
+            inputs[0];
+
+        const monthInput =
+            inputs[1];
+
+        const yearInput =
+            inputs[2];
+
+
+        const current =
+            AppState.statisticsDate;
+
+
+        /* =================================================
+           MONTH
+        ================================================= */
+
+        if (
+            AppState.statisticsPeriod ===
+            "month"
+        ) {
+
+            dayInput.parentElement.style.display =
+                "none";
+
+            monthInput.value =
+                current.getMonth() + 1;
+
+            yearInput.value =
+                current.getFullYear();
+
+        }
+
+
+        /* =================================================
+           DAY / WEEK
+        ================================================= */
+
+        else {
+
+            dayInput.parentElement.style.display =
+                "flex";
+
+            dayInput.value =
+                current.getDate();
+
+            monthInput.value =
+                current.getMonth() + 1;
+
+            yearInput.value =
+                current.getFullYear();
+
+        }
+
+
+        overlay.style.display =
+            "flex";
+
+
+        /*
+         * Focus ngày đầu tiên.
+         */
+
+        if (
+            AppState.statisticsPeriod !==
+            "month"
+        ) {
+
+            dayInput.focus();
+
+        }
+
+        else {
+
+            monthInput.focus();
+
+        }
 
     }
 
 
     /* =====================================================
-       CLICK VÀO LABEL
-       -----------------------------------------------------
-       Không cần sửa HTML
+       ĐÓNG PICKER
     ===================================================== */
 
-    function bindStatisticsDateClick() {
+    function closeStatisticsPicker() {
+
+        if (!pickerOverlay) {
+            return;
+        }
+
+        pickerOverlay.style.display =
+            "none";
+
+    }
+
+
+    /* =====================================================
+       BIND CLICK VÀO NGÀY THÁNG NĂM
+    ===================================================== */
+
+    function bindStatisticsDatePicker() {
 
         const ids = [
             "statisticsPeriodLabel",
             "statisticsDateLabel"
         ];
 
+
         ids.forEach(
             id => {
 
                 const element =
-                    document.getElementById(id);
+                    document.getElementById(
+                        id
+                    );
 
                 if (!element) {
                     return;
                 }
 
+
                 if (
                     element.dataset
-                        .statisticsDatePickerBound === "true"
+                        .statisticsPickerBound ===
+                    "true"
                 ) {
                     return;
                 }
 
+
                 element.dataset
-                    .statisticsDatePickerBound = "true";
+                    .statisticsPickerBound =
+                    "true";
 
 
                 element.style.cursor =
@@ -4948,7 +5304,7 @@ window.applyStatisticsDatePicker =
 
                         event.preventDefault();
 
-                        openStatisticsAutoPicker();
+                        openStatisticsPicker();
 
                     }
                 );
@@ -4967,43 +5323,45 @@ window.applyStatisticsDatePicker =
         "DOMContentLoaded",
         function () {
 
-            createStatisticsDatePicker();
+            createStatisticsPicker();
 
-            bindStatisticsDateClick();
+            bindStatisticsDatePicker();
 
         }
     );
 
 
     /* =====================================================
-       SAU MỖI LẦN RENDER
+       SAU KHI RENDER
        -----------------------------------------------------
-       Vì HTML cũ có thể render lại label.
+       Đảm bảo nếu HTML thay đổi thì vẫn bind được.
     ===================================================== */
 
-    const oldRenderStatistics =
+    const oldRender =
         window.renderStatistics;
 
 
     if (
-        typeof oldRenderStatistics === "function"
+        typeof oldRender ===
+        "function"
     ) {
 
         window.renderStatistics =
             function () {
 
-                oldRenderStatistics.apply(
+                oldRender.apply(
                     this,
                     arguments
                 );
 
                 setTimeout(
-                    bindStatisticsDateClick,
+                    bindStatisticsDatePicker,
                     0
                 );
 
             };
 
     }
+
 
 })();
