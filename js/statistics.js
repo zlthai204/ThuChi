@@ -442,29 +442,603 @@ function statisticsSetTextCompat(id, value) {
    DISH COST
 ========================================================= */
 
+/* =========================================================
+   DISH COST
+   FIX: LẤY VỐN TỪ DANH MỤC MÓN
+========================================================= */
+
 function statisticsGetDishCost(transaction) {
     if (!transaction) {
         return 0;
     }
 
+    /*
+     * -----------------------------------------------------
+     * 1. ƯU TIÊN HÀM GỐC CỦA APP NẾU ĐÃ CÓ
+     * -----------------------------------------------------
+     */
     if (
         typeof getTransactionDishCost ===
         "function"
     ) {
         try {
-            return statisticsNumber(
-                getTransactionDishCost(
-                    transaction
-                )
-            );
-        } catch (error) {}
+            const result =
+                statisticsNumber(
+                    getTransactionDishCost(
+                        transaction
+                    )
+                );
+
+            if (result > 0) {
+                return result;
+            }
+        } catch (error) { }
     }
 
-    return statisticsNumber(
-        transaction.cost ||
-        transaction.dish_cost ||
-        transaction.food_cost ||
-        0
+
+    /*
+     * -----------------------------------------------------
+     * 2. NẾU TRANSACTION ĐÃ LƯU SẴN VỐN
+     * -----------------------------------------------------
+     */
+    const directCostFields = [
+        "cost",
+        "dish_cost",
+        "food_cost",
+        "capital",
+        "capital_cost",
+        "cost_price",
+        "unit_cost",
+        "gia_von",
+        "von",
+        "von_mon",
+        "von_mon_an"
+    ];
+
+    for (
+        const field of directCostFields
+    ) {
+        if (
+            transaction[field] !==
+            undefined &&
+            transaction[field] !== null &&
+            transaction[field] !== ""
+        ) {
+            const value =
+                statisticsNumber(
+                    transaction[field]
+                );
+
+            if (value > 0) {
+                /*
+                 * Nếu đây là vốn đơn vị và transaction
+                 * có số lượng thì nhân số lượng.
+                 *
+                 * Nếu transaction đã lưu tổng vốn thì
+                 * các field tổng bên dưới sẽ được ưu tiên.
+                 */
+                const totalFields = [
+                    "total_cost",
+                    "totalCost",
+                    "total_capital",
+                    "totalCapital",
+                    "total_food_cost",
+                    "totalFoodCost",
+                    "tong_von",
+                    "tong_chi_phi"
+                ];
+
+                const hasTotalCost =
+                    totalFields.some(
+                        key =>
+                            transaction[key] !==
+                            undefined &&
+                            transaction[key] !==
+                            null &&
+                            transaction[key] !== ""
+                    );
+
+                if (hasTotalCost) {
+                    for (
+                        const totalField of totalFields
+                    ) {
+                        if (
+                            transaction[
+                            totalField
+                            ] !== undefined &&
+                            transaction[
+                            totalField
+                            ] !== null &&
+                            transaction[
+                            totalField
+                            ] !== ""
+                        ) {
+                            const total =
+                                statisticsNumber(
+                                    transaction[
+                                    totalField
+                                    ]
+                                );
+
+                            if (total > 0) {
+                                return total;
+                            }
+                        }
+                    }
+                }
+
+                const quantity =
+                    statisticsGetQuantity(
+                        transaction
+                    );
+
+                /*
+                 * Chỉ nhân số lượng khi transaction
+                 * thể hiện rõ đây là vốn đơn vị.
+                 */
+                if (
+                    quantity > 1 &&
+                    (
+                        field === "unit_cost" ||
+                        field === "cost_price"
+                    )
+                ) {
+                    return value * quantity;
+                }
+
+                return value;
+            }
+        }
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * 3. LẤY MÓN TỪ DANH MỤC
+     * -----------------------------------------------------
+     *
+     * Transaction có thể lưu:
+     * - dish_id
+     * - product_id
+     * - menu_id
+     * - category_id
+     * - dish_name
+     * - name
+     *
+     * Danh mục có thể nằm trong:
+     * - AppState.dishes
+     * - AppState.menu
+     * - AppState.products
+     * - AppState.categories
+     * - AppState.items
+     */
+
+    const collections = [
+        AppState.dishes,
+        AppState.menu,
+        AppState.products,
+        AppState.categories,
+        AppState.items,
+        AppState.menuItems
+    ];
+
+    const transactionId =
+        statisticsGetFirstValue(
+            transaction,
+            [
+                "dish_id",
+                "dishId",
+                "product_id",
+                "productId",
+                "menu_id",
+                "menuId",
+                "item_id",
+                "itemId",
+                "category_id",
+                "categoryId"
+            ]
+        );
+
+    const transactionName =
+        statisticsGetFirstValue(
+            transaction,
+            [
+                "dish_name",
+                "dishName",
+                "product_name",
+                "productName",
+                "menu_name",
+                "menuName",
+                "item_name",
+                "itemName",
+                "name"
+            ]
+        );
+
+    for (
+        const collection of collections
+    ) {
+        if (!Array.isArray(collection)) {
+            continue;
+        }
+
+        let matched = null;
+
+
+        /*
+         * Ưu tiên ID
+         */
+        if (
+            transactionId !== null &&
+            transactionId !== undefined &&
+            transactionId !== ""
+        ) {
+            matched =
+                collection.find(item => {
+                    if (!item) {
+                        return false;
+                    }
+
+                    const ids = [
+                        item.id,
+                        item.dish_id,
+                        item.dishId,
+                        item.product_id,
+                        item.productId,
+                        item.menu_id,
+                        item.menuId,
+                        item.item_id,
+                        item.itemId,
+                        item.category_id,
+                        item.categoryId
+                    ];
+
+                    return ids.some(
+                        id =>
+                            String(id) ===
+                            String(transactionId)
+                    );
+                });
+        }
+
+
+        /*
+         * Nếu không có ID thì tìm theo tên món
+         */
+        if (
+            !matched &&
+            transactionName
+        ) {
+            const normalizedName =
+                statisticsNormalizeDishName(
+                    transactionName
+                );
+
+            matched =
+                collection.find(item => {
+                    if (!item) {
+                        return false;
+                    }
+
+                    const names = [
+                        item.name,
+                        item.dish_name,
+                        item.dishName,
+                        item.product_name,
+                        item.productName,
+                        item.menu_name,
+                        item.menuName,
+                        item.item_name,
+                        item.itemName
+                    ];
+
+                    return names.some(
+                        name =>
+                            name &&
+                            statisticsNormalizeDishName(
+                                name
+                            ) ===
+                            normalizedName
+                    );
+                });
+        }
+
+
+        if (matched) {
+            const categoryCost =
+                statisticsGetCostFromDish(
+                    matched,
+                    transaction
+                );
+
+            if (categoryCost > 0) {
+                return categoryCost;
+            }
+        }
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * 4. THỬ TÌM QUA HÀM LẤY DANH MỤC CỦA APP
+     * -----------------------------------------------------
+     */
+    const possibleFunctions = [
+        "getDishById",
+        "getProductById",
+        "getMenuItemById",
+        "findDish",
+        "findProduct",
+        "findMenuItem"
+    ];
+
+    for (
+        const functionName of
+        possibleFunctions
+    ) {
+        if (
+            typeof window[
+            functionName
+            ] !== "function"
+        ) {
+            continue;
+        }
+
+        try {
+            let item = null;
+
+            if (
+                transactionId !==
+                null &&
+                transactionId !==
+                undefined &&
+                transactionId !== ""
+            ) {
+                item =
+                    window[
+                        functionName
+                    ](
+                        transactionId
+                    );
+            }
+
+            if (
+                !item &&
+                transactionName
+            ) {
+                item =
+                    window[
+                        functionName
+                    ](
+                        transactionName
+                    );
+            }
+
+            if (item) {
+                const cost =
+                    statisticsGetCostFromDish(
+                        item,
+                        transaction
+                    );
+
+                if (cost > 0) {
+                    return cost;
+                }
+            }
+        } catch (error) { }
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * 5. KHÔNG TÌM ĐƯỢC VỐN
+     * -----------------------------------------------------
+     */
+    return 0;
+}
+
+
+/* =========================================================
+   COST HELPERS
+========================================================= */
+
+function statisticsGetFirstValue(
+    object,
+    fields
+) {
+    if (!object) {
+        return null;
+    }
+
+    for (
+        const field of fields
+    ) {
+        if (
+            object[field] !==
+            undefined &&
+            object[field] !== null &&
+            object[field] !== ""
+        ) {
+            return object[field];
+        }
+    }
+
+    return null;
+}
+
+
+function statisticsNormalizeDishName(
+    value
+) {
+    return String(
+        value || ""
+    )
+        .trim()
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .replace(
+            /\s+/g,
+            " "
+        );
+}
+
+
+function statisticsGetQuantity(
+    transaction
+) {
+    if (!transaction) {
+        return 1;
+    }
+
+    const fields = [
+        "quantity",
+        "qty",
+        "count",
+        "so_luong",
+        "soLuong"
+    ];
+
+    for (
+        const field of fields
+    ) {
+        if (
+            transaction[field] !==
+            undefined &&
+            transaction[field] !== null &&
+            transaction[field] !== ""
+        ) {
+            const quantity =
+                statisticsNumber(
+                    transaction[field]
+                );
+
+            if (quantity > 0) {
+                return quantity;
+            }
+        }
+    }
+
+    return 1;
+}
+
+
+function statisticsGetCostFromDish(
+    dish,
+    transaction
+) {
+    if (!dish) {
+        return 0;
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * TỔNG VỐN ĐÃ TÍNH SẴN
+     * -----------------------------------------------------
+     */
+    const totalCostFields = [
+        "total_cost",
+        "totalCost",
+        "total_capital",
+        "totalCapital",
+        "total_food_cost",
+        "totalFoodCost",
+        "tong_von",
+        "tongVon",
+        "tong_chi_phi",
+        "tongChiPhi"
+    ];
+
+    for (
+        const field of totalCostFields
+    ) {
+        if (
+            dish[field] !==
+            undefined &&
+            dish[field] !== null &&
+            dish[field] !== ""
+        ) {
+            const value =
+                statisticsNumber(
+                    dish[field]
+                );
+
+            if (value > 0) {
+                return value;
+            }
+        }
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * VỐN ĐƠN VỊ
+     * -----------------------------------------------------
+     */
+    const unitCostFields = [
+        "cost",
+        "dish_cost",
+        "food_cost",
+        "capital",
+        "capital_cost",
+        "cost_price",
+        "unit_cost",
+        "gia_von",
+        "giaVon",
+        "von",
+        "von_mon",
+        "vonMon",
+        "foodCost",
+        "capitalPrice"
+    ];
+
+    let unitCost = 0;
+
+    for (
+        const field of unitCostFields
+    ) {
+        if (
+            dish[field] !==
+            undefined &&
+            dish[field] !== null &&
+            dish[field] !== ""
+        ) {
+            unitCost =
+                statisticsNumber(
+                    dish[field]
+                );
+
+            if (unitCost > 0) {
+                break;
+            }
+        }
+    }
+
+    if (unitCost <= 0) {
+        return 0;
+    }
+
+
+    /*
+     * -----------------------------------------------------
+     * NHÂN SỐ LƯỢNG
+     * -----------------------------------------------------
+     */
+    const quantity =
+        statisticsGetQuantity(
+            transaction
+        );
+
+    return (
+        unitCost *
+        Math.max(
+            quantity,
+            1
+        )
     );
 }
 
