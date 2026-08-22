@@ -4041,4 +4041,4 @@ window.closeStatisticsDatePicker =
     closeStatisticsDatePicker; 
  
 window.applyStatisticsDatePicker = 
-    applyStatisticsDatePicker; ,
+    applyStatisticsDatePicker;
