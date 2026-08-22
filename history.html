@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+
+    <meta name="theme-color" content="#f5f7fb">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <title>Bếp Nhà Duyên - Lịch sử</title>
+
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/history.css">
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- HEADER -->
+
+    <header class="header">
+
+        <div class="header-left">
+
+            <div class="brand-subtitle">
+                QUẢN LÝ BÁN HÀNG
+            </div>
+
+            <h1>
+                Bếp Nhà Duyên
+            </h1>
+
+        </div>
+
+
+        <button
+            type="button"
+            class="header-theme-button"
+            onclick="toggleDarkMode()"
+            aria-label="Đổi giao diện">
+
+            🌙
+
+        </button>
+
+    </header>
+
+
+
+    <!-- HISTORY -->
+
+    <main id="historyPage" class="page active-page">
+
+        <section class="card">
+
+            <div class="section-heading">
+
+                <div>
+
+                    <h2>
+                        Lịch sử giao dịch
+                    </h2>
+
+                    <small id="historyCount">
+                        0 giao dịch
+                    </small>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- SEARCH -->
+
+            <input
+                id="historySearch"
+                class="search-input"
+                type="search"
+                autocomplete="off"
+                placeholder="🔎 Tìm giao dịch...">
+
+
+
+            <!-- FILTER -->
+
+            <div class="history-filter-grid">
+
+
+                <select id="historyTypeFilter">
+
+                    <option value="all">
+                        Tất cả
+                    </option>
+
+                    <option value="thu">
+                        💚 Thu
+                    </option>
+
+                    <option value="chi">
+                        ❤️ Chi
+                    </option>
+
+                </select>
+
+
+                <select id="historySourceFilter">
+
+                    <option value="all">
+                        Tất cả nguồn
+                    </option>
+
+                    <option value="ShopeeFood">
+                        ShopeeFood
+                    </option>
+
+                    <option value="GrabFood">
+                        GrabFood
+                    </option>
+
+                    <option value="Ngoài sàn">
+                        Ngoài sàn
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div id="historyList"></div>
+
+        </section>
+
+    </main>
+
+
+
+    <!-- NAV -->
+
+    <nav class="bottom-nav">
+
+        <button
+            type="button"
+            class="nav-button"
+            onclick="navigateTo('home')">
+
+            <span>🏠</span>
+            <small>Trang chủ</small>
+
+        </button>
+
+
+        <button
+            type="button"
+            class="nav-button"
+            onclick="navigateTo('statistics')">
+
+            <span>📊</span>
+            <small>Thống kê</small>
+
+        </button>
+
+
+        <button
+            type="button"
+            class="nav-button active"
+            onclick="navigateTo('history')">
+
+            <span>📋</span>
+            <small>Lịch sử</small>
+
+        </button>
+
+
+        <button
+            type="button"
+            class="nav-button"
+            onclick="navigateTo('restaurant')">
+
+            <span>🍜</span>
+            <small>Quán</small>
+
+        </button>
+
+
+        <button
+            type="button"
+            class="nav-button"
+            onclick="navigateTo('cod')">
+
+            <span>💰</span>
+            <small>COD</small>
+
+        </button>
+
+    </nav>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="./js/supabase.js"></script>
+<script src="./js/app.js"></script>
+<script src="./js/history.js"></script>
+
+</body>
+
+</html>
