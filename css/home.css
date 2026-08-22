@@ -1648,4 +1648,664 @@ body.dark #homePage .orange-card .orange-text {
             none !important;
     }
 
+   /* =========================================================
+   NÂNG CẤP FORM THÊM GIAO DỊCH
+   MOBILE PREMIUM
+========================================================= */
+
+#homePage .transaction-card {
+    padding: 20px;
+}
+
+/* ---------------------------------------------------------
+   HEADER
+--------------------------------------------------------- */
+
+#homePage .transaction-card .section-heading {
+    margin-bottom: 20px;
+}
+
+#homePage .transaction-card .section-heading h2 {
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: -0.4px;
+}
+
+#homePage .transaction-card .section-heading small {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #98a2b3;
+}
+
+
+/* ---------------------------------------------------------
+   THU / CHI
+--------------------------------------------------------- */
+
+#homePage .transaction-type {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+
+    gap: 8px !important;
+
+    padding: 5px !important;
+    margin: 0 0 24px !important;
+
+    border: 1px solid #e5e7eb !important;
+    border-radius: 18px !important;
+
+    background: #f4f6f8 !important;
+}
+
+#homePage .transaction-type .type-button {
+    min-height: 55px !important;
+
+    border-radius: 14px !important;
+
+    font-size: 16px !important;
+    font-weight: 900 !important;
+
+    gap: 7px;
+
+    transition:
+        all .18s ease !important;
+}
+
+#homePage .transaction-type .type-button span {
+    font-size: 18px;
+}
+
+
+/* THU */
+
+#homePage .transaction-type #incomeTypeButton.active {
+    background:
+        linear-gradient(
+            135deg,
+            #059669,
+            #10b981
+        ) !important;
+
+    color: #fff !important;
+
+    box-shadow:
+        0 7px 18px rgba(16,185,129,.22) !important;
+}
+
+
+/* CHI */
+
+#homePage .transaction-type #expenseTypeButton.active {
+    background:
+        linear-gradient(
+            135deg,
+            #e11d48,
+            #ef4444
+        ) !important;
+
+    color: #fff !important;
+
+    box-shadow:
+        0 7px 18px rgba(239,68,68,.20) !important;
+}
+
+
+/* ---------------------------------------------------------
+   LABEL
+--------------------------------------------------------- */
+
+#homePage .field-label {
+    margin:
+        19px 0 8px;
+
+    font-size: 10px;
+    font-weight: 900;
+
+    letter-spacing: .8px;
+
+    color: #667085;
+}
+
+
+/* ---------------------------------------------------------
+   INPUT / SELECT
+--------------------------------------------------------- */
+
+#homePage input,
+#homePage select {
+
+    min-height: 50px;
+
+    padding:
+        0 14px;
+
+    border:
+        1px solid #dfe4ea;
+
+    border-radius: 14px;
+
+    background:
+        #ffffff;
+
+    color:
+        #17202f;
+
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+
+    box-shadow:
+        0 2px 5px rgba(15,23,42,.025);
+
+    transition:
+        border .2s ease,
+        box-shadow .2s ease,
+        transform .15s ease;
+}
+
+#homePage input:focus,
+#homePage select:focus {
+
+    border-color:
+        #10b981;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(16,185,129,.09);
+
+}
+
+
+/* ---------------------------------------------------------
+   DANH MỤC + MÓN
+--------------------------------------------------------- */
+
+#homePage #transactionCategory,
+#homePage #transactionDish {
+
+    appearance: auto;
+
+    background-color:
+        #f8fafc;
+}
+
+#homePage #transactionCategory:focus,
+#homePage #transactionDish:focus {
+
+    background:
+        #ffffff;
+}
+
+
+/* ---------------------------------------------------------
+   TÊN KHÁC
+--------------------------------------------------------- */
+
+#homePage #transactionName {
+
+    background:
+        #ffffff;
+}
+
+#homePage #transactionName::placeholder {
+    color: #a7afbb;
+}
+
+
+/* ---------------------------------------------------------
+   NGUỒN ĐƠN
+--------------------------------------------------------- */
+
+#homePage #orderSourceBox {
+
+    margin-top: 21px;
+
+    padding:
+        15px;
+
+    border:
+        1px solid #edf0f3;
+
+    border-radius:
+        17px;
+
+    background:
+        #f8fafc;
+}
+
+#homePage #orderSourceBox .field-label {
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+#homePage .source-grid {
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 7px;
+}
+
+#homePage .source-button {
+
+    min-height:
+        48px;
+
+    padding:
+        6px 4px;
+
+    border:
+        1px solid #e0e5eb;
+
+    border-radius:
+        12px;
+
+    background:
+        #ffffff;
+
+    font-size:
+        10px;
+
+    font-weight:
+        800;
+}
+
+
+/* SHOPEE */
+
+#homePage #sourceShopee.active {
+
+    background:
+        #fff7ed;
+
+    border-color:
+        #fb923c;
+
+    color:
+        #ea580c;
+
+}
+
+
+/* GRAB */
+
+#homePage #sourceGrab.active {
+
+    background:
+        #f0fdf4;
+
+    border-color:
+        #4ade80;
+
+    color:
+        #15803d;
+
+}
+
+
+/* NGOÀI SÀN */
+
+#homePage #sourceOutside.active {
+
+    background:
+        #eff6ff;
+
+    border-color:
+        #60a5fa;
+
+    color:
+        #2563eb;
+
+}
+
+
+/* ---------------------------------------------------------
+   KHẤU TRỪ APP
+--------------------------------------------------------- */
+
+#homePage #appFeeBox {
+
+    margin-top:
+        18px;
+
+    padding:
+        15px;
+
+    border:
+        1px solid #fed7aa;
+
+    border-radius:
+        17px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fffaf5,
+            #fff7ed
+        );
+}
+
+#homePage #appFeeBox .field-label {
+
+    margin-top:
+        0;
+
+    color:
+        #c2410c;
+}
+
+#homePage #appFee {
+
+    background:
+        #ffffff;
+
+    border-color:
+        #fed7aa;
+}
+
+#homePage #appFee:focus {
+
+    border-color:
+        #f97316;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(249,115,22,.10);
+}
+
+#homePage #appFeeBox .field-help {
+
+    margin-top:
+        7px;
+
+    font-size:
+        11px;
+
+    color:
+        #9a6b4a;
+}
+
+
+/* ---------------------------------------------------------
+   SỐ TIỀN
+--------------------------------------------------------- */
+
+#homePage .amount-input {
+
+    min-height:
+        70px;
+
+    margin-top:
+        2px;
+
+    padding:
+        0 16px;
+
+    border:
+        2px solid #dce3e9;
+
+    border-radius:
+        17px;
+
+    background:
+        #f8fafc;
+
+    font-size:
+        28px;
+
+    font-weight:
+        900;
+
+    color:
+        #111827;
+
+    text-align:
+        center;
+
+    letter-spacing:
+        -.8px;
+
+    box-shadow:
+        inset 0 1px 2px
+        rgba(15,23,42,.025);
+}
+
+#homePage .amount-input:focus {
+
+    border-color:
+        #10b981;
+
+    background:
+        #ffffff;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(16,185,129,.10);
+}
+
+
+/* ---------------------------------------------------------
+   NGÀY + GHI CHÚ
+--------------------------------------------------------- */
+
+#homePage #transactionDate {
+
+    background:
+        #f8fafc;
+
+    font-weight:
+        700;
+}
+
+#homePage #transactionNote {
+
+    background:
+        #f8fafc;
+}
+
+
+/* ---------------------------------------------------------
+   SAVE
+--------------------------------------------------------- */
+
+#homePage .primary-button {
+
+    min-height:
+        57px;
+
+    margin-top:
+        23px;
+
+    border-radius:
+        16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #047857 0%,
+            #059669 45%,
+            #10b981 100%
+        );
+
+    font-size:
+        16px;
+
+    font-weight:
+        900;
+
+    box-shadow:
+        0 10px 22px
+        rgba(5,150,105,.22);
+}
+
+#homePage .primary-button:hover {
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 13px 27px
+        rgba(5,150,105,.27);
+}
+
+
+/* ---------------------------------------------------------
+   CANCEL
+--------------------------------------------------------- */
+
+#homePage .secondary-button {
+
+    min-height:
+        48px;
+
+    margin-top:
+        10px;
+
+    border-radius:
+        14px;
+
+    font-weight:
+        800;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 480px) {
+
+    #homePage .transaction-card {
+        padding:
+            17px 15px 18px;
+    }
+
+    #homePage .transaction-card .section-heading h2 {
+        font-size:
+            19px;
+    }
+
+    #homePage .transaction-type {
+        margin-bottom:
+            21px !important;
+    }
+
+    #homePage .transaction-type .type-button {
+        min-height:
+            53px !important;
+
+        font-size:
+            15px !important;
+    }
+
+    #homePage .field-label {
+        margin-top:
+            16px;
+    }
+
+    #homePage input,
+    #homePage select {
+        min-height:
+            48px;
+
+        border-radius:
+            13px;
+
+        font-size:
+            14px;
+    }
+
+    #homePage #orderSourceBox,
+    #homePage #appFeeBox {
+        padding:
+            13px;
+    }
+
+    #homePage .source-button {
+        min-height:
+            46px;
+
+        font-size:
+            9px;
+    }
+
+    #homePage .amount-input {
+        min-height:
+            64px;
+
+        font-size:
+            25px;
+    }
+
+    #homePage .primary-button {
+        min-height:
+            55px;
+
+        margin-top:
+            20px;
+    }
+
+}
+
+
+/* =========================================================
+   DARK MODE
+========================================================= */
+
+body.dark #homePage #orderSourceBox {
+
+    background:
+        #182230;
+
+    border-color:
+        #263244;
+}
+
+body.dark #homePage #appFeeBox {
+
+    background:
+        linear-gradient(
+            135deg,
+            #241b12,
+            #2a1d0d
+        );
+
+    border-color:
+        #594319;
+}
+
+body.dark #homePage #appFeeBox .field-label {
+    color:
+        #fb923c;
+}
+
+body.dark #homePage #appFeeBox .field-help {
+    color:
+        #c08a5b;
+}
+
+body.dark #homePage #transactionCategory,
+body.dark #homePage #transactionDish,
+body.dark #homePage #transactionName,
+body.dark #homePage #transactionDate,
+body.dark #homePage #transactionNote {
+
+    background:
+        #1c2533;
+}
+
+body.dark #homePage .amount-input {
+
+    background:
+        #182230;
+
+    border-color:
+        #364152;
+
+    color:
+        #ffffff;
+}
+
 }
