@@ -1,8 +1,8 @@
 /* =========================================================
    BẾP NHÀ DUYÊN
    HOME.CSS
-   PREMIUM MOBILE UI
-   FULL VERSION
+   PREMIUM FRONTEND - MOBILE FIRST
+   NÂNG CẤP: THÊM GIAO DỊCH
 ========================================================= */
 
 
@@ -14,7 +14,7 @@
     width: 100%;
     max-width: 760px;
     margin: 0 auto;
-    padding-bottom: 110px;
+    padding-bottom: 115px;
 }
 
 
@@ -25,28 +25,27 @@
 .balance-card {
     position: relative;
     overflow: hidden;
+    isolation: isolate;
 
     width: 100%;
     box-sizing: border-box;
 
-    padding: 25px 21px 20px;
+    padding: 27px 22px 21px;
 
-    border-radius: 26px;
+    border-radius: 28px;
 
     background:
         linear-gradient(
             135deg,
             #047857 0%,
-            #059669 42%,
+            #059669 45%,
             #10b981 100%
         );
 
-    color: #ffffff;
+    color: #fff;
 
     box-shadow:
-        0 18px 38px rgba(5, 150, 105, 0.22);
-
-    isolation: isolate;
+        0 20px 45px rgba(5,150,105,.22);
 }
 
 .balance-card::before {
@@ -54,16 +53,16 @@
 
     position: absolute;
 
-    width: 220px;
-    height: 220px;
+    width: 240px;
+    height: 240px;
 
-    top: -130px;
-    right: -80px;
+    top: -145px;
+    right: -85px;
 
     border-radius: 50%;
 
     background:
-        rgba(255,255,255,0.09);
+        rgba(255,255,255,.10);
 
     pointer-events: none;
 
@@ -75,16 +74,16 @@
 
     position: absolute;
 
-    width: 180px;
-    height: 180px;
+    width: 190px;
+    height: 190px;
 
-    bottom: -125px;
-    left: -80px;
+    bottom: -130px;
+    left: -85px;
 
     border-radius: 50%;
 
     background:
-        rgba(255,255,255,0.07);
+        rgba(255,255,255,.075);
 
     pointer-events: none;
 
@@ -92,37 +91,33 @@
 }
 
 
-/* =========================================================
-   BALANCE LABEL
-========================================================= */
-
 .balance-label {
     position: relative;
 
     font-size: 11px;
-
     font-weight: 800;
-
-    letter-spacing: 1.3px;
+    letter-spacing: 1.4px;
 
     color:
-        rgba(255,255,255,0.82);
+        rgba(255,255,255,.80);
 }
+
 
 .balance-number {
     position: relative;
 
     margin-top: 7px;
 
-    font-size: clamp(30px, 8vw, 40px);
+    font-size:
+        clamp(30px, 8vw, 42px);
 
-    line-height: 1.1;
+    line-height: 1.08;
 
     font-weight: 900;
 
-    letter-spacing: -1px;
+    letter-spacing: -1.2px;
 
-    color: #ffffff;
+    color: #fff;
 
     word-break: break-word;
 }
@@ -142,7 +137,7 @@
 
     gap: 8px;
 
-    margin-top: 23px;
+    margin-top: 24px;
 }
 
 .balance-item {
@@ -152,15 +147,15 @@
 
     border:
         1px solid
-        rgba(255,255,255,0.12);
+        rgba(255,255,255,.13);
 
-    border-radius: 15px;
+    border-radius: 16px;
 
     background:
-        rgba(255,255,255,0.105);
+        rgba(255,255,255,.11);
 
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .balance-item span {
@@ -169,13 +164,12 @@
     margin-bottom: 5px;
 
     font-size: 9px;
-
     font-weight: 700;
 
-    letter-spacing: .3px;
+    letter-spacing: .35px;
 
     color:
-        rgba(255,255,255,0.72);
+        rgba(255,255,255,.70);
 }
 
 .balance-item strong {
@@ -191,12 +185,12 @@
 
     font-weight: 850;
 
-    color: #ffffff;
+    color: #fff;
 }
 
 
 /* =========================================================
-   CARD
+   GENERAL HOME CARD
 ========================================================= */
 
 #homePage .card {
@@ -206,20 +200,21 @@
 
     box-sizing: border-box;
 
-    margin-top: 17px;
+    margin-top: 18px;
 
-    padding: 20px;
+    padding: 21px;
 
     border:
-        1px solid #e9edf2;
+        1px solid #e8edf2;
 
-    border-radius: 22px;
+    border-radius: 24px;
 
-    background: #ffffff;
+    background:
+        rgba(255,255,255,.96);
 
     box-shadow:
-        0 7px 25px
-        rgba(15,23,42,0.045);
+        0 10px 30px
+        rgba(15,23,42,.055);
 }
 
 
@@ -236,7 +231,7 @@
 
     gap: 12px;
 
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
 #homePage .section-heading h2 {
@@ -248,15 +243,15 @@
 
     line-height: 1.25;
 
-    font-weight: 850;
+    font-weight: 900;
 
-    letter-spacing: -.25px;
+    letter-spacing: -.3px;
 }
 
 #homePage .section-heading small {
     display: block;
 
-    margin-top: 4px;
+    margin-top: 5px;
 
     color: #98a2b3;
 
@@ -268,41 +263,138 @@
 
 /* =========================================================
    =========================================================
-   THÊM GIAO DỊCH
+   TRANSACTION CARD
+   PHẦN THÊM GIAO DỊCH - PREMIUM
    =========================================================
-   ========================================================= */
+========================================================= */
+
+#homePage .transaction-card {
+
+    padding:
+        22px 20px 21px;
+
+    border:
+        1px solid #e3e9ef;
+
+    border-radius:
+        25px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff 0%,
+            #fbfcfd 100%
+        );
+
+    box-shadow:
+        0 14px 38px
+        rgba(15,23,42,.065);
+}
 
 
 /* =========================================================
-   TRANSACTION TYPE
+   TRANSACTION HEADER
+========================================================= */
+
+#homePage .transaction-card .section-heading {
+
+    position: relative;
+
+    margin-bottom:
+        21px;
+
+    padding-bottom:
+        17px;
+
+    border-bottom:
+        1px solid #edf0f3;
+}
+
+#homePage .transaction-card .section-heading::before {
+
+    content: "";
+
+    width: 5px;
+    height: 34px;
+
+    margin-right: 11px;
+
+    border-radius: 99px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #10b981,
+            #059669
+        );
+
+    flex-shrink: 0;
+}
+
+#homePage .transaction-card .section-heading > div {
+
+    flex: 1;
+}
+
+#homePage .transaction-card .section-heading h2 {
+
+    font-size:
+        20px;
+
+    font-weight:
+        900;
+
+    color:
+        #111827;
+}
+
+#homePage .transaction-card .section-heading small {
+
+    color:
+        #8b95a5;
+
+    font-size:
+        12px;
+}
+
+
+/* =========================================================
+   THU / CHI SWITCH
 ========================================================= */
 
 #homePage .transaction-type {
+
+    position: relative;
+
     display: grid !important;
 
     grid-template-columns:
         1fr 1fr !important;
 
-    gap: 8px !important;
+    gap: 6px !important;
 
     width: 100% !important;
 
     box-sizing: border-box !important;
 
     margin:
-        0 0 24px !important;
+        0 0 23px !important;
 
     padding:
         5px !important;
 
     border:
-        1px solid #e5e7eb !important;
+        1px solid #e4e8ed !important;
 
     border-radius:
         18px !important;
 
     background:
-        #f4f6f8 !important;
+        #f1f4f7 !important;
+
+    box-shadow:
+        inset 0 1px 2px
+        rgba(15,23,42,.035) !important;
 }
 
 
@@ -311,6 +403,7 @@
 ========================================================= */
 
 #homePage .transaction-type .type-button {
+
     position: relative !important;
 
     display: flex !important;
@@ -324,10 +417,10 @@
     width: 100% !important;
 
     min-height:
-        55px !important;
+        54px !important;
 
     padding:
-        0 10px !important;
+        0 12px !important;
 
     margin:
         0 !important;
@@ -351,41 +444,36 @@
         16px !important;
 
     font-weight:
-        900 !important;
+        850 !important;
 
     cursor:
         pointer !important;
 
     transition:
-        transform .15s ease,
-        background .2s ease,
-        color .2s ease,
-        box-shadow .2s ease !important;
+        all .2s ease !important;
 
     -webkit-tap-highlight-color:
         transparent !important;
 }
 
-#homePage .transaction-type .type-button span {
-    font-size: 18px;
-}
-
 #homePage .transaction-type .type-button:hover {
+
     background:
-        #e9edf1 !important;
+        #e8edf1 !important;
 
     color:
         #374151 !important;
 }
 
 #homePage .transaction-type .type-button:active {
+
     transform:
-        scale(.965) !important;
+        scale(.97) !important;
 }
 
 
 /* =========================================================
-   THU
+   THU ACTIVE
 ========================================================= */
 
 #homePage .transaction-type #incomeTypeButton.active {
@@ -398,19 +486,19 @@
         ) !important;
 
     color:
-        #ffffff !important;
+        #fff !important;
 
     box-shadow:
-        0 7px 18px
-        rgba(16,185,129,.22),
+        0 8px 18px
+        rgba(16,185,129,.25),
 
         inset 0 1px 0
-        rgba(255,255,255,.24) !important;
+        rgba(255,255,255,.25) !important;
 }
 
 
 /* =========================================================
-   CHI
+   CHI ACTIVE
 ========================================================= */
 
 #homePage .transaction-type #expenseTypeButton.active {
@@ -423,26 +511,28 @@
         ) !important;
 
     color:
-        #ffffff !important;
+        #fff !important;
 
     box-shadow:
-        0 7px 18px
-        rgba(239,68,68,.20),
+        0 8px 18px
+        rgba(239,68,68,.24),
 
         inset 0 1px 0
-        rgba(255,255,255,.24) !important;
+        rgba(255,255,255,.25) !important;
 }
 
 
 /* =========================================================
-   FIELD LABEL
+   FORM LABEL
 ========================================================= */
 
-#homePage .field-label {
-    display: block;
+#homePage .transaction-card .field-label {
+
+    display:
+        block;
 
     margin:
-        19px 0 8px;
+        18px 0 7px;
 
     color:
         #667085;
@@ -457,28 +547,31 @@
         900;
 
     letter-spacing:
-        .8px;
+        .85px;
 }
 
 
 /* =========================================================
-   INPUT + SELECT
+   INPUT + SELECT BASE
 ========================================================= */
 
-#homePage input,
-#homePage select {
-    box-sizing: border-box;
+#homePage .transaction-card input,
+#homePage .transaction-card select {
 
-    width: 100%;
+    box-sizing:
+        border-box;
+
+    width:
+        100%;
 
     min-height:
-        50px;
+        49px;
 
     padding:
         0 14px;
 
     border:
-        1px solid #dfe4ea;
+        1px solid #dce2e8;
 
     border-radius:
         14px;
@@ -487,7 +580,7 @@
         none;
 
     background:
-        #ffffff;
+        #fff;
 
     color:
         #17202f;
@@ -501,56 +594,81 @@
     font-weight:
         600;
 
-    box-shadow:
-        0 2px 5px
-        rgba(15,23,42,.025);
-
     transition:
-        border .2s ease,
+        border-color .2s ease,
         box-shadow .2s ease,
         background .2s ease,
         transform .15s ease;
 }
 
-#homePage input::placeholder {
+#homePage .transaction-card input::placeholder {
+
     color:
-        #a3acb9;
+        #a5aebb;
+
+    font-weight:
+        500;
 }
 
-#homePage input:focus,
-#homePage select:focus {
+
+/* =========================================================
+   SELECT
+========================================================= */
+
+#homePage .transaction-card select {
+
+    appearance:
+        auto;
+
+    cursor:
+        pointer;
+}
+
+#homePage .transaction-card select:hover {
+
+    border-color:
+        #cbd3dc;
+
+    background:
+        #fcfdff;
+}
+
+
+/* =========================================================
+   INPUT FOCUS
+========================================================= */
+
+#homePage .transaction-card input:focus,
+#homePage .transaction-card select:focus {
 
     border-color:
         #10b981;
+
+    background:
+        #ffffff;
 
     box-shadow:
         0 0 0 4px
         rgba(16,185,129,.09);
 
-    background:
-        #ffffff;
+    transform:
+        translateY(-1px);
 }
 
 
 /* =========================================================
-   CATEGORY
+   CATEGORY + DISH
 ========================================================= */
 
-#homePage #transactionCategory {
-
-    background:
-        #f8fafc;
-}
-
-
-/* =========================================================
-   DISH
-========================================================= */
-
+#homePage #transactionCategory,
 #homePage #transactionDish {
 
     background:
-        #f8fafc;
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #fafcfd
+        );
 }
 
 
@@ -561,13 +679,7 @@
 #homePage #transactionName {
 
     background:
-        #ffffff;
-}
-
-#homePage #transactionName::placeholder {
-
-    color:
-        #a7afbb;
+        #fafbfd;
 }
 
 
@@ -584,7 +696,7 @@
         15px;
 
     border:
-        1px solid #edf0f3;
+        1px solid #e8edf2;
 
     border-radius:
         17px;
@@ -593,13 +705,15 @@
         #f8fafc;
 }
 
+
+/* =========================================================
+   SOURCE LABEL
+========================================================= */
+
 #homePage #orderSourceBox .field-label {
 
-    margin-top:
-        0;
-
-    margin-bottom:
-        10px;
+    margin:
+        0 0 10px;
 }
 
 
@@ -609,7 +723,8 @@
 
 #homePage .source-grid {
 
-    display: grid;
+    display:
+        grid;
 
     grid-template-columns:
         repeat(3, 1fr);
@@ -625,6 +740,9 @@
 
 #homePage .source-button {
 
+    position:
+        relative;
+
     min-width:
         0;
 
@@ -635,13 +753,13 @@
         6px 4px;
 
     border:
-        1px solid #e0e5eb;
+        1px solid #dfe5eb;
 
     border-radius:
-        12px;
+        13px;
 
     background:
-        #ffffff;
+        #fff;
 
     color:
         #667085;
@@ -653,7 +771,7 @@
         10px;
 
     line-height:
-        1.2;
+        1.25;
 
     font-weight:
         800;
@@ -664,11 +782,15 @@
     transition:
         all .18s ease;
 
-    -webkit-tap-highlight-color:
-        transparent;
+    box-shadow:
+        0 2px 5px
+        rgba(15,23,42,.025);
 }
 
 #homePage .source-button:hover {
+
+    transform:
+        translateY(-1px);
 
     background:
         #f8fafc;
@@ -682,70 +804,82 @@
 
 
 /* =========================================================
-   SHOPEEFOOD
+   SHOPEE ACTIVE
 ========================================================= */
 
 #homePage #sourceShopee.active {
 
     background:
-        #fff7ed;
+        linear-gradient(
+            135deg,
+            #fff7ed,
+            #ffedd5
+        );
 
     border-color:
-        #fb923c;
+        #fdba74;
 
     color:
         #ea580c;
 
     box-shadow:
-        0 4px 10px
-        rgba(249,115,22,.10);
+        0 5px 12px
+        rgba(249,115,22,.11);
 }
 
 
 /* =========================================================
-   GRABFOOD
+   GRAB ACTIVE
 ========================================================= */
 
 #homePage #sourceGrab.active {
 
     background:
-        #f0fdf4;
+        linear-gradient(
+            135deg,
+            #f0fdf4,
+            #dcfce7
+        );
 
     border-color:
-        #4ade80;
+        #86efac;
 
     color:
         #15803d;
 
     box-shadow:
-        0 4px 10px
+        0 5px 12px
         rgba(34,197,94,.10);
 }
 
 
 /* =========================================================
-   NGOÀI SÀN
+   OUTSIDE ACTIVE
 ========================================================= */
 
 #homePage #sourceOutside.active {
 
     background:
-        #eff6ff;
+        linear-gradient(
+            135deg,
+            #eff6ff,
+            #dbeafe
+        );
 
     border-color:
-        #60a5fa;
+        #93c5fd;
 
     color:
         #2563eb;
 
     box-shadow:
-        0 4px 10px
+        0 5px 12px
         rgba(59,130,246,.10);
 }
 
 
 /* =========================================================
-   APP FEE BOX
+   APP FEE
 ========================================================= */
 
 #homePage #appFeeBox {
@@ -757,48 +891,22 @@
         15px;
 
     border:
-        1px solid #fed7aa;
+        1px dashed #d8dee6;
 
     border-radius:
-        17px;
+        16px;
 
     background:
-        linear-gradient(
-            135deg,
-            #fffaf5,
-            #fff7ed
-        );
+        #fafbfc;
 }
 
 #homePage #appFeeBox .field-label {
 
     margin-top:
         0;
-
-    color:
-        #c2410c;
 }
 
-#homePage #appFee {
-
-    background:
-        #ffffff;
-
-    border-color:
-        #fed7aa;
-}
-
-#homePage #appFee:focus {
-
-    border-color:
-        #f97316;
-
-    box-shadow:
-        0 0 0 4px
-        rgba(249,115,22,.10);
-}
-
-#homePage #appFeeBox .field-help {
+#homePage .field-help {
 
     display:
         block;
@@ -807,7 +915,7 @@
         7px;
 
     color:
-        #9a6b4a;
+        #98a2b3;
 
     font-size:
         11px;
@@ -818,28 +926,32 @@
 
 
 /* =========================================================
-   AMOUNT
+   AMOUNT - QUAN TRỌNG NHẤT
 ========================================================= */
 
-#homePage .amount-input {
+#homePage .transaction-card .amount-input {
 
     min-height:
-        70px;
+        68px;
 
     padding:
-        0 16px;
+        0 17px;
 
     border:
-        2px solid #dce3e9;
+        2px solid #dce5e1;
 
     border-radius:
         17px;
 
     background:
-        #f8fafc;
+        linear-gradient(
+            180deg,
+            #f8fffb,
+            #f5faf7
+        );
 
     color:
-        #111827;
+        #047857;
 
     font-size:
         28px;
@@ -851,20 +963,20 @@
         center;
 
     letter-spacing:
-        -.8px;
+        -.7px;
 
     box-shadow:
         inset 0 1px 2px
         rgba(15,23,42,.025);
 }
 
-#homePage .amount-input::placeholder {
+#homePage .transaction-card .amount-input::placeholder {
 
     color:
-        #c1c7d0;
+        #b8c8c0;
 }
 
-#homePage .amount-input:focus {
+#homePage .transaction-card .amount-input:focus {
 
     background:
         #ffffff;
@@ -873,8 +985,11 @@
         #10b981;
 
     box-shadow:
-        0 0 0 4px
-        rgba(16,185,129,.10);
+        0 0 0 5px
+        rgba(16,185,129,.10),
+
+        0 8px 18px
+        rgba(16,185,129,.07);
 }
 
 
@@ -884,14 +999,24 @@
 
 #homePage #transactionDate {
 
+    min-height:
+        52px;
+
     background:
-        #f8fafc;
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #f8fafc
+        );
 
     font-weight:
         700;
 
     color:
         #374151;
+
+    cursor:
+        pointer;
 }
 
 
@@ -902,15 +1027,21 @@
 #homePage #transactionNote {
 
     background:
-        #f8fafc;
+        #fafbfd;
 }
 
 
 /* =========================================================
-   PRIMARY SAVE BUTTON
+   SAVE BUTTON
 ========================================================= */
 
-#homePage .primary-button {
+#homePage .transaction-card .primary-button {
+
+    position:
+        relative;
+
+    overflow:
+        hidden;
 
     display:
         flex;
@@ -925,13 +1056,13 @@
         100%;
 
     min-height:
-        57px;
+        56px;
 
     box-sizing:
         border-box;
 
     margin-top:
-        23px;
+        22px;
 
     padding:
         0 18px;
@@ -957,7 +1088,7 @@
         inherit;
 
     font-size:
-        16px;
+        15px;
 
     font-weight:
         900;
@@ -967,7 +1098,7 @@
 
     box-shadow:
         0 10px 22px
-        rgba(5,150,105,.22);
+        rgba(16,185,129,.23);
 
     transition:
         transform .15s ease,
@@ -975,23 +1106,68 @@
         filter .2s ease;
 }
 
-#homePage .primary-button:hover {
+#homePage .transaction-card .primary-button::before {
 
-    filter:
-        brightness(1.03);
+    content:
+        "";
 
-    box-shadow:
-        0 13px 27px
-        rgba(5,150,105,.27);
+    position:
+        absolute;
+
+    top:
+        0;
+
+    left:
+        -100%;
+
+    width:
+        70%;
+
+    height:
+        100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.18),
+            transparent
+        );
 
     transform:
-        translateY(-1px);
+        skewX(-20deg);
+
+    transition:
+        left .55s ease;
 }
 
-#homePage .primary-button:active {
+#homePage .transaction-card .primary-button:hover::before {
+
+    left:
+        140%;
+}
+
+#homePage .transaction-card .primary-button:hover {
+
+    filter:
+        brightness(1.04);
+
+    box-shadow:
+        0 13px 28px
+        rgba(16,185,129,.28);
+
+    transform:
+        translateY(-2px);
+}
+
+#homePage .transaction-card .primary-button:active {
 
     transform:
         scale(.98);
+
+    box-shadow:
+        0 6px 14px
+        rgba(16,185,129,.20);
 }
 
 
@@ -999,7 +1175,7 @@
    CANCEL EDIT
 ========================================================= */
 
-#homePage .secondary-button {
+#homePage .transaction-card .secondary-button {
 
     display:
         flex;
@@ -1014,10 +1190,10 @@
         100%;
 
     min-height:
-        48px;
+        46px;
 
     margin-top:
-        10px;
+        9px;
 
     padding:
         0 16px;
@@ -1047,11 +1223,10 @@
         pointer;
 
     transition:
-        background .2s ease,
-        border .2s ease;
+        all .2s ease;
 }
 
-#homePage .secondary-button:hover {
+#homePage .transaction-card .secondary-button:hover {
 
     background:
         #f8fafc;
@@ -1062,7 +1237,7 @@
 
 
 /* =========================================================
-   TODAY SECTION
+   TODAY
 ========================================================= */
 
 #homePage .quick-grid {
@@ -1077,11 +1252,6 @@
         10px;
 }
 
-
-/* =========================================================
-   QUICK CARD
-========================================================= */
-
 #homePage .quick-card {
 
     position:
@@ -1094,7 +1264,7 @@
         0;
 
     min-height:
-        102px;
+        105px;
 
     box-sizing:
         border-box;
@@ -1106,7 +1276,7 @@
         1px solid transparent;
 
     border-radius:
-        17px;
+        18px;
 
     display:
         flex;
@@ -1118,13 +1288,18 @@
         space-between;
 
     transition:
-        transform .2s ease;
+        transform .2s ease,
+        box-shadow .2s ease;
 }
 
 #homePage .quick-card:hover {
 
     transform:
         translateY(-2px);
+
+    box-shadow:
+        0 8px 18px
+        rgba(15,23,42,.05);
 }
 
 #homePage .quick-card span {
@@ -1174,7 +1349,7 @@
 
 
 /* =========================================================
-   QUICK CARD DECORATION
+   QUICK DECORATION
 ========================================================= */
 
 #homePage .quick-card::after {
@@ -1186,16 +1361,16 @@
         absolute;
 
     width:
-        70px;
+        75px;
 
     height:
-        70px;
+        75px;
 
     right:
-        -30px;
+        -32px;
 
     bottom:
-        -35px;
+        -37px;
 
     border-radius:
         50%;
@@ -1206,7 +1381,7 @@
 
 
 /* =========================================================
-   DOANH THU
+   GREEN
 ========================================================= */
 
 #homePage .green-card {
@@ -1236,7 +1411,7 @@
 
 
 /* =========================================================
-   CHI PHÍ
+   RED
 ========================================================= */
 
 #homePage .red-card {
@@ -1245,7 +1420,7 @@
         linear-gradient(
             135deg,
             #fff1f2,
-            #fff5f5
+            #fff7f7
         );
 
     border-color:
@@ -1266,39 +1441,10 @@
 
 
 /* =========================================================
-   LỢI NHUẬN
+   BLUE / PROFIT
 ========================================================= */
 
-#homePage .profit-card {
-
-    background:
-        linear-gradient(
-            135deg,
-            #eef2ff,
-            #eff6ff
-        );
-
-    border-color:
-        #dbeafe;
-}
-
-#homePage .profit-card::after {
-
-    background:
-        #818cf8;
-}
-
-#homePage .profit-card .profit-text {
-
-    color:
-        #4f46e5;
-}
-
-
-/* =========================================================
-   BLUE CARD
-========================================================= */
-
+#homePage .profit-card,
 #homePage .blue-card {
 
     background:
@@ -1312,12 +1458,14 @@
         #dbeafe;
 }
 
+#homePage .profit-card::after,
 #homePage .blue-card::after {
 
     background:
         #818cf8;
 }
 
+#homePage .profit-card .profit-text,
 #homePage .blue-card .blue-text {
 
     color:
@@ -1326,7 +1474,7 @@
 
 
 /* =========================================================
-   ORANGE CARD
+   ORANGE
 ========================================================= */
 
 #homePage .orange-card {
@@ -1360,42 +1508,22 @@
 ========================================================= */
 
 .green-text {
-
     color:
         #059669;
 }
 
 .red-text {
-
     color:
         #e11d48;
 }
 
 .orange-text {
-
     color:
         #ea580c;
 }
 
-.profit-text {
-
-    color:
-        #4f46e5;
-}
-
+.profit-text,
 .blue-text {
-
-    color:
-        #4f46e5;
-}
-
-
-/* =========================================================
-   PROFIT COLOR OVERRIDE
-========================================================= */
-
-#homePage .profit-card strong,
-#homePage .profit-text {
 
     color:
         #4f46e5;
@@ -1415,7 +1543,7 @@ body.dark #homePage .card {
         #263244;
 
     box-shadow:
-        0 8px 25px
+        0 10px 30px
         rgba(0,0,0,.18);
 }
 
@@ -1433,13 +1561,43 @@ body.dark #homePage .section-heading small {
 
 
 /* =========================================================
-   DARK TRANSACTION TYPE
+   DARK TRANSACTION CARD
+========================================================= */
+
+body.dark #homePage .transaction-card {
+
+    background:
+        linear-gradient(
+            180deg,
+            #111827,
+            #0f1722
+        );
+
+    border-color:
+        #293548;
+}
+
+body.dark #homePage .transaction-card .section-heading {
+
+    border-color:
+        #273244;
+}
+
+body.dark #homePage .transaction-card .section-heading h2 {
+
+    color:
+        #f9fafb;
+}
+
+
+/* =========================================================
+   DARK TYPE
 ========================================================= */
 
 body.dark #homePage .transaction-type {
 
     background:
-        #1c2533 !important;
+        #1b2431 !important;
 
     border-color:
         #303b4d !important;
@@ -1460,9 +1618,6 @@ body.dark #homePage .transaction-type .type-button:hover {
         #f9fafb !important;
 }
 
-
-/* DARK THU */
-
 body.dark #homePage .transaction-type #incomeTypeButton.active {
 
     background:
@@ -1473,11 +1628,8 @@ body.dark #homePage .transaction-type #incomeTypeButton.active {
         ) !important;
 
     color:
-        #ffffff !important;
+        #fff !important;
 }
-
-
-/* DARK CHI */
 
 body.dark #homePage .transaction-type #expenseTypeButton.active {
 
@@ -1489,7 +1641,18 @@ body.dark #homePage .transaction-type #expenseTypeButton.active {
         ) !important;
 
     color:
-        #ffffff !important;
+        #fff !important;
+}
+
+
+/* =========================================================
+   DARK LABEL
+========================================================= */
+
+body.dark #homePage .transaction-card .field-label {
+
+    color:
+        #9ca3af;
 }
 
 
@@ -1497,11 +1660,11 @@ body.dark #homePage .transaction-type #expenseTypeButton.active {
    DARK INPUT
 ========================================================= */
 
-body.dark #homePage input,
-body.dark #homePage select {
+body.dark #homePage .transaction-card input,
+body.dark #homePage .transaction-card select {
 
     background:
-        #1c2533;
+        #1a2432;
 
     border-color:
         #364152;
@@ -1510,14 +1673,14 @@ body.dark #homePage select {
         #f9fafb;
 }
 
-body.dark #homePage input::placeholder {
+body.dark #homePage .transaction-card input::placeholder {
 
     color:
         #697586;
 }
 
-body.dark #homePage input:focus,
-body.dark #homePage select:focus {
+body.dark #homePage .transaction-card input:focus,
+body.dark #homePage .transaction-card select:focus {
 
     background:
         #111827;
@@ -1530,47 +1693,6 @@ body.dark #homePage select:focus {
         rgba(16,185,129,.10);
 }
 
-body.dark #homePage #transactionCategory,
-body.dark #homePage #transactionDish {
-
-    background:
-        #1c2533;
-}
-
-body.dark #homePage #transactionName,
-body.dark #homePage #transactionDate,
-body.dark #homePage #transactionNote {
-
-    background:
-        #1c2533;
-}
-
-
-/* =========================================================
-   DARK AMOUNT
-========================================================= */
-
-body.dark #homePage .amount-input {
-
-    background:
-        #182230;
-
-    border-color:
-        #364152;
-
-    color:
-        #ffffff;
-}
-
-body.dark #homePage .amount-input:focus {
-
-    background:
-        #111827;
-
-    border-color:
-        #10b981;
-}
-
 
 /* =========================================================
    DARK SOURCE BOX
@@ -1579,10 +1701,10 @@ body.dark #homePage .amount-input:focus {
 body.dark #homePage #orderSourceBox {
 
     background:
-        #182230;
+        #151e2b;
 
     border-color:
-        #263244;
+        #2d394a;
 }
 
 body.dark #homePage .source-button {
@@ -1603,9 +1725,6 @@ body.dark #homePage .source-button:hover {
         #273244;
 }
 
-
-/* DARK SHOPEE */
-
 body.dark #homePage #sourceShopee.active {
 
     background:
@@ -1618,9 +1737,6 @@ body.dark #homePage #sourceShopee.active {
         #fb923c;
 }
 
-
-/* DARK GRAB */
-
 body.dark #homePage #sourceGrab.active {
 
     background:
@@ -1632,9 +1748,6 @@ body.dark #homePage #sourceGrab.active {
     color:
         #86efac;
 }
-
-
-/* DARK OUTSIDE */
 
 body.dark #homePage #sourceOutside.active {
 
@@ -1656,35 +1769,80 @@ body.dark #homePage #sourceOutside.active {
 body.dark #homePage #appFeeBox {
 
     background:
+        #151e2b;
+
+    border-color:
+        #364152;
+}
+
+body.dark #homePage .field-help {
+
+    color:
+        #7f8a9c;
+}
+
+
+/* =========================================================
+   DARK AMOUNT
+========================================================= */
+
+body.dark #homePage .transaction-card .amount-input {
+
+    background:
         linear-gradient(
-            135deg,
-            #241b12,
-            #2a1d0d
+            180deg,
+            #12251d,
+            #142a21
         );
 
     border-color:
-        #594319;
-}
-
-body.dark #homePage #appFeeBox .field-label {
+        #245c47;
 
     color:
-        #fb923c;
+        #34d399;
 }
 
-body.dark #homePage #appFeeBox .field-help {
+body.dark #homePage .transaction-card .amount-input::placeholder {
 
     color:
-        #c08a5b;
+        #527466;
 }
 
-body.dark #homePage #appFee {
+body.dark #homePage .transaction-card .amount-input:focus {
 
     background:
-        #1c2533;
+        #111827;
 
     border-color:
-        #594319;
+        #10b981;
+}
+
+
+/* =========================================================
+   DARK DATE
+========================================================= */
+
+body.dark #homePage #transactionDate {
+
+    background:
+        #1a2432;
+
+    color:
+        #f9fafb;
+
+    border-color:
+        #364152;
+}
+
+
+/* =========================================================
+   DARK NOTE
+========================================================= */
+
+body.dark #homePage #transactionNote {
+
+    background:
+        #1a2432;
 }
 
 
@@ -1692,7 +1850,7 @@ body.dark #homePage #appFee {
    DARK SECONDARY
 ========================================================= */
 
-body.dark #homePage .secondary-button {
+body.dark #homePage .transaction-card .secondary-button {
 
     background:
         #1c2533;
@@ -1704,7 +1862,7 @@ body.dark #homePage .secondary-button {
         #d1d5db;
 }
 
-body.dark #homePage .secondary-button:hover {
+body.dark #homePage .transaction-card .secondary-button:hover {
 
     background:
         #273244;
@@ -1741,11 +1899,6 @@ body.dark #homePage .red-card {
         #54202c;
 }
 
-
-/* =========================================================
-   DARK PROFIT
-========================================================= */
-
 body.dark #homePage .profit-card,
 body.dark #homePage .blue-card {
 
@@ -1759,27 +1912,6 @@ body.dark #homePage .blue-card {
     border-color:
         #29376b;
 }
-
-body.dark #homePage .profit-card::after,
-body.dark #homePage .blue-card::after {
-
-    background:
-        #6366f1;
-}
-
-body.dark #homePage .profit-card .profit-text,
-body.dark #homePage .blue-card .blue-text,
-body.dark #homePage .profit-text,
-body.dark #homePage .blue-text {
-
-    color:
-        #818cf8;
-}
-
-
-/* =========================================================
-   DARK ORANGE
-========================================================= */
 
 body.dark #homePage .orange-card {
 
@@ -1818,6 +1950,13 @@ body.dark #homePage .orange-card .orange-text {
         #fb923c;
 }
 
+body.dark #homePage .profit-card .profit-text,
+body.dark #homePage .blue-card .blue-text {
+
+    color:
+        #818cf8;
+}
+
 
 /* =========================================================
    TABLET
@@ -1828,7 +1967,7 @@ body.dark #homePage .orange-card .orange-text {
     #homePage {
 
         padding-bottom:
-            120px;
+            125px;
     }
 
     .balance-card {
@@ -1840,19 +1979,19 @@ body.dark #homePage .orange-card .orange-text {
     .balance-number {
 
         font-size:
-            40px;
+            42px;
     }
 
     #homePage .card {
 
         padding:
-            23px;
+            24px;
     }
 
     #homePage .transaction-card {
 
         padding:
-            24px;
+            25px;
     }
 
     #homePage .quick-card {
@@ -1869,7 +2008,6 @@ body.dark #homePage .orange-card .orange-text {
         font-size:
             19px;
     }
-
 }
 
 
@@ -1882,11 +2020,8 @@ body.dark #homePage .orange-card .orange-text {
     #homePage {
 
         padding-bottom:
-            105px;
+            108px;
     }
-
-
-    /* BALANCE */
 
     .balance-card {
 
@@ -1939,26 +2074,175 @@ body.dark #homePage .orange-card .orange-text {
     #homePage .card {
 
         margin-top:
-            13px;
+            14px;
 
         padding:
-            16px;
+            17px;
 
         border-radius:
-            18px;
+            20px;
     }
 
 
-    /* TRANSACTION CARD */
+    /* TRANSACTION */
 
     #homePage .transaction-card {
 
         padding:
-            17px 15px 18px;
+            18px 15px 17px;
+
+        border-radius:
+            21px;
     }
 
 
-    /* HEADING */
+    #homePage .transaction-card .section-heading {
+
+        margin-bottom:
+            17px;
+
+        padding-bottom:
+            15px;
+    }
+
+
+    #homePage .transaction-card .section-heading h2 {
+
+        font-size:
+            18px;
+    }
+
+
+    #homePage .transaction-type {
+
+        gap:
+            6px !important;
+
+        padding:
+            4px !important;
+
+        border-radius:
+            16px !important;
+
+        margin-bottom:
+            20px !important;
+    }
+
+
+    #homePage .transaction-type .type-button {
+
+        min-height:
+            51px !important;
+
+        font-size:
+            15px !important;
+
+        border-radius:
+            12px !important;
+    }
+
+
+    #homePage .transaction-card .field-label {
+
+        margin-top:
+            15px;
+    }
+
+
+    #homePage .transaction-card input,
+    #homePage .transaction-card select {
+
+        min-height:
+            47px;
+
+        font-size:
+            14px;
+
+        border-radius:
+            13px;
+    }
+
+
+    #homePage #orderSourceBox {
+
+        margin-top:
+            18px;
+
+        padding:
+            13px;
+
+        border-radius:
+            15px;
+    }
+
+
+    #homePage .source-grid {
+
+        gap:
+            5px;
+    }
+
+
+    #homePage .source-button {
+
+        min-height:
+            44px;
+
+        font-size:
+            9px;
+
+        border-radius:
+            10px;
+    }
+
+
+    #homePage #appFeeBox {
+
+        margin-top:
+            16px;
+
+        padding:
+            13px;
+
+        border-radius:
+            14px;
+    }
+
+
+    #homePage .transaction-card .amount-input {
+
+        min-height:
+            61px;
+
+        font-size:
+            24px;
+
+        border-radius:
+            15px;
+    }
+
+
+    #homePage #transactionDate {
+
+        min-height:
+            49px;
+    }
+
+
+    #homePage .transaction-card .primary-button {
+
+        min-height:
+            54px;
+
+        margin-top:
+            19px;
+
+        border-radius:
+            14px;
+    }
+
+
+    /* TODAY */
 
     #homePage .section-heading {
 
@@ -1971,139 +2255,6 @@ body.dark #homePage .orange-card .orange-text {
         font-size:
             18px;
     }
-
-
-    /* TYPE */
-
-    #homePage .transaction-type {
-
-        gap:
-            7px !important;
-
-        padding:
-            4px !important;
-
-        border-radius:
-            15px !important;
-
-        margin-bottom:
-            21px !important;
-    }
-
-    #homePage .transaction-type .type-button {
-
-        min-height:
-            52px !important;
-
-        font-size:
-            15px !important;
-
-        border-radius:
-            11px !important;
-    }
-
-
-    /* LABEL */
-
-    #homePage .field-label {
-
-        margin-top:
-            16px;
-    }
-
-
-    /* INPUT */
-
-    #homePage input,
-    #homePage select {
-
-        min-height:
-            48px;
-
-        font-size:
-            14px;
-
-        border-radius:
-            13px;
-    }
-
-
-    /* SOURCE */
-
-    #homePage #orderSourceBox {
-
-        padding:
-            13px;
-
-        border-radius:
-            15px;
-    }
-
-    #homePage .source-grid {
-
-        gap:
-            5px;
-    }
-
-    #homePage .source-button {
-
-        min-height:
-            46px;
-
-        font-size:
-            9px;
-
-        border-radius:
-            10px;
-    }
-
-
-    /* APP */
-
-    #homePage #appFeeBox {
-
-        padding:
-            13px;
-
-        border-radius:
-            15px;
-    }
-
-
-    /* AMOUNT */
-
-    #homePage .amount-input {
-
-        min-height:
-            64px;
-
-        font-size:
-            25px;
-
-        border-radius:
-            15px;
-    }
-
-
-    /* SAVE */
-
-    #homePage .primary-button {
-
-        min-height:
-            55px;
-
-        margin-top:
-            20px;
-
-        border-radius:
-            15px;
-
-        font-size:
-            15px;
-    }
-
-
-    /* TODAY */
 
     #homePage .quick-grid {
 
@@ -2120,7 +2271,7 @@ body.dark #homePage .orange-card .orange-text {
             13px;
 
         border-radius:
-            14px;
+            15px;
     }
 
     #homePage .quick-card strong {
@@ -2128,7 +2279,6 @@ body.dark #homePage .orange-card .orange-text {
         font-size:
             15px;
     }
-
 }
 
 
@@ -2151,7 +2301,22 @@ body.dark #homePage .orange-card .orange-text {
     }
 
 
-    /* SOURCE XẾP DỌC */
+    #homePage .transaction-card {
+
+        padding:
+            16px 13px;
+    }
+
+
+    #homePage .transaction-type .type-button {
+
+        min-height:
+            48px !important;
+
+        font-size:
+            14px !important;
+    }
+
 
     #homePage .source-grid {
 
@@ -2169,14 +2334,50 @@ body.dark #homePage .orange-card .orange-text {
     }
 
 
-    /* QUICK */
+    #homePage .transaction-card .amount-input {
+
+        font-size:
+            22px;
+    }
+
 
     #homePage .quick-card strong {
 
         font-size:
             14px;
     }
+}
 
+
+/* =========================================================
+   TOUCH DEVICES
+========================================================= */
+
+@media (hover: none) {
+
+    #homePage .transaction-card .primary-button:hover {
+
+        transform:
+            none;
+
+        filter:
+            none;
+    }
+
+    #homePage .source-button:hover {
+
+        transform:
+            none;
+    }
+
+    #homePage .quick-card:hover {
+
+        transform:
+            none;
+
+        box-shadow:
+            none;
+    }
 }
 
 
@@ -2186,15 +2387,14 @@ body.dark #homePage .orange-card .orange-text {
 
 @media (prefers-reduced-motion: reduce) {
 
-    #homePage .transaction-type .type-button,
-    #homePage .primary-button,
-    #homePage .quick-card,
-    #homePage .source-button,
-    #homePage input,
-    #homePage select {
+    #homePage *,
+    #homePage *::before,
+    #homePage *::after {
 
         transition:
             none !important;
-    }
 
+        animation:
+            none !important;
+    }
 }
