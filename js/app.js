@@ -1,26 +1,9 @@
 /* =========================================================
    APP.JS
-   BẾP NHÀ DUYÊN
-   FULL APP CONTROLLER
-   FIX FULL:
-   - setText is not defined
-   - setHTML is not defined
-   - setValue is not defined
-   - page trắng khi chuyển trang
-   - render một trang lỗi làm chết trang khác
-   - navigation SPA
-   - dark mode
-   - database loading
-   - statistics navigation
-========================================================= */
-
-
-/* =========================================================
-   APP STATE
+   GLOBAL APP STATE + NAVIGATION + INIT
 ========================================================= */
 
 const AppState = {
-
     currentPage: "home",
 
     transactions: [],
@@ -29,494 +12,41 @@ const AppState = {
     codParts: [],
 
     editingTransactionId: null,
-
     transactionType: "thu",
-
     orderSource: "ShopeeFood",
 
     statisticsPeriod: "day",
-
-    statisticsDate: new Date(),
-
-    initialized: false
-
-};
-
-
-/* =========================================================
-   PAGE CONFIG
-========================================================= */
-
-const PAGE_CONFIG = {
-
-    home: {
-        pageId: "homePage",
-        navId: "navHome",
-        render: "renderHome"
-    },
-
-    statistics: {
-        pageId: "statisticsPage",
-        navId: "navStatistics",
-        render: "renderStatistics"
-    },
-
-    history: {
-        pageId: "historyPage",
-        navId: "navHistory",
-        render: "renderHistory"
-    },
-
-    restaurant: {
-        pageId: "restaurantPage",
-        navId: "navRestaurant",
-        render: "renderRestaurant"
-    },
-
-    cod: {
-        pageId: "codPage",
-        navId: "navCOD",
-        render: "renderCOD"
-    }
-
+    statisticsDate: new Date()
 };
 
 
 /* =========================================================
    DOM HELPERS
-   DÙNG CHUNG CHO TẤT CẢ FILE JS
 ========================================================= */
 
+function $(selector, parent = document) {
+    return parent.querySelector(selector);
+}
 
-/*
- * Query một element
- */
-
-function $(selector) {
-
-    if (
-        selector instanceof
-        Element
-    ) {
-        return selector;
-    }
-
-    return document.querySelector(
-        selector
-    );
-
+function $$(selector, parent = document) {
+    return [...parent.querySelectorAll(selector)];
 }
 
 
-/*
- * Query nhiều element
- */
-
-function $$(selector) {
-
-    return [
-        ...document.querySelectorAll(
-            selector
-        )
-    ];
-
-}
-
-
-/*
- * setText
- */
-
-function setText(
-    selector,
-    value
-) {
-
+/* FIX: setText is used by home.js/statistics.js/etc */
+function setText(selector, value) {
     const element =
-        $(selector);
+        typeof selector === "string"
+            ? document.querySelector(selector)
+            : selector;
 
-    if (!element) {
-
-        console.warn(
-            "setText: element không tồn tại:",
-            selector
-        );
-
-        return;
-
-    }
+    if (!element) return;
 
     element.textContent =
         value === null ||
         value === undefined
             ? ""
             : String(value);
-
-}
-
-
-/*
- * setHTML
- */
-
-function setHTML(
-    selector,
-    value
-) {
-
-    const element =
-        $(selector);
-
-    if (!element) {
-
-        console.warn(
-            "setHTML: element không tồn tại:",
-            selector
-        );
-
-        return;
-
-    }
-
-    element.innerHTML =
-        value === null ||
-        value === undefined
-            ? ""
-            : String(value);
-
-}
-
-
-/*
- * setValue
- */
-
-function setValue(
-    selector,
-    value
-) {
-
-    const element =
-        $(selector);
-
-    if (!element) {
-
-        console.warn(
-            "setValue: element không tồn tại:",
-            selector
-        );
-
-        return;
-
-    }
-
-    element.value =
-        value === null ||
-        value === undefined
-            ? ""
-            : value;
-
-}
-
-
-/*
- * getValue
- */
-
-function getValue(
-    selector
-) {
-
-    const element =
-        $(selector);
-
-    if (!element) {
-
-        return "";
-
-    }
-
-    return element.value ?? "";
-
-}
-
-
-/*
- * show element
- */
-
-function showElement(
-    selector
-) {
-
-    const element =
-        $(selector);
-
-    if (!element) return;
-
-    element.hidden = false;
-
-    element.style.removeProperty(
-        "display"
-    );
-
-}
-
-
-/*
- * hide element
- */
-
-function hideElement(
-    selector
-) {
-
-    const element =
-        $(selector);
-
-    if (!element) return;
-
-    element.hidden = true;
-
-}
-
-
-/*
- * set visible
- */
-
-function setVisible(
-    selector,
-    visible
-) {
-
-    if (visible) {
-
-        showElement(
-            selector
-        );
-
-    } else {
-
-        hideElement(
-            selector
-        );
-
-    }
-
-}
-
-
-/*
- * class add
- */
-
-function addClass(
-    selector,
-    className
-) {
-
-    const element =
-        $(selector);
-
-    if (!element) return;
-
-    element.classList.add(
-        className
-    );
-
-}
-
-
-/*
- * class remove
- */
-
-function removeClass(
-    selector,
-    className
-) {
-
-    const element =
-        $(selector);
-
-    if (!element) return;
-
-    element.classList.remove(
-        className
-    );
-
-}
-
-
-/*
- * class toggle
- */
-
-function toggleClass(
-    selector,
-    className,
-    force
-) {
-
-    const element =
-        $(selector);
-
-    if (!element) return;
-
-    element.classList.toggle(
-        className,
-        force
-    );
-
-}
-
-
-/* =========================================================
-   FORMAT
-========================================================= */
-
-function formatMoney(
-    value
-) {
-
-    const number =
-        Number(value) || 0;
-
-    return number.toLocaleString(
-        "vi-VN"
-    ) + " ₫";
-
-}
-
-
-function formatNumber(
-    value
-) {
-
-    const number =
-        Number(value) || 0;
-
-    return number.toLocaleString(
-        "vi-VN"
-    );
-
-}
-
-
-function formatDateInput(
-    date
-) {
-
-    if (
-        !date ||
-        !(date instanceof Date)
-    ) {
-
-        date =
-            new Date(
-                date || Date.now()
-            );
-
-    }
-
-
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    return `${year}-${month}-${day}`;
-
-}
-
-
-function formatDateVN(
-    value
-) {
-
-    if (!value) return "";
-
-    const date =
-        value instanceof Date
-            ? value
-            : new Date(value);
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return String(value);
-
-    }
-
-
-    return date.toLocaleDateString(
-        "vi-VN"
-    );
-
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHTML(
-    value
-) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-
-    }
-
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
 }
 
 
@@ -526,292 +56,137 @@ function escapeHTML(
 
 document.addEventListener(
     "DOMContentLoaded",
-    initApp
+    async () => {
+
+        try {
+
+            setToday();
+
+            loadTheme();
+
+            await loadInitialData();
+
+            ensurePages();
+
+            navigateTo("home");
+
+        } catch (error) {
+
+            console.error(
+                "APP INIT ERROR:",
+                error
+            );
+
+        }
+
+    }
 );
 
 
-async function initApp() {
-
-    try {
-
-        console.log(
-            "Bếp Nhà Duyên đang khởi tạo..."
-        );
-
-
-        /*
-         * Theme
-         */
-
-        loadTheme();
-
-
-        /*
-         * Date
-         */
-
-        setToday();
-
-
-        /*
-         * Page system
-         */
-
-        preparePages();
-
-
-        /*
-         * Load database
-         */
-
-        await loadInitialData();
-
-
-        /*
-         * Render trang hiện tại
-         */
-
-        const initialPage =
-            getPageFromURL();
-
-
-        navigateTo(
-            initialPage,
-            false
-        );
-
-
-        AppState.initialized =
-            true;
-
-
-        console.log(
-            "Bếp Nhà Duyên đã sẵn sàng."
-        );
-
-
-    } catch (error) {
-
-        console.error(
-            "APP INIT ERROR:",
-            error
-        );
-
-        /*
-         * Không để app trắng
-         */
-
-        navigateTo(
-            "home",
-            false
-        );
-
-    }
-
-}
-
-
 /* =========================================================
-   PREPARE PAGES
+   INITIAL DATA
 ========================================================= */
-
-function preparePages() {
-
-    /*
-     * Các page phải có class page
-     */
-
-    Object.values(
-        PAGE_CONFIG
-    ).forEach(
-        config => {
-
-            const element =
-                document.getElementById(
-                    config.pageId
-                );
-
-
-            if (!element) {
-
-                console.warn(
-                    `Thiếu #${config.pageId}`
-                );
-
-                return;
-
-            }
-
-
-            element.classList.add(
-                "page"
-            );
-
-
-            element.setAttribute(
-                "aria-hidden",
-                "true"
-            );
-
-        }
-    );
-
-
-    /*
-     * Nav
-     */
-
-    Object.values(
-        PAGE_CONFIG
-    ).forEach(
-        config => {
-
-            const nav =
-                document.getElementById(
-                    config.navId
-                );
-
-
-            if (!nav) return;
-
-
-            nav.classList.add(
-                "nav-button"
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   DATABASE
-========================================================= */
-
-async function safeDbGet(
-    table,
-    options = {}
-) {
-
-    if (
-        typeof dbGet !==
-        "function"
-    ) {
-
-        console.warn(
-            "dbGet chưa tồn tại:",
-            table
-        );
-
-        return [];
-
-    }
-
-
-    try {
-
-        const result =
-            await dbGet(
-                table,
-                options
-            );
-
-
-        return Array.isArray(
-            result
-        )
-            ? result
-            : [];
-
-    } catch (error) {
-
-        console.error(
-            `DB ERROR [${table}]`,
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
 
 async function loadInitialData() {
 
-    /*
-     * Categories
-     */
+    try {
 
-    AppState.categories =
-        await safeDbGet(
-            "categories",
-            {
-                order: {
-                    column: "created_at",
-                    ascending: true
+        if (typeof dbGet !== "function") {
+
+            console.warn(
+                "dbGet() chưa được load."
+            );
+
+            renderAll();
+
+            return;
+
+        }
+
+
+        AppState.categories =
+            await dbGet(
+                "categories",
+                {
+                    order: {
+                        column: "created_at",
+                        ascending: true
+                    }
                 }
-            }
+            ) || [];
+
+
+        AppState.dishes =
+            await dbGet(
+                "dishes",
+                {
+                    order: {
+                        column: "created_at",
+                        ascending: true
+                    }
+                }
+            ) || [];
+
+
+        AppState.transactions =
+            await dbGet(
+                "transactions",
+                {
+                    order: {
+                        column: "date",
+                        ascending: false
+                    }
+                }
+            ) || [];
+
+
+        renderAll();
+
+    } catch (error) {
+
+        console.error(
+            "LOAD DATA ERROR:",
+            error
         );
 
+        AppState.categories = [];
+        AppState.dishes = [];
+        AppState.transactions = [];
 
-    /*
-     * Dishes
-     */
+        renderAll();
 
-    AppState.dishes =
-        await safeDbGet(
-            "dishes",
-            {
-                order: {
-                    column: "created_at",
-                    ascending: true
-                }
-            }
-        );
+    }
+
+}
 
 
-    /*
-     * Transactions
-     */
+/* =========================================================
+   PAGE CHECK
+========================================================= */
 
-    AppState.transactions =
-        await safeDbGet(
-            "transactions",
-            {
-                order: {
-                    column: "date",
-                    ascending: false
-                }
-            }
-        );
+function ensurePages() {
 
+    const pages = [
+        "home",
+        "statistics",
+        "history",
+        "restaurant",
+        "cod"
+    ];
 
-    /*
-     * COD
-     *
-     * Không để thiếu bảng COD
-     * làm chết toàn app.
-     */
+    pages.forEach(page => {
 
-    AppState.codParts =
-        await safeDbGet(
-            "cod_parts",
-            {
-                order: {
-                    column: "created_at",
-                    ascending: false
-                }
-            }
-        );
+        const id = `${page}Page`;
 
+        if (!document.getElementById(id)) {
 
-    /*
-     * Render tất cả
-     */
+            console.warn(
+                `Không tìm thấy #${id}`
+            );
 
-    renderAll();
+        }
+
+    });
 
 }
 
@@ -820,43 +195,22 @@ async function loadInitialData() {
    NAVIGATION
 ========================================================= */
 
-function navigateTo(
-    page,
-    smooth = true
-) {
+function navigateTo(page) {
 
-    /*
-     * Kiểm tra page
-     */
+    const validPages = [
+        "home",
+        "statistics",
+        "history",
+        "restaurant",
+        "cod"
+    ];
 
-    if (
-        !PAGE_CONFIG[page]
-    ) {
+
+    if (!validPages.includes(page)) {
 
         console.warn(
-            "Page không tồn tại:",
+            "Trang không hợp lệ:",
             page
-        );
-
-        page = "home";
-
-    }
-
-
-    const config =
-        PAGE_CONFIG[page];
-
-
-    const pageElement =
-        document.getElementById(
-            config.pageId
-        );
-
-
-    if (!pageElement) {
-
-        console.error(
-            `Không tìm thấy #${config.pageId}`
         );
 
         return;
@@ -864,72 +218,87 @@ function navigateTo(
     }
 
 
-    /*
-     * State
-     */
-
-    AppState.currentPage =
-        page;
+    AppState.currentPage = page;
 
 
-    /*
-     * HIDE ALL PAGE
-     */
+    /* ---------------------------------
+       Hide all pages
+    --------------------------------- */
 
-    $$(".page")
-        .forEach(
-            element => {
+    $$(".page").forEach(element => {
 
-                element.classList.remove(
-                    "active-page"
-                );
+        element.classList.remove(
+            "active-page"
+        );
 
-                element.setAttribute(
-                    "aria-hidden",
-                    "true"
-                );
+        element.hidden = true;
 
-            }
+    });
+
+
+    /* ---------------------------------
+       Show selected page
+    --------------------------------- */
+
+    const pageElement =
+        document.getElementById(
+            `${page}Page`
         );
 
 
-    /*
-     * SHOW CURRENT PAGE
-     */
+    if (!pageElement) {
+
+        console.error(
+            `Không tìm thấy #${page}Page`
+        );
+
+        return;
+
+    }
+
+
+    pageElement.hidden = false;
 
     pageElement.classList.add(
         "active-page"
     );
 
-    pageElement.setAttribute(
-        "aria-hidden",
-        "false"
-    );
 
+    /* ---------------------------------
+       Navigation button
+    --------------------------------- */
 
-    /*
-     * Navigation
-     */
+    $$(".nav-button").forEach(button => {
 
-    $$(".nav-button")
-        .forEach(
-            button => {
-
-                button.classList.remove(
-                    "active"
-                );
-
-                button.removeAttribute(
-                    "aria-current"
-                );
-
-            }
+        button.classList.remove(
+            "active"
         );
+
+    });
+
+
+    const navMap = {
+
+        home: "navHome",
+
+        statistics:
+            "navStatistics",
+
+        history:
+            "navHistory",
+
+        restaurant:
+            "navRestaurant",
+
+        cod:
+            "navCOD"
+
+    };
 
 
     const navButton =
         document.getElementById(
-            config.navId
+            navMap[page]
         );
 
 
@@ -939,98 +308,92 @@ function navigateTo(
             "active"
         );
 
-        navButton.setAttribute(
-            "aria-current",
-            "page"
-        );
-
     }
 
 
-    /*
-     * Render riêng page
-     */
-
-    renderCurrentPage(
-        page
-    );
-
-
-    /*
-     * Scroll top
-     */
-
-    window.scrollTo({
-
-        top: 0,
-
-        behavior:
-            smooth
-                ? "smooth"
-                : "auto"
-
-    });
-
-}
-
-
-/* =========================================================
-   RENDER CURRENT PAGE
-========================================================= */
-
-function renderCurrentPage(
-    page
-) {
-
-    const config =
-        PAGE_CONFIG[page];
-
-
-    if (!config) return;
-
-
-    const renderFunction =
-        window[
-            config.render
-        ];
-
-
-    if (
-        typeof renderFunction !==
-        "function"
-    ) {
-
-        console.warn(
-            `${config.render} chưa được load`
-        );
-
-        return;
-
-    }
-
+    /* ---------------------------------
+       Render page
+    --------------------------------- */
 
     try {
 
-        renderFunction();
+        switch (page) {
+
+            case "home":
+
+                if (
+                    typeof renderHome ===
+                    "function"
+                ) {
+                    renderHome();
+                }
+
+                break;
+
+
+            case "statistics":
+
+                if (
+                    typeof renderStatistics ===
+                    "function"
+                ) {
+                    renderStatistics();
+                }
+
+                break;
+
+
+            case "history":
+
+                if (
+                    typeof renderHistory ===
+                    "function"
+                ) {
+                    renderHistory();
+                }
+
+                break;
+
+
+            case "restaurant":
+
+                if (
+                    typeof renderRestaurant ===
+                    "function"
+                ) {
+                    renderRestaurant();
+                }
+
+                break;
+
+
+            case "cod":
+
+                if (
+                    typeof renderCOD ===
+                    "function"
+                ) {
+                    renderCOD();
+                }
+
+                break;
+
+        }
 
     } catch (error) {
 
         console.error(
-            `RENDER ERROR [${page}]`,
+            `RENDER ${page} ERROR:`,
             error
         );
 
-
-        /*
-         * Chỉ page hiện tại lỗi.
-         * Không làm chết các page khác.
-         */
-
-        showToast(
-            `Lỗi hiển thị ${page}`
-        );
-
     }
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 
 }
 
@@ -1042,36 +405,24 @@ function renderCurrentPage(
 function renderAll() {
 
     const renderers = [
-
-        "renderHome",
-
-        "renderStatistics",
-
-        "renderHistory",
-
-        "renderRestaurant",
-
-        "renderCOD"
-
+        ["home", renderHome],
+        ["statistics", renderStatistics],
+        ["history", renderHistory],
+        ["restaurant", renderRestaurant],
+        ["cod", renderCOD]
     ];
 
 
     renderers.forEach(
-        functionName => {
-
-            const fn =
-                window[
-                    functionName
-                ];
-
+        ([name, renderer]) => {
 
             if (
-                typeof fn !==
+                typeof renderer !==
                 "function"
             ) {
 
                 console.warn(
-                    `${functionName} chưa được load`
+                    `Chưa có ${name}.js`
                 );
 
                 return;
@@ -1081,12 +432,12 @@ function renderAll() {
 
             try {
 
-                fn();
+                renderer();
 
             } catch (error) {
 
                 console.error(
-                    `RENDER ERROR: ${functionName}`,
+                    `Render ${name} lỗi:`,
                     error
                 );
 
@@ -1099,41 +450,21 @@ function renderAll() {
 
 
 /* =========================================================
-   REFRESH
-========================================================= */
-
-function refreshCurrentPage() {
-
-    renderCurrentPage(
-        AppState.currentPage
-    );
-
-}
-
-
-/* =========================================================
    TOAST
 ========================================================= */
 
 let toastTimer = null;
 
-
-function showToast(
-    message
-) {
+function showToast(message) {
 
     const toast =
         document.getElementById(
             "toast"
         );
 
-
     if (!toast) {
 
-        console.log(
-            "Toast:",
-            message
-        );
+        console.log(message);
 
         return;
 
@@ -1141,7 +472,7 @@ function showToast(
 
 
     toast.textContent =
-        String(message);
+        message || "";
 
 
     toast.classList.add(
@@ -1155,16 +486,13 @@ function showToast(
 
 
     toastTimer =
-        setTimeout(
-            () => {
+        setTimeout(() => {
 
-                toast.classList.remove(
-                    "show"
-                );
+            toast.classList.remove(
+                "show"
+            );
 
-            },
-            2200
-        );
+        }, 2200);
 
 }
 
@@ -1175,7 +503,7 @@ function showToast(
 
 function toggleDarkMode() {
 
-    const dark =
+    const enabled =
         document.body.classList.toggle(
             "dark"
         );
@@ -1183,14 +511,7 @@ function toggleDarkMode() {
 
     localStorage.setItem(
         "bep_nha_duyen_dark",
-        dark
-            ? "true"
-            : "false"
-    );
-
-
-    updateThemeButton(
-        dark
+        enabled
     );
 
 }
@@ -1201,54 +522,16 @@ function loadTheme() {
     const dark =
         localStorage.getItem(
             "bep_nha_duyen_dark"
-        ) === "true";
+        );
 
 
-    document.body.classList.toggle(
-        "dark",
-        dark
-    );
+    if (dark === "true") {
 
+        document.body.classList.add(
+            "dark"
+        );
 
-    updateThemeButton(
-        dark
-    );
-
-}
-
-
-function updateThemeButton(
-    dark
-) {
-
-    $$(
-        "[data-theme-toggle]"
-    ).forEach(
-        button => {
-
-            button.setAttribute(
-                "aria-pressed",
-                String(dark)
-            );
-
-
-            const icon =
-                button.querySelector(
-                    ".theme-icon"
-                );
-
-
-            if (icon) {
-
-                icon.textContent =
-                    dark
-                        ? "☀️"
-                        : "🌙";
-
-            }
-
-        }
-    );
+    }
 
 }
 
@@ -1259,13 +542,8 @@ function updateThemeButton(
 
 function setToday() {
 
-    const now =
-        new Date();
+    const now = new Date();
 
-
-    /*
-     * Transaction date
-     */
 
     const input =
         document.getElementById(
@@ -1275,17 +553,27 @@ function setToday() {
 
     if (input) {
 
+        const year =
+            now.getFullYear();
+
+
+        const month =
+            String(
+                now.getMonth() + 1
+            ).padStart(2, "0");
+
+
+        const day =
+            String(
+                now.getDate()
+            ).padStart(2, "0");
+
+
         input.value =
-            formatDateInput(
-                now
-            );
+            `${year}-${month}-${day}`;
 
     }
 
-
-    /*
-     * Today label
-     */
 
     const label =
         document.getElementById(
@@ -1302,453 +590,113 @@ function setToday() {
 
     }
 
-
-    /*
-     * Statistics date
-     */
-
-    AppState.statisticsDate =
-        new Date(now);
-
 }
 
 
 /* =========================================================
-   STATISTICS
+   GLOBAL FORMATTERS
 ========================================================= */
 
-function setStatisticsPeriod(
-    period
-) {
+function formatMoney(value) {
 
-    if (
-        ![
-            "day",
-            "month",
-            "year"
-        ].includes(period)
-    ) {
-
-        period = "day";
-
-    }
+    const number =
+        Number(value) || 0;
 
 
-    AppState.statisticsPeriod =
-        period;
-
-
-    refreshCurrentPage();
+    return number.toLocaleString(
+        "vi-VN"
+    ) + " ₫";
 
 }
 
 
-function changeStatisticsDate(
-    amount
-) {
+function formatNumber(value) {
 
-    const date =
-        new Date(
-            AppState.statisticsDate
-        );
-
-
-    switch (
-        AppState.statisticsPeriod
-    ) {
-
-        case "day":
-
-            date.setDate(
-                date.getDate() +
-                Number(amount)
-            );
-
-            break;
-
-
-        case "month":
-
-            date.setMonth(
-                date.getMonth() +
-                Number(amount)
-            );
-
-            break;
-
-
-        case "year":
-
-            date.setFullYear(
-                date.getFullYear() +
-                Number(amount)
-            );
-
-            break;
-
-    }
-
-
-    AppState.statisticsDate =
-        date;
-
-
-    refreshCurrentPage();
-
-}
-
-
-function getStatisticsDateLabel() {
-
-    const date =
-        AppState.statisticsDate;
-
-
-    switch (
-        AppState.statisticsPeriod
-    ) {
-
-        case "day":
-
-            return date.toLocaleDateString(
-                "vi-VN",
-                {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric"
-                }
-            );
-
-
-        case "month":
-
-            return date.toLocaleDateString(
-                "vi-VN",
-                {
-                    month: "long",
-                    year: "numeric"
-                }
-            );
-
-
-        case "year":
-
-            return String(
-                date.getFullYear()
-            );
-
-
-        default:
-
-            return "";
-
-    }
-
-}
-
-
-/* =========================================================
-   URL
-========================================================= */
-
-function getPageFromURL() {
-
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-
-    const page =
-        params.get(
-            "page"
-        );
-
-
-    if (
-        page &&
-        PAGE_CONFIG[page]
-    ) {
-
-        return page;
-
-    }
-
-
-    return "home";
-
-}
-
-
-function navigateToURL(
-    page
-) {
-
-    if (
-        !PAGE_CONFIG[page]
-    ) {
-
-        page = "home";
-
-    }
-
-
-    const url =
-        new URL(
-            window.location.href
-        );
-
-
-    url.searchParams.set(
-        "page",
-        page
+    return (
+        Number(value) || 0
+    ).toLocaleString(
+        "vi-VN"
     );
 
-
-    history.pushState(
-        {
-            page
-        },
-        "",
-        url
-    );
+}
 
 
-    navigateTo(
-        page
+function formatDate(date) {
+
+    if (!date) return "";
+
+
+    const d =
+        new Date(date);
+
+
+    if (
+        Number.isNaN(
+            d.getTime()
+        )
+    ) {
+        return "";
+    }
+
+
+    return d.toLocaleDateString(
+        "vi-VN"
     );
 
 }
 
 
 /* =========================================================
-   NAVIGATION CLICK
+   SAFE HTML
 ========================================================= */
 
-document.addEventListener(
-    "click",
-    event => {
+function escapeHTML(value) {
 
-        /*
-         * data-page
-         */
+    return String(
+        value ?? ""
+    )
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
 
-        const navigation =
-            event.target.closest(
-                "[data-page]"
-            );
-
-
-        if (navigation) {
-
-            const page =
-                navigation.dataset.page;
-
-
-            if (
-                page &&
-                PAGE_CONFIG[page]
-            ) {
-
-                event.preventDefault();
-
-                navigateTo(
-                    page
-                );
-
-                return;
-
-            }
-
-        }
-
-
-        /*
-         * Theme
-         */
-
-        const theme =
-            event.target.closest(
-                "[data-theme-toggle]"
-            );
-
-
-        if (theme) {
-
-            event.preventDefault();
-
-            toggleDarkMode();
-
-        }
-
-    }
-);
+}
 
 
 /* =========================================================
-   BROWSER BACK/FORWARD
+   ACTIVE PAGE
 ========================================================= */
 
-window.addEventListener(
-    "popstate",
-    () => {
+function getCurrentPage() {
 
-        navigateTo(
-            getPageFromURL(),
-            false
-        );
+    return AppState.currentPage;
 
-    }
-);
+}
 
 
 /* =========================================================
-   GLOBAL ERROR
+   BACKWARD COMPATIBILITY
 ========================================================= */
 
-window.addEventListener(
-    "error",
-    event => {
+window.AppState = AppState;
 
-        console.error(
-            "GLOBAL JS ERROR:",
-            event.error ||
-            event.message
-        );
+window.$ = $;
+window.$$ = $$;
 
-    }
-);
+window.setText = setText;
 
+window.formatMoney = formatMoney;
+window.formatNumber = formatNumber;
+window.formatDate = formatDate;
 
-window.addEventListener(
-    "unhandledrejection",
-    event => {
+window.escapeHTML = escapeHTML;
 
-        console.error(
-            "UNHANDLED PROMISE:",
-            event.reason
-        );
-
-    }
-);
-
-
-/* =========================================================
-   EXPOSE GLOBAL FUNCTIONS
-   QUAN TRỌNG KHI TÁCH FILE
-========================================================= */
-
-window.AppState =
-    AppState;
-
-window.PAGE_CONFIG =
-    PAGE_CONFIG;
-
-
-/*
- * DOM
- */
-
-window.$ =
-    $;
-
-window.$$ =
-    $$;
-
-window.setText =
-    setText;
-
-window.setHTML =
-    setHTML;
-
-window.setValue =
-    setValue;
-
-window.getValue =
-    getValue;
-
-window.showElement =
-    showElement;
-
-window.hideElement =
-    hideElement;
-
-window.setVisible =
-    setVisible;
-
-window.addClass =
-    addClass;
-
-window.removeClass =
-    removeClass;
-
-window.toggleClass =
-    toggleClass;
-
-
-/*
- * Format
- */
-
-window.formatMoney =
-    formatMoney;
-
-window.formatNumber =
-    formatNumber;
-
-window.formatDateInput =
-    formatDateInput;
-
-window.formatDateVN =
-    formatDateVN;
-
-window.escapeHTML =
-    escapeHTML;
-
-
-/*
- * App
- */
-
-window.navigateTo =
-    navigateTo;
-
-window.navigateToURL =
-    navigateToURL;
-
-window.renderAll =
-    renderAll;
-
-window.refreshCurrentPage =
-    refreshCurrentPage;
-
-window.showToast =
-    showToast;
-
-
-/*
- * Theme
- */
+window.navigateTo = navigateTo;
+window.showToast = showToast;
 
 window.toggleDarkMode =
     toggleDarkMode;
 
-
-/*
- * Statistics
- */
-
-window.setStatisticsPeriod =
-    setStatisticsPeriod;
-
-window.changeStatisticsDate =
-    changeStatisticsDate;
-
-window.getStatisticsDateLabel =
-    getStatisticsDateLabel;
-
-
-/* =========================================================
-   END APP.JS
-========================================================= */
+window.loadTheme = loadTheme;
+window.setToday = setToday;
