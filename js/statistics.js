@@ -1,1661 +1,1180 @@
 /* =========================================================
-   STATISTICS.JS
-   BẾP NHÀ DUYÊN
+   STATISTICS — PREMIUM INTERACTION
+   DATE PICKER / PERIOD NAVIGATION
 ========================================================= */
 
 (function () {
-
     "use strict";
 
+    const root =
+        document.querySelector("#statisticsPage") ||
+        document.querySelector(".statistics-page");
 
-    /* =====================================================
-       FORMAT
-    ===================================================== */
-
-    function formatMoney(value) {
-
-        const number = Number(value) || 0;
-
-        return number.toLocaleString("vi-VN") + " ₫";
-
-    }
-
-
-    window.formatMoney = formatMoney;
-
+    if (!root) return;
 
     /* =====================================================
        STATE
     ===================================================== */
 
-    function getState() {
-
-        if (
-            typeof window.AppState === "undefined"
-        ) {
-            return null;
-        }
-
-        return window.AppState;
-
-    }
-
-
-    /* =====================================================
-       TRANSACTIONS
-    ===================================================== */
-
-    function getTransactions() {
-
-        const state = getState();
-
-        if (!state) {
-            return [];
-        }
-
-        return Array.isArray(
-            state.transactions
-        )
-            ? state.transactions
-            : [];
-
-    }
-
-
-    /* =====================================================
-       DATE HELPERS
-    ===================================================== */
-
-    function parseDate(value) {
-
-        if (!value) {
-            return null;
-        }
-
-        const date =
-            value instanceof Date
-                ? new Date(value)
-                : new Date(value);
-
-        if (
-            Number.isNaN(
-                date.getTime()
-            )
-        ) {
-            return null;
-        }
-
-        return date;
-
-    }
-
-
-    function startOfDay(date) {
-
-        const result =
-            new Date(date);
-
-        result.setHours(
-            0,
-            0,
-            0,
-            0
-        );
-
-        return result;
-
-    }
-
-
-    function endOfDay(date) {
-
-        const result =
-            new Date(date);
-
-        result.setHours(
-            23,
-            59,
-            59,
-            999
-        );
-
-        return result;
-
-    }
-
-
-    function startOfWeek(date) {
-
-        const result =
-            startOfDay(date);
-
-        const day =
-            result.getDay();
-
-        const diff =
-            day === 0
-                ? -6
-                : 1 - day;
-
-        result.setDate(
-            result.getDate() + diff
-        );
-
-        return result;
-
-    }
-
-
-    function endOfWeek(date) {
-
-        const result =
-            startOfWeek(date);
-
-        result.setDate(
-            result.getDate() + 6
-        );
-
-        return endOfDay(result);
-
-    }
-
-
-    function startOfMonth(date) {
-
-        return new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            1,
-            0,
-            0,
-            0,
-            0
-        );
-
-    }
-
-
-    function endOfMonth(date) {
-
-        return new Date(
-            date.getFullYear(),
-            date.getMonth() + 1,
-            0,
-            23,
-            59,
-            59,
-            999
-        );
-
-    }
-
-
-    /* =====================================================
-       STATISTICS RANGE
-    ===================================================== */
-
-    function getStatisticsRange() {
-
-        const state =
-            getState();
-
-        const period =
-            state?.statisticsPeriod ||
-            "day";
-
-        const selectedDate =
-            parseDate(
-                state?.statisticsDate
-            ) || new Date();
-
-
-        let start;
-
-        let end;
-
-
-        if (period === "week") {
-
-            start =
-                startOfWeek(
-                    selectedDate
-                );
-
-            end =
-                endOfWeek(
-                    selectedDate
-                );
-
-        }
-
-        else if (period === "month") {
-
-            start =
-                startOfMonth(
-                    selectedDate
-                );
-
-            end =
-                endOfMonth(
-                    selectedDate
-                );
-
-        }
-
-        else {
-
-            start =
-                startOfDay(
-                    selectedDate
-                );
-
-            end =
-                endOfDay(
-                    selectedDate
-                );
-
-        }
-
-
-        return {
-            start,
-            end
-        };
-
-    }
-
-
-    window.getStatisticsTransactions =
-        function () {
-
-            const range =
-                getStatisticsRange();
-
-            return getTransactions()
-                .filter(transaction => {
-
-                    const date =
-                        parseDate(
-                            transaction.date
-                        );
-
-                    if (!date) {
-                        return false;
-                    }
-
-                    return (
-                        date >= range.start &&
-                        date <= range.end
-                    );
-
-                });
-
-        };
-
-
-    /* =====================================================
-       NORMALIZE TRANSACTION
-    ===================================================== */
-
-    function normalizeTransaction(
-        transaction
-    ) {
-
-        const amount =
-            Number(
-                transaction.amount ??
-                transaction.money ??
-                transaction.value ??
-                0
-            ) || 0;
-
-
-        const appFee =
-            Number(
-                transaction.app_fee ??
-                transaction.appFee ??
-                transaction.platform_fee ??
-                transaction.fee ??
-                0
-            ) || 0;
-
-
-        const cost =
-            Number(
-                transaction.cost ??
-                transaction.cod_cost ??
-                transaction.cost_price ??
-                transaction.cogs ??
-                0
-            ) || 0;
-
-
-        const type =
-            String(
-                transaction.type ??
-                ""
-            )
-            .toLowerCase()
-            .trim();
-
-
-        const source =
-            transaction.order_source ??
-            transaction.orderSource ??
-            transaction.source ??
-            "Khác";
-
-
-        return {
-
-            ...transaction,
-
-            amount,
-
-            appFee,
-
-            cost,
-
-            type,
-
-            source
-
-        };
-
-    }
-
-
-    /* =====================================================
-       CALCULATE
-    ===================================================== */
-
-    function calculateStatistics(
-        transactions
-    ) {
-
-        let revenue = 0;
-
-        let expense = 0;
-
-        let appFee = 0;
-
-        let cost = 0;
-
-        let orders = 0;
-
-        let expenseCount = 0;
-
-
-        const dishes = {};
-
-        const categories = {};
-
-        const sources = {};
-
-
-        transactions.forEach(
-            rawTransaction => {
-
-                const transaction =
-                    normalizeTransaction(
-                        rawTransaction
-                    );
-
-
-                if (
-                    transaction.type ===
-                    "thu"
-                ) {
-
-                    revenue +=
-                        transaction.amount;
-
-                    orders++;
-
-
-                    appFee +=
-                        transaction.appFee;
-
-                    cost +=
-                        transaction.cost;
-
-
-                    const dish =
-                        transaction.dish_name ??
-                        transaction.dish ??
-                        transaction.name ??
-                        "Không rõ";
-
-
-                    if (!dishes[dish]) {
-
-                        dishes[dish] = {
-
-                            name: dish,
-
-                            amount: 0,
-
-                            count: 0
-
-                        };
-
-                    }
-
-
-                    dishes[dish].amount +=
-                        transaction.amount;
-
-                    dishes[dish].count++;
-
-
-                    const source =
-                        transaction.source;
-
-
-                    if (!sources[source]) {
-
-                        sources[source] = {
-
-                            name: source,
-
-                            revenue: 0,
-
-                            fee: 0,
-
-                            count: 0
-
-                        };
-
-                    }
-
-
-                    sources[source].revenue +=
-                        transaction.amount;
-
-                    sources[source].fee +=
-                        transaction.appFee;
-
-                    sources[source].count++;
-
-                }
-
-
-                if (
-                    transaction.type ===
-                    "chi"
-                ) {
-
-                    expense +=
-                        transaction.amount;
-
-                    expenseCount++;
-
-
-                    const category =
-                        transaction.category_name ??
-                        transaction.category ??
-                        "Khác";
-
-
-                    if (
-                        !categories[category]
-                    ) {
-
-                        categories[category] = {
-
-                            name: category,
-
-                            amount: 0,
-
-                            count: 0
-
-                        };
-
-                    }
-
-
-                    categories[category].amount +=
-                        transaction.amount;
-
-                    categories[category].count++;
-
-                }
-
-            }
-        );
-
-
-        const profit =
-            revenue -
-            expense -
-            appFee -
-            cost;
-
-
-        return {
-
-            revenue,
-
-            expense,
-
-            appFee,
-
-            cost,
-
-            profit,
-
-            orders,
-
-            expenseCount,
-
-            expenseAverage:
-                expenseCount > 0
-                    ? expense /
-                      expenseCount
-                    : 0,
-
-            dishes:
-                Object.values(
-                    dishes
-                ),
-
-            categories:
-                Object.values(
-                    categories
-                ),
-
-            sources:
-                Object.values(
-                    sources
-                )
-
-        };
-
-    }
-
-
-    /* =====================================================
-       PERIOD LABEL
-    ===================================================== */
-
-    function updatePeriodLabel() {
-
-        const state =
-            getState();
-
-        if (!state) {
-            return;
-        }
-
-
-        const period =
-            state.statisticsPeriod ||
-            "day";
-
-
-        const date =
-            parseDate(
-                state.statisticsDate
-            ) || new Date();
-
-
-        const element =
-            document.getElementById(
-                "statisticsPeriodLabel"
-            );
-
-
-        if (!element) {
-            return;
-        }
-
-
-        if (period === "month") {
-
-            element.textContent =
-                `Tháng ${
-                    date.getMonth() + 1
-                }/${date.getFullYear()}`;
-
-        }
-
-        else if (period === "week") {
-
-            const start =
-                startOfWeek(date);
-
-            const end =
-                endOfWeek(date);
-
-
-            element.textContent =
-                `${start.toLocaleDateString(
-                    "vi-VN"
-                )} - ${end.toLocaleDateString(
-                    "vi-VN"
-                )}`;
-
-        }
-
-        else {
-
-            element.textContent =
-                date.toLocaleDateString(
-                    "vi-VN",
-                    {
-                        weekday: "long",
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric"
-                    }
-                );
-
-        }
-
-    }
-
-
-    /* =====================================================
-       PERIOD BUTTON
-    ===================================================== */
-
-    function updatePeriodButtons() {
-
-        const state =
-            getState();
-
-        const period =
-            state?.statisticsPeriod ||
-            "day";
-
-
-        document
-            .querySelectorAll(
-                ".period-tab"
-            )
-            .forEach(button => {
-
-                button.classList.toggle(
-                    "active",
-                    button.dataset.period ===
-                    period
-                );
-
-            });
-
-    }
-
-
-    /* =====================================================
-       OVERVIEW
-    ===================================================== */
-
-    function renderOverview(
-        stats
-    ) {
-
-        setText(
-            "statisticsProfit",
-            formatMoney(stats.profit)
-        );
-
-
-        setText(
-            "statisticsRevenue",
-            formatMoney(stats.revenue)
-        );
-
-
-        setText(
-            "statisticsExpense",
-            formatMoney(stats.expense)
-        );
-
-
-        setText(
-            "statisticsCOD",
-            formatMoney(stats.cost)
-        );
-
-
-        setText(
-            "statisticsShopeeFee",
-            formatMoney(stats.appFee)
-        );
-
-
-        setText(
-            "statisticsTotalExpense",
-            formatMoney(stats.expense)
-        );
-
-
-        setText(
-            "statisticsExpenseCount",
-            stats.expenseCount
-        );
-
-
-        setText(
-            "statisticsExpenseAverage",
-            formatMoney(
-                stats.expenseAverage
-            )
-        );
-
-
-        setText(
-            "statisticsFinalProfit",
-            formatMoney(stats.profit)
-        );
-
-    }
-
-
-    /* =====================================================
-       DISH LIST
-    ===================================================== */
-
-    function renderDishList(
-        stats
-    ) {
-
-        const container =
-            document.getElementById(
-                "statisticsDishList"
-            );
-
-
-        if (!container) {
-            return;
-        }
-
-
-        if (
-            stats.dishes.length === 0
-        ) {
-
-            container.innerHTML = `
-                <div class="statistics-empty">
-                    Chưa có dữ liệu doanh thu
-                    trong kỳ này.
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        const sorted =
-            [...stats.dishes]
-                .sort(
-                    (a, b) =>
-                        b.amount -
-                        a.amount
-                );
-
-
-        container.innerHTML =
-            sorted.map(
-                item => `
-
-                    <div class="statistics-detail-row">
-
-                        <div>
-                            <strong>
-                                ${escapeHTML(item.name)}
-                            </strong>
-
-                            <small>
-                                ${item.count} đơn
-                            </small>
-                        </div>
-
-                        <strong class="green-text">
-                            ${formatMoney(item.amount)}
-                        </strong>
-
-                    </div>
-
-                `
-            ).join("");
-
-    }
-
-
-    /* =====================================================
-       EXPENSE CATEGORY
-    ===================================================== */
-
-    function renderExpenseCategories(
-        stats
-    ) {
-
-        const container =
-            document.getElementById(
-                "statisticsExpenseCategoryList"
-            );
-
-
-        if (!container) {
-            return;
-        }
-
-
-        if (
-            stats.categories.length === 0
-        ) {
-
-            container.innerHTML = `
-                <div class="statistics-empty">
-                    Chưa có khoản chi trong kỳ này.
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        const sorted =
-            [...stats.categories]
-                .sort(
-                    (a, b) =>
-                        b.amount -
-                        a.amount
-                );
-
-
-        container.innerHTML =
-            sorted.map(
-                item => `
-
-                    <div class="statistics-category-row">
-
-                        <div class="statistics-category-info">
-
-                            <strong>
-                                ${escapeHTML(item.name)}
-                            </strong>
-
-                            <small>
-                                ${item.count} khoản
-                            </small>
-
-                        </div>
-
-                        <strong class="red-text">
-                            ${formatMoney(item.amount)}
-                        </strong>
-
-                    </div>
-
-                `
-            ).join("");
-
-    }
-
-
-    /* =====================================================
-       EXPENSE DETAIL
-    ===================================================== */
-
-    function renderExpenseList(
-        transactions
-    ) {
-
-        const container =
-            document.getElementById(
-                "statisticsExpenseList"
-            );
-
-
-        if (!container) {
-            return;
-        }
-
-
-        const expenses =
-            transactions.filter(
-                transaction =>
-                    String(
-                        transaction.type
-                    )
-                    .toLowerCase()
-                    .trim() === "chi"
-            );
-
-
-        if (
-            expenses.length === 0
-        ) {
-
-            container.innerHTML = `
-                <div class="statistics-empty">
-                    Chưa có khoản chi trong kỳ này.
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        container.innerHTML =
-            expenses.map(
-                raw => {
-
-                    const item =
-                        normalizeTransaction(
-                            raw
-                        );
-
-
-                    const name =
-                        item.name ??
-                        item.category_name ??
-                        item.category ??
-                        "Khoản chi";
-
-
-                    return `
-
-                        <div class="statistics-detail-row">
-
-                            <div>
-
-                                <strong>
-                                    ${escapeHTML(name)}
-                                </strong>
-
-                                <small>
-                                    ${formatDate(item.date)}
-                                </small>
-
-                            </div>
-
-                            <strong class="red-text">
-                                ${formatMoney(item.amount)}
-                            </strong>
-
-                        </div>
-
-                    `;
-
-                }
-            ).join("");
-
-    }
-
-
-    /* =====================================================
-       SOURCE
-    ===================================================== */
-
-    function renderSources(
-        stats
-    ) {
-
-        const container =
-            document.getElementById(
-                "statisticsSourceList"
-            );
-
-
-        if (!container) {
-            return;
-        }
-
-
-        if (
-            stats.sources.length === 0
-        ) {
-
-            container.innerHTML = `
-                <div class="statistics-empty">
-                    Chưa có đơn hàng trong kỳ này.
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        container.innerHTML =
-            stats.sources.map(
-                source => `
-
-                    <div class="statistics-source-row">
-
-                        <div>
-
-                            <strong>
-                                ${escapeHTML(source.name)}
-                            </strong>
-
-                            <small>
-                                ${source.count} đơn
-                            </small>
-
-                        </div>
-
-                        <div class="statistics-source-values">
-
-                            <strong>
-                                ${formatMoney(
-                                    source.revenue
-                                )}
-                            </strong>
-
-                            <small>
-                                Phí:
-                                ${formatMoney(
-                                    source.fee
-                                )}
-                            </small>
-
-                        </div>
-
-                    </div>
-
-                `
-            ).join("");
-
-    }
-
-
-    /* =====================================================
-       BAR CHART
-    ===================================================== */
-
-    function renderChart(
-        transactions
-    ) {
-
-        const container =
-            document.getElementById(
-                "statisticsChart"
-            );
-
-
-        if (!container) {
-            return;
-        }
-
-
-        const daily = {};
-
-
-        transactions.forEach(
-            raw => {
-
-                const item =
-                    normalizeTransaction(
-                        raw
-                    );
-
-
-                const date =
-                    parseDate(
-                        item.date
-                    );
-
-
-                if (!date) {
-                    return;
-                }
-
-
-                const key =
-                    date.toISOString()
-                        .slice(
-                            0,
-                            10
-                        );
-
-
-                if (!daily[key]) {
-
-                    daily[key] = {
-
-                        income: 0,
-
-                        expense: 0
-
-                    };
-
-                }
-
-
-                if (
-                    item.type === "thu"
-                ) {
-
-                    daily[key].income +=
-                        item.amount;
-
-                }
-
-
-                if (
-                    item.type === "chi"
-                ) {
-
-                    daily[key].expense +=
-                        item.amount;
-
-                }
-
-            }
-        );
-
-
-        const days =
-            Object.entries(
-                daily
-            )
-            .sort(
-                ([a], [b]) =>
-                    a.localeCompare(b)
-            );
-
-
-        if (days.length === 0) {
-
-            container.innerHTML = `
-                <div class="statistics-empty">
-                    Chưa có dữ liệu biểu đồ.
-                </div>
-            `;
-
-            return;
-
-        }
-
-
-        const max =
-            Math.max(
-                ...days.flatMap(
-                    ([, item]) => [
-                        item.income,
-                        item.expense
-                    ]
-                ),
-                1
-            );
-
-
-        container.innerHTML =
-            days.map(
-                ([date, item]) => {
-
-                    const incomeHeight =
-                        Math.max(
-                            4,
-                            item.income /
-                            max *
-                            100
-                        );
-
-
-                    const expenseHeight =
-                        Math.max(
-                            4,
-                            item.expense /
-                            max *
-                            100
-                        );
-
-
-                    return `
-
-                        <div class="statistics-chart-column">
-
-                            <div class="statistics-chart-bars">
-
-                                <div
-                                    class="statistics-bar income"
-                                    style="height:${incomeHeight}%"
-                                    title="Thu: ${formatMoney(item.income)}">
-                                </div>
-
-                                <div
-                                    class="statistics-bar expense"
-                                    style="height:${expenseHeight}%"
-                                    title="Chi: ${formatMoney(item.expense)}">
-                                </div>
-
-                            </div>
-
-                            <small>
-                                ${formatShortDate(date)}
-                            </small>
-
-                        </div>
-
-                    `;
-
-                }
-            ).join("");
-
-    }
-
-
-    /* =====================================================
-       PIE CHART
-    ===================================================== */
-
-    function renderPie(
-        stats
-    ) {
-
-        const total =
-            stats.revenue +
-            stats.expense;
-
-
-        const incomePercent =
-            total > 0
-                ? stats.revenue /
-                  total *
-                  100
-                : 0;
-
-
-        const expensePercent =
-            total > 0
-                ? stats.expense /
-                  total *
-                  100
-                : 0;
-
-
-        const pie =
-            document.getElementById(
-                "statisticsPieChart"
-            );
-
-
-        if (pie) {
-
-            pie.style.background =
-                total > 0
-                    ? `conic-gradient(
-                        #22c55e 0% ${incomePercent}%,
-                        #ef4444 ${incomePercent}% 100%
-                    )`
-                    : `
-                        conic-gradient(
-                            #e5e7eb 0% 100%
-                        )
-                    `;
-
-        }
-
-
-        setText(
-            "statisticsIncomePercent",
-            incomePercent.toFixed(1) + "%"
-        );
-
-
-        setText(
-            "statisticsExpensePercent",
-            expensePercent.toFixed(1) + "%"
-        );
-
-
-        setText(
-            "statisticsPieTotal",
-            formatMoney(total)
-        );
-
-    }
-
-
-    /* =====================================================
-       MAIN RENDER
-    ===================================================== */
-
-    function renderStatistics() {
-
-        const state =
-            getState();
-
-
-        if (!state) {
-            return;
-        }
-
-
-        updatePeriodLabel();
-
-        updatePeriodButtons();
-
-
-        const transactions =
-            window.getStatisticsTransactions
-                ? window.getStatisticsTransactions()
-                : getTransactions();
-
-
-        const stats =
-            calculateStatistics(
-                transactions
-            );
-
-
-        renderOverview(
-            stats
-        );
-
-
-        renderDishList(
-            stats
-        );
-
-
-        renderExpenseCategories(
-            stats
-        );
-
-
-        renderExpenseList(
-            transactions
-        );
-
-
-        renderSources(
-            stats
-        );
-
-
-        renderChart(
-            transactions
-        );
-
-
-        renderPie(
-            stats
-        );
-
-    }
-
-
-    window.renderStatistics =
-        renderStatistics;
-
-
-    /* =====================================================
-       PERIOD CONTROL
-    ===================================================== */
-
-    window.setStatisticsPeriod =
-        function (period) {
-
-            const state =
-                getState();
-
-            if (!state) {
-                return;
-            }
-
-
-            state.statisticsPeriod =
-                period;
-
-
-            renderStatistics();
-
-            if (
-                typeof window.updateStatisticsPie ===
-                "function"
-            ) {
-
-                window.updateStatisticsPie();
-
-            }
-
-        };
-
-
-    window.statisticsPrevious =
-        function () {
-
-            const state =
-                getState();
-
-            if (!state) {
-                return;
-            }
-
-
-            const date =
-                parseDate(
-                    state.statisticsDate
-                ) || new Date();
-
-
-            if (
-                state.statisticsPeriod ===
-                "month"
-            ) {
-
-                date.setMonth(
-                    date.getMonth() - 1
-                );
-
-            }
-
-            else if (
-                state.statisticsPeriod ===
-                "week"
-            ) {
-
-                date.setDate(
-                    date.getDate() - 7
-                );
-
-            }
-
-            else {
-
-                date.setDate(
-                    date.getDate() - 1
-                );
-
-            }
-
-
-            state.statisticsDate =
-                date;
-
-
-            renderStatistics();
-
-        };
-
-
-    window.statisticsNext =
-        function () {
-
-            const state =
-                getState();
-
-            if (!state) {
-                return;
-            }
-
-
-            const date =
-                parseDate(
-                    state.statisticsDate
-                ) || new Date();
-
-
-            if (
-                state.statisticsPeriod ===
-                "month"
-            ) {
-
-                date.setMonth(
-                    date.getMonth() + 1
-                );
-
-            }
-
-            else if (
-                state.statisticsPeriod ===
-                "week"
-            ) {
-
-                date.setDate(
-                    date.getDate() + 7
-                );
-
-            }
-
-            else {
-
-                date.setDate(
-                    date.getDate() + 1
-                );
-
-            }
-
-
-            state.statisticsDate =
-                date;
-
-
-            renderStatistics();
-
-        };
-
+    const state = {
+        period: "day",
+        date: new Date(),
+
+        pickerOpen: false,
+        pickerView: "calendar"
+    };
 
     /* =====================================================
        HELPERS
     ===================================================== */
 
-    function setText(
-        id,
-        value
-    ) {
+    const pad = (n) =>
+        String(n).padStart(2, "0");
 
-        const element =
-            document.getElementById(id);
-
-
-        if (element) {
-
-            element.textContent =
-                value;
-
-        }
-
-    }
-
-
-    function escapeHTML(value) {
-
-        return String(
-            value ?? ""
-        )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-    }
-
-
-    function formatDate(
-        value
-    ) {
-
-        const date =
-            parseDate(value);
-
-
-        if (!date) {
-            return "";
-        }
-
-
-        return date.toLocaleDateString(
-            "vi-VN"
-        );
-
-    }
-
-
-    function formatShortDate(
-        value
-    ) {
-
-        const date =
-            parseDate(value);
-
-
-        if (!date) {
-            return "";
-        }
-
-
-        return `${String(
+    const cloneDate = (date) =>
+        new Date(
+            date.getFullYear(),
+            date.getMonth(),
             date.getDate()
-        ).padStart(2, "0")}/${
-            String(
-                date.getMonth() + 1
-            ).padStart(2, "0")
-        }`;
+        );
 
-    }
+    const isSameDate = (a, b) =>
+        a.getFullYear() === b.getFullYear() &&
+        a.getMonth() === b.getMonth() &&
+        a.getDate() === b.getDate();
 
+    const monthNames = [
+        "Tháng 1",
+        "Tháng 2",
+        "Tháng 3",
+        "Tháng 4",
+        "Tháng 5",
+        "Tháng 6",
+        "Tháng 7",
+        "Tháng 8",
+        "Tháng 9",
+        "Tháng 10",
+        "Tháng 11",
+        "Tháng 12"
+    ];
+
+    const weekNames = [
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "CN"
+    ];
 
     /* =====================================================
-       INITIALIZE
+       FIND ELEMENTS
     ===================================================== */
 
-    document.addEventListener(
-        "DOMContentLoaded",
-        function () {
+    const dateRow =
+        root.querySelector(".statistics-date-row");
 
-            setTimeout(
-                function () {
+    if (!dateRow) return;
 
-                    if (
-                        getState()
-                    ) {
+    const dateButtons =
+        dateRow.querySelectorAll("button");
 
-                        renderStatistics();
+    const prevButton = dateButtons[0];
+    const nextButton = dateButtons[1];
 
-                    }
+    let dateLabel =
+        dateRow.querySelector("strong");
 
-                },
-                150
+    if (!dateLabel) {
+        dateLabel = document.createElement("strong");
+        dateRow.insertBefore(
+            dateLabel,
+            nextButton
+        );
+    }
+
+    /* =====================================================
+       PERIOD TABS
+    ===================================================== */
+
+    const tabs =
+        root.querySelectorAll(".period-tab");
+
+    function detectPeriod() {
+
+        const active =
+            root.querySelector(
+                ".period-tab.active"
             );
+
+        if (!active) return;
+
+        const text =
+            active.textContent
+                .trim()
+                .toLowerCase();
+
+        if (
+            text.includes("ngày") ||
+            text.includes("day")
+        ) {
+            state.period = "day";
+        } else if (
+            text.includes("tháng") ||
+            text.includes("month")
+        ) {
+            state.period = "month";
+        } else if (
+            text.includes("năm") ||
+            text.includes("year")
+        ) {
+            state.period = "year";
+        }
+    }
+
+    detectPeriod();
+
+    tabs.forEach((tab) => {
+
+        tab.addEventListener(
+            "click",
+            function () {
+
+                tabs.forEach((item) =>
+                    item.classList.remove(
+                        "active"
+                    )
+                );
+
+                tab.classList.add("active");
+
+                detectPeriod();
+
+                state.pickerView =
+                    state.period === "day"
+                        ? "calendar"
+                        : state.period === "month"
+                            ? "month"
+                            : "year";
+
+                updateDateLabel();
+
+                closePicker();
+
+                /*
+                 * Cho phép JS cũ của app xử lý
+                 * phần render dữ liệu.
+                 */
+                setTimeout(() => {
+                    notifyStatisticsChanged();
+                }, 0);
+            }
+        );
+
+    });
+
+    /* =====================================================
+       DATE LABEL
+    ===================================================== */
+
+    function updateDateLabel() {
+
+        const d = state.date;
+
+        let text = "";
+
+        if (state.period === "day") {
+
+            text =
+                `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+
+        } else if (state.period === "month") {
+
+            text =
+                `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+
+        } else {
+
+            text =
+                `Năm ${d.getFullYear()}`;
+
+        }
+
+        dateLabel.textContent = text;
+    }
+
+    /* =====================================================
+       PERIOD NAVIGATION
+    ===================================================== */
+
+    function movePeriod(direction) {
+
+        const d = cloneDate(state.date);
+
+        if (state.period === "day") {
+
+            d.setDate(
+                d.getDate() + direction
+            );
+
+        } else if (state.period === "month") {
+
+            d.setMonth(
+                d.getMonth() + direction
+            );
+
+        } else {
+
+            d.setFullYear(
+                d.getFullYear() + direction
+            );
+        }
+
+        state.date = d;
+
+        updateDateLabel();
+
+        renderPicker();
+
+        notifyStatisticsChanged();
+    }
+
+    if (prevButton) {
+
+        prevButton.addEventListener(
+            "click",
+            function () {
+                movePeriod(-1);
+            }
+        );
+
+    }
+
+    if (nextButton) {
+
+        nextButton.addEventListener(
+            "click",
+            function () {
+                movePeriod(1);
+            }
+        );
+
+    }
+
+    /* =====================================================
+       DATE PICKER ROOT
+    ===================================================== */
+
+    let picker =
+        root.querySelector(".stats-date-picker");
+
+    if (!picker) {
+
+        picker =
+            document.createElement("div");
+
+        picker.className =
+            "stats-date-picker";
+
+        dateRow.appendChild(picker);
+    }
+
+    /* =====================================================
+       OPEN / CLOSE
+    ===================================================== */
+
+    function openPicker() {
+
+        state.pickerOpen = true;
+
+        if (
+            state.period === "day"
+        ) {
+            state.pickerView =
+                "calendar";
+        }
+
+        if (
+            state.period === "month"
+        ) {
+            state.pickerView =
+                "month";
+        }
+
+        if (
+            state.period === "year"
+        ) {
+            state.pickerView =
+                "year";
+        }
+
+        renderPicker();
+
+        requestAnimationFrame(() => {
+            picker.classList.add("open");
+        });
+    }
+
+    function closePicker() {
+
+        state.pickerOpen = false;
+
+        picker.classList.remove("open");
+    }
+
+    dateLabel.addEventListener(
+        "click",
+        function (event) {
+
+            event.stopPropagation();
+
+            if (state.pickerOpen) {
+                closePicker();
+            } else {
+                openPicker();
+            }
 
         }
     );
 
+    document.addEventListener(
+        "click",
+        function (event) {
+
+            if (!state.pickerOpen) return;
+
+            if (
+                picker.contains(event.target) ||
+                dateLabel.contains(event.target)
+            ) {
+                return;
+            }
+
+            closePicker();
+        }
+    );
+
+    /* =====================================================
+       PICKER HEADER
+    ===================================================== */
+
+    function pickerHeader() {
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "stats-date-picker-header";
+
+        const prev =
+            document.createElement("button");
+
+        prev.type = "button";
+
+        prev.className =
+            "stats-date-picker-nav";
+
+        prev.innerHTML = "‹";
+
+        const title =
+            document.createElement("div");
+
+        title.className =
+            "stats-date-picker-title";
+
+        const next =
+            document.createElement("button");
+
+        next.type = "button";
+
+        next.className =
+            "stats-date-picker-nav";
+
+        next.innerHTML = "›";
+
+        wrapper.append(
+            prev,
+            title,
+            next
+        );
+
+        return {
+            wrapper,
+            prev,
+            title,
+            next
+        };
+    }
+
+    /* =====================================================
+       SWITCH
+    ===================================================== */
+
+    function createSwitch() {
+
+        const wrap =
+            document.createElement("div");
+
+        wrap.className =
+            "stats-date-picker-switch";
+
+        const monthBtn =
+            document.createElement("button");
+
+        monthBtn.type = "button";
+
+        monthBtn.textContent =
+            "Tháng";
+
+        const yearBtn =
+            document.createElement("button");
+
+        yearBtn.type = "button";
+
+        yearBtn.textContent =
+            "Năm";
+
+        monthBtn.classList.toggle(
+            "active",
+            state.pickerView !== "year"
+        );
+
+        yearBtn.classList.toggle(
+            "active",
+            state.pickerView === "year"
+        );
+
+        monthBtn.addEventListener(
+            "click",
+            () => {
+
+                state.pickerView =
+                    state.period === "day"
+                        ? "calendar"
+                        : "month";
+
+                renderPicker();
+            }
+        );
+
+        yearBtn.addEventListener(
+            "click",
+            () => {
+
+                state.pickerView = "year";
+
+                renderPicker();
+            }
+        );
+
+        wrap.append(
+            monthBtn,
+            yearBtn
+        );
+
+        return wrap;
+    }
+
+    /* =====================================================
+       CALENDAR
+    ===================================================== */
+
+    function renderCalendar(container) {
+
+        const header =
+            pickerHeader();
+
+        header.title.textContent =
+            `${monthNames[state.date.getMonth()]} ${state.date.getFullYear()}`;
+
+        header.prev.addEventListener(
+            "click",
+            () => {
+
+                state.date.setMonth(
+                    state.date.getMonth() - 1
+                );
+
+                renderPicker();
+                updateDateLabel();
+            }
+        );
+
+        header.next.addEventListener(
+            "click",
+            () => {
+
+                state.date.setMonth(
+                    state.date.getMonth() + 1
+                );
+
+                renderPicker();
+                updateDateLabel();
+            }
+        );
+
+        container.append(
+            header.wrapper
+        );
+
+        container.append(
+            createSwitch()
+        );
+
+        const week =
+            document.createElement("div");
+
+        week.className =
+            "stats-calendar-week";
+
+        weekNames.forEach((name) => {
+
+            const el =
+                document.createElement("span");
+
+            el.textContent = name;
+
+            week.appendChild(el);
+
+        });
+
+        container.appendChild(week);
+
+        const grid =
+            document.createElement("div");
+
+        grid.className =
+            "stats-calendar-grid";
+
+        const year =
+            state.date.getFullYear();
+
+        const month =
+            state.date.getMonth();
+
+        /*
+         * JS Date:
+         * Sunday = 0
+         *
+         * Chuyển về:
+         * Monday = 0
+         */
+        const firstDay =
+            new Date(
+                year,
+                month,
+                1
+            ).getDay();
+
+        const startOffset =
+            firstDay === 0
+                ? 6
+                : firstDay - 1;
+
+        const daysInMonth =
+            new Date(
+                year,
+                month + 1,
+                0
+            ).getDate();
+
+        const daysPrevMonth =
+            new Date(
+                year,
+                month,
+                0
+            ).getDate();
+
+        const today =
+            new Date();
+
+        for (
+            let i = 0;
+            i < 42;
+            i++
+        ) {
+
+            let day;
+            let cellMonth = month;
+            let cellYear = year;
+
+            if (i < startOffset) {
+
+                day =
+                    daysPrevMonth -
+                    startOffset +
+                    i +
+                    1;
+
+                cellMonth--;
+
+                if (cellMonth < 0) {
+                    cellMonth = 11;
+                    cellYear--;
+                }
+
+            } else if (
+                i >=
+                startOffset +
+                daysInMonth
+            ) {
+
+                day =
+                    i -
+                    startOffset -
+                    daysInMonth +
+                    1;
+
+                cellMonth++;
+
+                if (cellMonth > 11) {
+                    cellMonth = 0;
+                    cellYear++;
+                }
+
+            } else {
+
+                day =
+                    i -
+                    startOffset +
+                    1;
+            }
+
+            const cellDate =
+                new Date(
+                    cellYear,
+                    cellMonth,
+                    day
+                );
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.type = "button";
+
+            button.className =
+                "stats-calendar-day";
+
+            button.textContent = day;
+
+            if (
+                cellMonth !== month
+            ) {
+                button.classList.add(
+                    "muted"
+                );
+            }
+
+            if (
+                isSameDate(
+                    cellDate,
+                    today
+                )
+            ) {
+                button.classList.add(
+                    "today"
+                );
+            }
+
+            if (
+                isSameDate(
+                    cellDate,
+                    state.date
+                )
+            ) {
+                button.classList.add(
+                    "selected"
+                );
+            }
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    state.date =
+                        cloneDate(cellDate);
+
+                    updateDateLabel();
+
+                    closePicker();
+
+                    notifyStatisticsChanged();
+                }
+            );
+
+            grid.appendChild(button);
+        }
+
+        container.appendChild(grid);
+    }
+
+    /* =====================================================
+       MONTH
+    ===================================================== */
+
+    function renderMonths(container) {
+
+        const header =
+            pickerHeader();
+
+        header.title.textContent =
+            `Năm ${state.date.getFullYear()}`;
+
+        header.prev.addEventListener(
+            "click",
+            () => {
+
+                state.date.setFullYear(
+                    state.date.getFullYear() - 1
+                );
+
+                renderPicker();
+                updateDateLabel();
+            }
+        );
+
+        header.next.addEventListener(
+            "click",
+            () => {
+
+                state.date.setFullYear(
+                    state.date.getFullYear() + 1
+                );
+
+                renderPicker();
+                updateDateLabel();
+            }
+        );
+
+        container.append(
+            header.wrapper
+        );
+
+        const grid =
+            document.createElement("div");
+
+        grid.className =
+            "stats-month-grid";
+
+        monthNames.forEach(
+            (name, index) => {
+
+                const button =
+                    document.createElement(
+                        "button"
+                    );
+
+                button.type = "button";
+
+                button.textContent =
+                    name;
+
+                if (
+                    index ===
+                    state.date.getMonth()
+                ) {
+                    button.classList.add(
+                        "active"
+                    );
+                }
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        state.date.setMonth(
+                            index
+                        );
+
+                        updateDateLabel();
+
+                        if (
+                            state.period ===
+                            "month"
+                        ) {
+                            closePicker();
+                            notifyStatisticsChanged();
+                        } else {
+                            state.pickerView =
+                                "calendar";
+
+                            renderPicker();
+                        }
+                    }
+                );
+
+                grid.appendChild(button);
+            }
+        );
+
+        container.appendChild(grid);
+    }
+
+    /* =====================================================
+       YEAR
+    ===================================================== */
+
+    function renderYears(container) {
+
+        const currentYear =
+            state.date.getFullYear();
+
+        const start =
+            currentYear - 5;
+
+        const end =
+            currentYear + 6;
+
+        const header =
+            pickerHeader();
+
+        header.title.textContent =
+            `${start} – ${end}`;
+
+        header.prev.addEventListener(
+            "click",
+            () => {
+
+                state.date.setFullYear(
+                    state.date.getFullYear() - 12
+                );
+
+                renderPicker();
+            }
+        );
+
+        header.next.addEventListener(
+            "click",
+            () => {
+
+                state.date.setFullYear(
+                    state.date.getFullYear() + 12
+                );
+
+                renderPicker();
+            }
+        );
+
+        container.append(
+            header.wrapper
+        );
+
+        const grid =
+            document.createElement("div");
+
+        grid.className =
+            "stats-year-grid";
+
+        for (
+            let year = start;
+            year <= end;
+            year++
+        ) {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.type = "button";
+
+            button.textContent =
+                year;
+
+            if (
+                year === currentYear
+            ) {
+                button.classList.add(
+                    "active"
+                );
+            }
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    state.date.setFullYear(
+                        year
+                    );
+
+                    updateDateLabel();
+
+                    if (
+                        state.period ===
+                        "year"
+                    ) {
+                        closePicker();
+                        notifyStatisticsChanged();
+                    } else {
+                        state.pickerView =
+                            state.period ===
+                            "month"
+                                ? "month"
+                                : "calendar";
+
+                        renderPicker();
+                    }
+                }
+            );
+
+            grid.appendChild(button);
+        }
+
+        container.appendChild(grid);
+    }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+
+    function createFooter() {
+
+        const footer =
+            document.createElement("div");
+
+        footer.className =
+            "stats-date-picker-footer";
+
+        const today =
+            document.createElement("button");
+
+        today.type = "button";
+
+        today.className =
+            "stats-date-today";
+
+        today.textContent =
+            "Hôm nay";
+
+        today.addEventListener(
+            "click",
+            () => {
+
+                state.date =
+                    cloneDate(new Date());
+
+                updateDateLabel();
+
+                closePicker();
+
+                notifyStatisticsChanged();
+            }
+        );
+
+        const close =
+            document.createElement("button");
+
+        close.type = "button";
+
+        close.className =
+            "stats-date-close";
+
+        close.textContent =
+            "Xong";
+
+        close.addEventListener(
+            "click",
+            closePicker
+        );
+
+        footer.append(
+            today,
+            close
+        );
+
+        return footer;
+    }
+
+    /* =====================================================
+       RENDER PICKER
+    ===================================================== */
+
+    function renderPicker() {
+
+        picker.innerHTML = "";
+
+        if (
+            state.period === "day"
+        ) {
+
+            renderCalendar(picker);
+
+        } else if (
+            state.period === "month"
+        ) {
+
+            if (
+                state.pickerView ===
+                "year"
+            ) {
+                renderYears(picker);
+            } else {
+                renderMonths(picker);
+            }
+
+        } else {
+
+            renderYears(picker);
+        }
+
+        picker.appendChild(
+            createFooter()
+        );
+    }
+
+    /* =====================================================
+       NOTIFY APP
+    ===================================================== */
+
+    function notifyStatisticsChanged() {
+
+        /*
+         * Các app khác nhau thường dùng
+         * những function khác nhau.
+         *
+         * Vì vậy kiểm tra các function
+         * phổ biến trước.
+         */
+
+        const payload = {
+            date: cloneDate(state.date),
+            period: state.period,
+
+            day:
+                state.date.getDate(),
+
+            month:
+                state.date.getMonth() + 1,
+
+            year:
+                state.date.getFullYear()
+        };
+
+        const functions = [
+            "renderStatistics",
+            "updateStatistics",
+            "loadStatistics",
+            "refreshStatistics",
+            "calculateStatistics"
+        ];
+
+        for (
+            const name of functions
+        ) {
+
+            if (
+                typeof window[name] ===
+                "function"
+            ) {
+
+                try {
+                    window[name](payload);
+                } catch (error) {
+                    /*
+                     * Không làm app crash
+                     * nếu function cũ không
+                     * nhận payload.
+                     */
+                    try {
+                        window[name]();
+                    } catch (_) {}
+                }
+
+                break;
+            }
+        }
+
+        /*
+         * Phát custom event để JS hiện tại
+         * có thể bắt nếu cần.
+         */
+        document.dispatchEvent(
+            new CustomEvent(
+                "statisticsDateChanged",
+                {
+                    detail: payload
+                }
+            )
+        );
+    }
+
+    /* =====================================================
+       PUBLIC API
+    ===================================================== */
+
+    window.statisticsDatePicker = {
+
+        getDate() {
+            return cloneDate(
+                state.date
+            );
+        },
+
+        getPeriod() {
+            return state.period;
+        },
+
+        setDate(date) {
+
+            if (!(date instanceof Date)) {
+                return;
+            }
+
+            state.date =
+                cloneDate(date);
+
+            updateDateLabel();
+            renderPicker();
+        },
+
+        setPeriod(period) {
+
+            if (
+                ![
+                    "day",
+                    "month",
+                    "year"
+                ].includes(period)
+            ) {
+                return;
+            }
+
+            state.period =
+                period;
+
+            state.pickerView =
+                period === "day"
+                    ? "calendar"
+                    : period === "month"
+                        ? "month"
+                        : "year";
+
+            updateDateLabel();
+            renderPicker();
+        },
+
+        open() {
+            openPicker();
+        },
+
+        close() {
+            closePicker();
+        }
+    };
+
+    /* =====================================================
+       INIT
+    ===================================================== */
+
+    updateDateLabel();
+
+    /*
+     * Nếu date row đã tồn tại nhưng strong
+     * đang có text cũ, thay bằng state.
+     */
+    renderPicker();
 
 })();
