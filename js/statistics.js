@@ -2,12 +2,8 @@
    STATISTICS.JS
    PREMIUM STATISTICS
    FULL REBUILD
-   + DATE PICKER NGÀY / THÁNG / NĂM ĐỘNG
-========================================================= */
-
-
-/* =========================================================
-   STATE
+   + DATE PICKER NGÀY / TUẦN / THÁNG
+   + RESPONSIVE MOBILE
 ========================================================= */
 
 if (typeof AppState === "undefined") {
@@ -46,7 +42,6 @@ function statisticsCreateLocalDate(year, month, day) {
     );
 }
 
-
 function statisticsDateToString(date) {
     if (
         !(date instanceof Date) ||
@@ -63,7 +58,6 @@ function statisticsDateToString(date) {
         String(date.getDate()).padStart(2, "0")
     );
 }
-
 
 function statisticsStringToDate(value) {
     if (!value) {
@@ -91,7 +85,6 @@ function statisticsStringToDate(value) {
         : date;
 }
 
-
 function statisticsNormalizeDate() {
     if (
         !(AppState.statisticsDate instanceof Date) ||
@@ -110,7 +103,7 @@ function statisticsNormalizeDate() {
 
 
 /* =========================================================
-   MONTH / DATE LABEL
+   LABEL
 ========================================================= */
 
 function statisticsMonthName(month) {
@@ -132,7 +125,6 @@ function statisticsMonthName(month) {
     return months[month] || "";
 }
 
-
 function statisticsFormatDayMonthYear(date) {
     if (!(date instanceof Date)) {
         return "";
@@ -149,7 +141,7 @@ function statisticsFormatDayMonthYear(date) {
 
 
 /* =========================================================
-   SET MODE
+   MODE
 ========================================================= */
 
 function setStatisticsMode(mode) {
@@ -294,7 +286,7 @@ function statisticsGetTransactionDate(transaction) {
 
 
 /* =========================================================
-   FILTER TRANSACTIONS
+   FILTER
 ========================================================= */
 
 function getStatisticsTransactions() {
@@ -337,7 +329,6 @@ function statisticsSafeText(value) {
 
     return String(value);
 }
-
 
 function statisticsEscapeHTML(value) {
     const text =
@@ -409,7 +400,7 @@ function statisticsMoney(value) {
 
 
 /* =========================================================
-   SET TEXT
+   TEXT
 ========================================================= */
 
 function statisticsSetText(id, value) {
@@ -423,7 +414,6 @@ function statisticsSetText(id, value) {
     element.textContent =
         statisticsSafeText(value);
 }
-
 
 function statisticsSetTextCompat(id, value) {
     if (typeof setText === "function") {
@@ -493,11 +483,6 @@ function renderStatistics() {
                     transaction.type === "chi"
             );
 
-
-        /* =================================================
-           REVENUE
-        ================================================= */
-
         const revenue =
             income.reduce(
                 (sum, transaction) =>
@@ -508,11 +493,6 @@ function renderStatistics() {
                 0
             );
 
-
-        /* =================================================
-           EXPENSE
-        ================================================= */
-
         const expense =
             expenses.reduce(
                 (sum, transaction) =>
@@ -522,11 +502,6 @@ function renderStatistics() {
                     ),
                 0
             );
-
-
-        /* =================================================
-           APP FEES
-        ================================================= */
 
         const shopeeFee =
             income
@@ -544,7 +519,6 @@ function renderStatistics() {
                     0
                 );
 
-
         const grabFee =
             income
                 .filter(
@@ -561,20 +535,10 @@ function renderStatistics() {
                     0
                 );
 
-
-        /* =================================================
-           COST
-        ================================================= */
-
         const codCost =
             calculatePeriodCODCost(
                 income
             );
-
-
-        /* =================================================
-           PROFIT
-        ================================================= */
 
         const profit =
             revenue -
@@ -582,11 +546,6 @@ function renderStatistics() {
             expense -
             shopeeFee -
             grabFee;
-
-
-        /* =================================================
-           MAIN UI
-        ================================================= */
 
         statisticsSetTextCompat(
             "statisticsRevenue",
@@ -618,7 +577,6 @@ function renderStatistics() {
             statisticsMoney(profit)
         );
 
-
         const profitElement =
             document.getElementById(
                 "statisticsProfit"
@@ -635,11 +593,6 @@ function renderStatistics() {
                 profit < 0
             );
         }
-
-
-        /* =================================================
-           EXTRA OVERVIEW
-        ================================================= */
 
         statisticsSetTextCompat(
             "statisticsTotalRevenue",
@@ -662,11 +615,6 @@ function renderStatistics() {
                 shopeeFee + grabFee
             )
         );
-
-
-        /* =================================================
-           SECTIONS
-        ================================================= */
 
         renderStatisticsExpenses(
             expenses
@@ -691,11 +639,6 @@ function renderStatistics() {
             expenses
         );
 
-
-        /* =================================================
-           LABEL
-        ================================================= */
-
         const periodLabel =
             getPeriodLabel();
 
@@ -714,7 +657,6 @@ function renderStatistics() {
             periodLabel
         );
 
-
         document
             .querySelectorAll(".period-tab")
             .forEach(button => {
@@ -725,12 +667,13 @@ function renderStatistics() {
                 );
             });
 
-
         hideOldStatisticsModeTabs();
 
         updateStatisticsNavigationButtons();
 
         updateStatisticsDateDisplay();
+
+        statisticsMakeDateLabelClickable();
 
     } catch (error) {
         console.error(
@@ -1647,11 +1590,6 @@ function renderStatisticsPercentWheel(
             ? expense / total * 100
             : 0;
 
-
-    /* =====================================================
-       DISH MAP
-    ===================================================== */
-
     const dishMap = {};
 
     (
@@ -1692,11 +1630,6 @@ function renderStatisticsPercentWheel(
                     b[1].revenue -
                     a[1].revenue
             );
-
-
-    /* =====================================================
-       EXPENSE MAP
-    ===================================================== */
 
     const expenseMap = {};
 
@@ -1739,11 +1672,6 @@ function renderStatisticsPercentWheel(
 
     const topExpenses =
         expenseCategories.slice(0, 8);
-
-
-    /* =====================================================
-       DISH HTML
-    ===================================================== */
 
     let dishesHTML = "";
 
@@ -1815,11 +1743,6 @@ function renderStatisticsPercentWheel(
         `;
     }
 
-
-    /* =====================================================
-       EXPENSE HTML
-    ===================================================== */
-
     let expenseHTML = "";
 
     if (topExpenses.length) {
@@ -1883,11 +1806,6 @@ function renderStatisticsPercentWheel(
             </div>
         `;
     }
-
-
-    /* =====================================================
-       EXPENSE ANALYSIS
-    ===================================================== */
 
     let expenseAnalysisHTML = "";
 
@@ -1973,11 +1891,6 @@ function renderStatisticsPercentWheel(
         `;
     }
 
-
-    /* =====================================================
-       RENDER
-    ===================================================== */
-
     section.innerHTML = `
         <div class="
             statistics-wheel-heading
@@ -1997,7 +1910,6 @@ function renderStatisticsPercentWheel(
                 ${statisticsMoney(total)}
             </small>
         </div>
-
 
         <div class="
             statistics-wheel-grid
@@ -2041,7 +1953,6 @@ function renderStatisticsPercentWheel(
                 </div>
             </div>
 
-
             <div class="
                 statistics-wheel-card
                 expense
@@ -2082,7 +1993,6 @@ function renderStatisticsPercentWheel(
             </div>
         </div>
 
-
         <div class="
             statistics-detail-wheel-section
         ">
@@ -2110,7 +2020,6 @@ function renderStatisticsPercentWheel(
                 ${dishesHTML}
             </div>
         </div>
-
 
         <div class="
             statistics-expense-analysis
@@ -2145,7 +2054,6 @@ function renderStatisticsPercentWheel(
                 ${expenseAnalysisHTML}
             </div>
         </div>
-
 
         <div class="
             statistics-detail-wheel-section
@@ -2388,7 +2296,7 @@ function getPeriodLabel() {
 
 
 /* =========================================================
-   UPDATE DATE DISPLAY
+   DATE DISPLAY
 ========================================================= */
 
 function updateStatisticsDateDisplay() {
@@ -2437,12 +2345,6 @@ function updateStatisticsDateDisplay() {
         );
     });
 
-
-    /*
-     * Cập nhật tất cả phần tử dùng
-     * data-statistics-date-display
-     */
-
     document
         .querySelectorAll(
             "[data-statistics-date-display]"
@@ -2454,7 +2356,7 @@ function updateStatisticsDateDisplay() {
 
 
 /* =========================================================
-   NAVIGATION BUTTON STATE
+   NAVIGATION BUTTON
 ========================================================= */
 
 function updateStatisticsNavigationButtons() {
@@ -2464,6 +2366,7 @@ function updateStatisticsNavigationButtons() {
         )
         .forEach(button => {
             button.disabled = false;
+
             button.removeAttribute(
                 "aria-disabled"
             );
@@ -2472,22 +2375,16 @@ function updateStatisticsNavigationButtons() {
 
 
 /* =========================================================
-   DATE PICKER
-   ---------------------------------------------------------
-   BẤM:
-      22/08/2026
-
-   SẼ HIỆN:
-      Năm
-      Tháng
-      Ngày
-
-   Tất cả đều sinh động theo năm/tháng hiện tại.
+   DATE PICKER STATE
 ========================================================= */
 
 let statisticsPickerYear = null;
 let statisticsPickerMonth = null;
 
+
+/* =========================================================
+   CREATE DATE PICKER
+========================================================= */
 
 function createStatisticsDatePicker() {
     let picker =
@@ -2516,6 +2413,7 @@ function createStatisticsDatePicker() {
         <div class="
             statistics-date-picker-panel
         ">
+
             <div class="
                 statistics-date-picker-header
             ">
@@ -2545,7 +2443,6 @@ function createStatisticsDatePicker() {
                 </button>
             </div>
 
-
             <div class="
                 statistics-picker-periods
             ">
@@ -2571,7 +2468,6 @@ function createStatisticsDatePicker() {
                 </button>
             </div>
 
-
             <div
                 id="
                     statisticsPickerContent
@@ -2580,7 +2476,6 @@ function createStatisticsDatePicker() {
                     statistics-picker-content
                 "
             ></div>
-
 
             <div class="
                 statistics-picker-footer
@@ -2594,14 +2489,13 @@ function createStatisticsDatePicker() {
 
                 <button
                     type="button"
-                    class="
-                        primary
-                    "
+                    class="primary"
                     data-picker-action="apply"
                 >
                     Chọn
                 </button>
             </div>
+
         </div>
     `;
 
@@ -2629,13 +2523,11 @@ function openStatisticsDatePicker() {
 
     picker.classList.add("open");
 
-    renderStatisticsDatePicker();
+    document.body.classList.add(
+        "statistics-picker-open"
+    );
 
-    setTimeout(() => {
-        document.body.classList.add(
-            "statistics-picker-open"
-        );
-    }, 0);
+    renderStatisticsDatePicker();
 }
 
 
@@ -2700,11 +2592,6 @@ function renderStatisticsDatePicker() {
             );
         });
 
-
-    /*
-     * TITLE
-     */
-
     const title =
         document.getElementById(
             "statisticsPickerTitle"
@@ -2717,11 +2604,6 @@ function renderStatisticsDatePicker() {
             );
     }
 
-
-    /* =====================================================
-       DAY
-    ===================================================== */
-
     if (period === "day") {
         renderStatisticsDayPicker(
             content
@@ -2729,22 +2611,12 @@ function renderStatisticsDatePicker() {
         return;
     }
 
-
-    /* =====================================================
-       WEEK
-    ===================================================== */
-
     if (period === "week") {
         renderStatisticsWeekPicker(
             content
         );
         return;
     }
-
-
-    /* =====================================================
-       MONTH
-    ===================================================== */
 
     renderStatisticsMonthPicker(
         content
@@ -2771,16 +2643,6 @@ function renderStatisticsYearSelector(
         ">
     `;
 
-    /*
-     * Không cố định.
-     *
-     * Luôn tạo vùng:
-     *
-     * năm hiện tại - 6
-     * đến
-     * năm hiện tại + 6
-     */
-
     for (
         let year = currentYear - 6;
         year <= currentYear + 6;
@@ -2803,7 +2665,9 @@ function renderStatisticsYearSelector(
         `;
     }
 
-    html += `</div>`;
+    html += `
+        </div>
+    `;
 
     return html;
 }
@@ -2848,14 +2712,16 @@ function renderStatisticsMonthGrid() {
         `;
     }
 
-    html += `</div>`;
+    html += `
+        </div>
+    `;
 
     return html;
 }
 
 
 /* =========================================================
-   DAY GRID
+   CALENDAR
 ========================================================= */
 
 function renderStatisticsCalendar() {
@@ -2879,10 +2745,6 @@ function renderStatisticsCalendar() {
             0
         );
 
-    /*
-     * Monday = 0
-     */
-
     let startDay =
         firstDay.getDay() - 1;
 
@@ -2899,7 +2761,8 @@ function renderStatisticsCalendar() {
         ">
             <button
                 type="button"
-                data-picker-calendar="prev-year"
+                data-picker-calendar="prev-month"
+                aria-label="Tháng trước"
             >
                 ‹
             </button>
@@ -2911,7 +2774,8 @@ function renderStatisticsCalendar() {
 
             <button
                 type="button"
-                data-picker-calendar="next-year"
+                data-picker-calendar="next-month"
+                aria-label="Tháng sau"
             >
                 ›
             </button>
@@ -2934,11 +2798,6 @@ function renderStatisticsCalendar() {
         ">
     `;
 
-
-    /*
-     * Ô trống đầu tháng
-     */
-
     for (
         let i = 0;
         i < startDay;
@@ -2953,10 +2812,11 @@ function renderStatisticsCalendar() {
         `;
     }
 
+    const selected =
+        AppState.statisticsDate;
 
-    /*
-     * Ngày trong tháng
-     */
+    const now =
+        new Date();
 
     for (
         let day = 1;
@@ -2964,12 +2824,9 @@ function renderStatisticsCalendar() {
         day++
     ) {
         const isSelected =
-            AppState.statisticsDate.getFullYear() === year &&
-            AppState.statisticsDate.getMonth() === month &&
-            AppState.statisticsDate.getDate() === day;
-
-        const now =
-            new Date();
+            selected.getFullYear() === year &&
+            selected.getMonth() === month &&
+            selected.getDate() === day;
 
         const isToday =
             now.getFullYear() === year &&
@@ -3043,22 +2900,13 @@ function renderStatisticsDayPicker(
 function renderStatisticsWeekPicker(
     content
 ) {
-    const selected =
-        AppState.statisticsDate;
-
-    const selectedYear =
-        selected.getFullYear();
-
-    const selectedMonth =
-        selected.getMonth();
-
     content.innerHTML = `
         <div class="
             statistics-picker-scroll
         ">
 
             ${renderStatisticsYearSelector(
-                selectedYear
+                statisticsPickerYear
             )}
 
             ${renderStatisticsMonthGrid()}
@@ -3124,13 +2972,6 @@ function applyStatisticsDatePicker() {
     else {
         const day =
             selected.getDate();
-
-        /*
-         * Khi đổi tháng:
-         * nếu ngày cũ không tồn tại
-         * trong tháng mới thì đưa về
-         * ngày cuối tháng.
-         */
 
         const maxDay =
             statisticsCreateLocalDate(
@@ -3290,15 +3131,29 @@ function statisticsBindDatePicker() {
                         .pickerCalendar;
 
                 if (
-                    action === "prev-year"
+                    action === "prev-month"
                 ) {
-                    statisticsPickerYear--;
+                    statisticsPickerMonth--;
+
+                    if (
+                        statisticsPickerMonth < 0
+                    ) {
+                        statisticsPickerMonth = 11;
+                        statisticsPickerYear--;
+                    }
                 }
 
                 if (
-                    action === "next-year"
+                    action === "next-month"
                 ) {
-                    statisticsPickerYear++;
+                    statisticsPickerMonth++;
+
+                    if (
+                        statisticsPickerMonth > 11
+                    ) {
+                        statisticsPickerMonth = 0;
+                        statisticsPickerYear++;
+                    }
                 }
 
                 renderStatisticsDatePicker();
@@ -3364,7 +3219,7 @@ function statisticsBindDatePicker() {
 
 
 /* =========================================================
-   FIND / BIND DATE DISPLAY
+   DATE DISPLAY EVENTS
 ========================================================= */
 
 function statisticsBindDateDisplay() {
@@ -3381,14 +3236,6 @@ function statisticsBindDateDisplay() {
         "click",
         event => {
 
-            /*
-             * Hỗ trợ:
-             *
-             * data-statistics-date-picker
-             *
-             * và các id cũ.
-             */
-
             const target =
                 event.target.closest(
                     "[data-statistics-date-picker]"
@@ -3396,10 +3243,11 @@ function statisticsBindDateDisplay() {
 
             if (target) {
                 event.preventDefault();
+
                 openStatisticsDatePicker();
+
                 return;
             }
-
 
             const ids = [
                 "statisticsDateLabel",
@@ -3418,22 +3266,11 @@ function statisticsBindDateDisplay() {
 
             if (idTarget) {
                 event.preventDefault();
+
                 openStatisticsDatePicker();
+
                 return;
             }
-
-
-            /*
-             * Nếu HTML có cấu trúc:
-             *
-             * <div class="statistics-date-row">
-             *    <button>‹</button>
-             *    <strong>22/08/2026</strong>
-             *    <button>›</button>
-             * </div>
-             *
-             * thì click vào phần giữa cũng mở picker.
-             */
 
             const row =
                 event.target.closest(
@@ -3451,6 +3288,7 @@ function statisticsBindDateDisplay() {
 
             if (middle) {
                 event.preventDefault();
+
                 openStatisticsDatePicker();
             }
         }
@@ -3493,6 +3331,7 @@ function statisticsBindNavigation() {
                 action === "previous"
             ) {
                 event.preventDefault();
+
                 statisticsPrevious();
             }
 
@@ -3500,6 +3339,7 @@ function statisticsBindNavigation() {
                 action === "next"
             ) {
                 event.preventDefault();
+
                 statisticsNext();
             }
 
@@ -3507,6 +3347,7 @@ function statisticsBindNavigation() {
                 action === "today"
             ) {
                 event.preventDefault();
+
                 statisticsToday();
             }
         }
@@ -3515,9 +3356,7 @@ function statisticsBindNavigation() {
 
 
 /* =========================================================
-   AUTO CREATE CSS
-   ---------------------------------------------------------
-   JS tự thêm CSS để không cần sửa HTML.
+   RESPONSIVE DATE PICKER CSS
 ========================================================= */
 
 function statisticsInjectDatePickerCSS() {
@@ -3537,58 +3376,98 @@ function statisticsInjectDatePickerCSS() {
 
     style.textContent = `
 
+        /* =====================================================
+           BODY
+        ===================================================== */
+
         body.statistics-picker-open {
-            overflow: hidden;
+            overflow: hidden !important;
+            touch-action: none;
         }
 
+
+        /* =====================================================
+           OVERLAY
+        ===================================================== */
+
         .statistics-date-picker {
-            position: fixed;
-            inset: 0;
-            z-index: 999999;
+            position: fixed !important;
+            inset: 0 !important;
+
+            z-index: 999999 !important;
+
             display: none;
+
             align-items: center;
             justify-content: center;
-            padding: 16px;
+
+            width: 100vw;
+            height: 100dvh;
+
+            padding: 12px;
+
+            box-sizing: border-box;
         }
 
         .statistics-date-picker.open {
-            display: flex;
+            display: flex !important;
         }
 
         .statistics-date-picker-backdrop {
-            position: absolute;
-            inset: 0;
+            position: absolute !important;
+            inset: 0 !important;
+
+            width: 100%;
+            height: 100%;
+
             background:
-                rgba(8, 15, 30, .58);
+                rgba(8,15,30,.62);
+
             backdrop-filter:
                 blur(7px);
+
+            -webkit-backdrop-filter:
+                blur(7px);
+
+            cursor: pointer;
         }
+
+
+        /* =====================================================
+           PANEL
+        ===================================================== */
 
         .statistics-date-picker-panel {
             position: relative;
-            width: min(
-                480px,
-                100%
-            );
+            z-index: 2;
+
+            width: min(480px, 100%);
+            max-width: 100%;
+
+            height: auto;
+
             max-height:
-                min(760px, 92vh);
+                calc(100dvh - 24px);
+
             overflow: hidden;
+
             display: flex;
             flex-direction: column;
+
+            box-sizing: border-box;
+
             border-radius: 24px;
+
             background:
-                var(
-                    --card-bg,
-                    #ffffff
-                );
+                var(--card-bg, #ffffff);
+
             color:
-                var(
-                    --text-color,
-                    #111827
-                );
+                var(--text-color, #111827);
+
             box-shadow:
                 0 30px 90px
-                rgba(0,0,0,.28);
+                rgba(0,0,0,.30);
+
             animation:
                 statisticsPickerIn
                 .22s
@@ -3598,225 +3477,486 @@ function statisticsInjectDatePickerCSS() {
         @keyframes statisticsPickerIn {
             from {
                 opacity: 0;
+
                 transform:
-                    translateY(16px)
+                    translateY(18px)
                     scale(.97);
             }
 
             to {
                 opacity: 1;
+
                 transform:
                     translateY(0)
                     scale(1);
             }
         }
 
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
         .statistics-date-picker-header {
+            flex: 0 0 auto;
+
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
-            gap: 16px;
+
+            gap: 12px;
+
             padding:
-                20px 20px 14px;
+                18px 20px 12px;
+
+            box-sizing: border-box;
         }
 
         .statistics-date-picker-header > div {
+            min-width: 0;
+
             display: flex;
+
             flex-direction: column;
-            gap: 5px;
+
+            gap: 4px;
         }
 
         .statistics-date-picker-header small {
             font-size: 10px;
+
+            line-height: 1.2;
+
             font-weight: 800;
+
             letter-spacing: .12em;
+
             opacity: .55;
         }
 
         .statistics-date-picker-header strong {
-            font-size: 24px;
-            line-height: 1.15;
+            display: block;
+
+            font-size: 23px;
+
+            line-height: 1.2;
+
+            white-space: nowrap;
         }
 
         .statistics-picker-close {
             width: 38px;
             height: 38px;
+
+            min-width: 38px;
+            min-height: 38px;
+
             flex: 0 0 38px;
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
             border: 0;
+
             border-radius: 50%;
+
             background:
                 rgba(127,127,127,.12);
+
             color: inherit;
+
             font-size: 25px;
+
+            line-height: 1;
+
             cursor: pointer;
+
+            -webkit-tap-highlight-color:
+                transparent;
         }
 
+
+        /* =====================================================
+           PERIOD
+        ===================================================== */
+
         .statistics-picker-periods {
+            flex: 0 0 auto;
+
             display: grid;
+
             grid-template-columns:
-                repeat(3, 1fr);
-            gap: 7px;
+                repeat(3, minmax(0, 1fr));
+
+            gap: 6px;
+
             margin:
-                0 20px 12px;
+                0 20px 10px;
+
             padding: 5px;
+
+            box-sizing: border-box;
+
             border-radius: 14px;
+
             background:
                 rgba(127,127,127,.10);
         }
 
         .statistics-picker-periods button {
+            min-width: 0;
+
             border: 0;
+
             border-radius: 10px;
-            padding: 10px 8px;
-            background: transparent;
+
+            padding:
+                10px 6px;
+
+            background:
+                transparent;
+
             color: inherit;
+
+            font-size: 14px;
+
             font-weight: 700;
+
             cursor: pointer;
+
+            -webkit-tap-highlight-color:
+                transparent;
         }
 
         .statistics-picker-periods button.active {
-            background:
-                #2563eb;
+            background: #2563eb;
+
             color: #fff;
+
             box-shadow:
                 0 5px 14px
                 rgba(37,99,235,.28);
         }
 
+
+        /* =====================================================
+           CONTENT
+        ===================================================== */
+
         .statistics-picker-content {
             min-height: 0;
+
             overflow: hidden;
+
+            flex: 1 1 auto;
         }
 
         .statistics-picker-scroll {
+            width: 100%;
+
+            max-height: 60dvh;
+
             overflow-y: auto;
-            max-height:
-                58vh;
+
+            overflow-x: hidden;
+
             padding:
-                0 20px 10px;
+                0 20px 12px;
+
+            box-sizing: border-box;
+
+            -webkit-overflow-scrolling:
+                touch;
+
+            overscroll-behavior:
+                contain;
         }
+
+
+        /* =====================================================
+           SECTION
+        ===================================================== */
 
         .statistics-picker-section-title {
             margin:
-                12px 0 9px;
-            font-size: 12px;
+                10px 0 8px;
+
+            font-size: 11px;
+
+            line-height: 1.3;
+
             font-weight: 800;
-            text-transform: uppercase;
+
+            text-transform:
+                uppercase;
+
             letter-spacing: .06em;
+
             opacity: .58;
         }
 
+
+        /* =====================================================
+           YEAR
+        ===================================================== */
+
         .statistics-year-grid {
             display: grid;
+
             grid-template-columns:
-                repeat(5, 1fr);
-            gap: 7px;
+                repeat(5, minmax(0, 1fr));
+
+            gap: 6px;
+
+            width: 100%;
         }
 
-        .statistics-year-item,
-        .statistics-month-item {
+        .statistics-year-item {
+            min-width: 0;
+
             min-height: 40px;
-            border: 1px solid
+
+            padding:
+                5px 2px;
+
+            border:
+                1px solid
                 rgba(127,127,127,.15);
+
             border-radius: 11px;
+
             background:
                 rgba(127,127,127,.055);
+
             color: inherit;
+
+            font-size: 13px;
+
             font-weight: 700;
+
             cursor: pointer;
+
+            -webkit-tap-highlight-color:
+                transparent;
         }
+
+
+        /* =====================================================
+           MONTH
+        ===================================================== */
+
+        .statistics-month-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, minmax(0, 1fr));
+
+            gap: 7px;
+
+            width: 100%;
+        }
+
+        .statistics-month-item {
+            min-width: 0;
+
+            min-height: 40px;
+
+            padding:
+                5px 2px;
+
+            border:
+                1px solid
+                rgba(127,127,127,.15);
+
+            border-radius: 11px;
+
+            background:
+                rgba(127,127,127,.055);
+
+            color: inherit;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            -webkit-tap-highlight-color:
+                transparent;
+        }
+
+
+        /* =====================================================
+           ACTIVE
+        ===================================================== */
 
         .statistics-year-item:hover,
         .statistics-month-item:hover,
         .statistics-calendar-day:hover {
-            border-color:
-                #2563eb;
-            color:
-                #2563eb;
+            border-color: #2563eb;
+
+            color: #2563eb;
         }
 
         .statistics-year-item.active,
         .statistics-month-item.active {
-            background:
-                #2563eb;
+            background: #2563eb;
+
             color: #fff;
-            border-color:
-                #2563eb;
+
+            border-color: #2563eb;
+
             box-shadow:
                 0 5px 13px
                 rgba(37,99,235,.25);
         }
 
-        .statistics-month-grid {
-            display: grid;
-            grid-template-columns:
-                repeat(4, 1fr);
-            gap: 8px;
-        }
+
+        /* =====================================================
+           CALENDAR HEADER
+        ===================================================== */
 
         .statistics-picker-calendar-header {
             display: grid;
+
             grid-template-columns:
-                42px 1fr 42px;
+                38px
+                minmax(0, 1fr)
+                38px;
+
             align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
+
+            gap: 6px;
+
+            margin-bottom: 7px;
         }
 
         .statistics-picker-calendar-header strong {
+            min-width: 0;
+
             text-align: center;
-            font-size: 15px;
+
+            font-size: 14px;
+
+            line-height: 1.2;
+
+            white-space: nowrap;
         }
 
         .statistics-picker-calendar-header button {
             width: 38px;
             height: 38px;
+
+            min-width: 38px;
+            min-height: 38px;
+
             border: 0;
+
             border-radius: 10px;
+
             background:
                 rgba(127,127,127,.08);
+
             color: inherit;
-            font-size: 25px;
+
+            font-size: 24px;
+
+            line-height: 1;
+
             cursor: pointer;
+
+            -webkit-tap-highlight-color:
+                transparent;
         }
+
+
+        /* =====================================================
+           WEEK DAYS
+        ===================================================== */
 
         .statistics-calendar-weekdays {
             display: grid;
+
             grid-template-columns:
-                repeat(7, 1fr);
-            margin-bottom: 4px;
+                repeat(7, minmax(0, 1fr));
+
+            gap: 4px;
+
+            margin-bottom: 3px;
         }
 
         .statistics-calendar-weekdays span {
+            min-width: 0;
+
             text-align: center;
-            padding: 6px 0;
+
+            padding:
+                5px 0;
+
             font-size: 10px;
+
+            line-height: 1;
+
             font-weight: 800;
+
             opacity: .5;
         }
 
+
+        /* =====================================================
+           CALENDAR
+        ===================================================== */
+
         .statistics-calendar-grid {
             display: grid;
+
             grid-template-columns:
-                repeat(7, 1fr);
+                repeat(7, minmax(0, 1fr));
+
             gap: 5px;
+
+            width: 100%;
         }
 
         .statistics-calendar-day,
         .statistics-calendar-empty {
-            aspect-ratio: 1;
-            min-height: 40px;
+            width: 100%;
+
+            min-width: 0;
+
+            min-height: 0;
+
+            aspect-ratio: 1 / 1;
+
+            box-sizing: border-box;
         }
 
         .statistics-calendar-day {
-            border: 1px solid
+            padding: 0;
+
+            border:
+                1px solid
                 rgba(127,127,127,.12);
+
             border-radius: 11px;
+
             background:
                 rgba(127,127,127,.045);
+
             color: inherit;
+
+            font-size: 13px;
+
             font-weight: 700;
+
             cursor: pointer;
+
+            -webkit-tap-highlight-color:
+                transparent;
         }
 
         .statistics-calendar-day.today {
@@ -3826,63 +3966,147 @@ function statisticsInjectDatePickerCSS() {
         }
 
         .statistics-calendar-day.active {
-            background:
-                #2563eb;
-            border-color:
-                #2563eb;
+            background: #2563eb;
+
+            border-color: #2563eb;
+
             color: #fff;
+
             box-shadow:
                 0 5px 13px
                 rgba(37,99,235,.28);
         }
 
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
         .statistics-picker-footer {
+            flex: 0 0 auto;
+
             display: flex;
+
+            align-items: center;
+
             justify-content: space-between;
+
             gap: 10px;
+
             padding:
-                14px 20px 18px;
+                12px 20px 16px;
+
             border-top:
                 1px solid
                 rgba(127,127,127,.12);
+
+            box-sizing: border-box;
         }
 
         .statistics-picker-footer button {
             min-width: 100px;
+
             border: 0;
+
             border-radius: 12px;
-            padding: 11px 16px;
+
+            padding:
+                11px 16px;
+
             background:
                 rgba(127,127,127,.10);
+
             color: inherit;
+
+            font-size: 14px;
+
             font-weight: 800;
+
             cursor: pointer;
+
+            -webkit-tap-highlight-color:
+                transparent;
         }
 
         .statistics-picker-footer button.primary {
-            background:
-                #2563eb;
+            background: #2563eb;
+
             color: #fff;
+
             box-shadow:
                 0 6px 16px
                 rgba(37,99,235,.25);
         }
 
-        @media (max-width: 520px) {
+
+        /* =====================================================
+           TABLET
+        ===================================================== */
+
+        @media (max-width: 768px) {
 
             .statistics-date-picker {
-                padding: 8px;
+                padding: 10px;
             }
 
             .statistics-date-picker-panel {
-                border-radius: 20px;
-                max-height: 96vh;
+                width:
+                    min(500px, 100%);
+
+                max-height:
+                    calc(100dvh - 20px);
             }
 
             .statistics-picker-scroll {
-                max-height: 62vh;
-                padding-left: 14px;
-                padding-right: 14px;
+                max-height: 62dvh;
+            }
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 520px) {
+
+            .statistics-date-picker {
+                align-items: flex-end;
+
+                padding: 0;
+            }
+
+            .statistics-date-picker-panel {
+                width: 100%;
+
+                max-width: 100%;
+
+                max-height: 94dvh;
+
+                border-radius:
+                    22px 22px 0 0;
+
+                margin: 0;
+
+                animation:
+                    statisticsPickerMobileIn
+                    .22s
+                    ease;
+            }
+
+            @keyframes statisticsPickerMobileIn {
+                from {
+                    opacity: 0;
+
+                    transform:
+                        translateY(100%);
+                }
+
+                to {
+                    opacity: 1;
+
+                    transform:
+                        translateY(0);
+                }
             }
 
             .statistics-date-picker-header {
@@ -3890,44 +4114,252 @@ function statisticsInjectDatePickerCSS() {
                     16px 14px 10px;
             }
 
+            .statistics-date-picker-header strong {
+                font-size: 21px;
+            }
+
             .statistics-picker-periods {
                 margin:
+                    0 14px 9px;
+            }
+
+            .statistics-picker-periods button {
+                padding:
+                    9px 5px;
+
+                font-size: 13px;
+            }
+
+            .statistics-picker-scroll {
+                max-height: 64dvh;
+
+                padding:
                     0 14px 10px;
             }
 
-            .statistics-picker-footer {
-                padding:
-                    12px 14px 14px;
+            .statistics-picker-section-title {
+                margin-top: 9px;
+
+                margin-bottom: 7px;
             }
 
             .statistics-year-grid {
                 grid-template-columns:
-                    repeat(4, 1fr);
+                    repeat(4, minmax(0, 1fr));
+
+                gap: 6px;
+            }
+
+            .statistics-year-item {
+                min-height: 38px;
+
+                font-size: 12px;
             }
 
             .statistics-month-grid {
                 grid-template-columns:
-                    repeat(3, 1fr);
+                    repeat(3, minmax(0, 1fr));
+
+                gap: 6px;
+            }
+
+            .statistics-month-item {
+                min-height: 39px;
+
+                font-size: 12px;
+            }
+
+            .statistics-picker-calendar-header {
+                grid-template-columns:
+                    36px
+                    minmax(0, 1fr)
+                    36px;
+
+                gap: 5px;
+            }
+
+            .statistics-picker-calendar-header button {
+                width: 36px;
+                height: 36px;
+
+                min-width: 36px;
+                min-height: 36px;
+            }
+
+            .statistics-picker-calendar-header strong {
+                font-size: 13px;
+            }
+
+            .statistics-calendar-weekdays {
+                gap: 3px;
+            }
+
+            .statistics-calendar-weekdays span {
+                font-size: 9px;
+
+                padding:
+                    5px 0;
+            }
+
+            .statistics-calendar-grid {
+                gap: 4px;
             }
 
             .statistics-calendar-day,
             .statistics-calendar-empty {
-                min-height: 36px;
+                min-height: 34px;
+            }
+
+            .statistics-calendar-day {
+                border-radius: 9px;
+
+                font-size: 12px;
+            }
+
+            .statistics-picker-footer {
+                padding:
+                    11px 14px
+                    calc(
+                        12px +
+                        env(safe-area-inset-bottom)
+                    );
+
+                gap: 8px;
+            }
+
+            .statistics-picker-footer button {
+                flex: 1;
+
+                min-width: 0;
+
+                padding:
+                    11px 10px;
+
+                font-size: 13px;
             }
         }
+
+
+        /* =====================================================
+           VERY SMALL MOBILE
+        ===================================================== */
+
+        @media (max-width: 360px) {
+
+            .statistics-date-picker-panel {
+                max-height: 96dvh;
+            }
+
+            .statistics-date-picker-header {
+                padding:
+                    13px 11px 8px;
+            }
+
+            .statistics-date-picker-header strong {
+                font-size: 19px;
+            }
+
+            .statistics-picker-close {
+                width: 34px;
+                height: 34px;
+
+                min-width: 34px;
+                min-height: 34px;
+            }
+
+            .statistics-picker-periods {
+                margin:
+                    0 11px 8px;
+
+                padding: 4px;
+            }
+
+            .statistics-picker-periods button {
+                padding:
+                    8px 3px;
+
+                font-size: 12px;
+            }
+
+            .statistics-picker-scroll {
+                max-height: 67dvh;
+
+                padding:
+                    0 11px 8px;
+            }
+
+            .statistics-year-grid {
+                gap: 5px;
+            }
+
+            .statistics-year-item {
+                min-height: 36px;
+
+                font-size: 11px;
+
+                border-radius: 9px;
+            }
+
+            .statistics-month-grid {
+                gap: 5px;
+            }
+
+            .statistics-month-item {
+                min-height: 37px;
+
+                font-size: 11px;
+
+                border-radius: 9px;
+            }
+
+            .statistics-calendar-grid {
+                gap: 3px;
+            }
+
+            .statistics-calendar-day,
+            .statistics-calendar-empty {
+                min-height: 31px;
+            }
+
+            .statistics-calendar-day {
+                border-radius: 8px;
+
+                font-size: 11px;
+            }
+
+            .statistics-picker-footer {
+                padding:
+                    9px 11px
+                    calc(
+                        10px +
+                        env(safe-area-inset-bottom)
+                    );
+            }
+
+            .statistics-picker-footer button {
+                padding:
+                    10px 7px;
+
+                font-size: 12px;
+            }
+        }
+
+
+        /* =====================================================
+           DARK MODE
+        ===================================================== */
 
         @media (prefers-color-scheme: dark) {
 
             .statistics-date-picker-panel {
-                background:
-                    #111827;
-                color:
-                    #f3f4f6;
+                background: #111827;
+
+                color: #f3f4f6;
             }
 
             .statistics-date-picker-backdrop {
                 background:
-                    rgba(0,0,0,.70);
+                    rgba(0,0,0,.72);
             }
         }
 
@@ -3938,7 +4370,7 @@ function statisticsInjectDatePickerCSS() {
 
 
 /* =========================================================
-   AUTO MAKE DATE LABEL CLICKABLE
+   MAKE DATE LABEL CLICKABLE
 ========================================================= */
 
 function statisticsMakeDateLabelClickable() {
@@ -3964,7 +4396,7 @@ function statisticsMakeDateLabelClickable() {
 
             element.setAttribute(
                 "title",
-                "Bấm để chọn ngày / tháng / năm"
+                "Bấm để chọn ngày / tuần / tháng"
             );
         });
 }
@@ -3995,6 +4427,7 @@ document.addEventListener(
         setTimeout(
             () => {
                 renderStatistics();
+
                 statisticsMakeDateLabelClickable();
             },
             0
