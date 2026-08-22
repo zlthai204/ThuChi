@@ -2,497 +2,2090 @@
 <html lang="vi">
 
 <head>
-
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+viewport-fit=cover">
 
-    <meta name="theme-color" content="#f5f7fb">
+    <meta name="theme-color" content="#f7f8fc">
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>Quản Lý Thu Chi - Quán</title>
 
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    <title>Bếp Nhà Duyên - Quản lý bán hàng</title>
+        html {
+            scroll-behavior: smooth;
+        }
 
-    <link rel="stylesheet" href="./css/home.css">
-    <link rel="stylesheet" href="./css/statistics.css">
-    <link rel="stylesheet" href="./css/history.css">
-    <link rel="stylesheet" href="./css/restaurant.css">
-    <link rel="stylesheet" href="./css/cod.css">
-    <link rel="stylesheet" href="./css/global.css">
-    <link rel="stylesheet" href="./css/home.css">
+        body {
+            margin: 0;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "SF Pro Display",
+                "Segoe UI",
+                Arial, sans-serif;
+            background: #f6f7fb;
+            color: #171923;
+            padding-bottom:
+                calc(100px + env(safe-area-inset-bottom));
+        }
 
+        button,
+        input,
+        select {
+            font: inherit;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        input,
+        select {
+            font-size: 16px;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 720px;
+            margin: auto;
+            padding: 14px 15px 30px;
+        }
+
+        /* HEADER */
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+
+        .header-left small {
+            color: #8b91a1;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .header-left h1 {
+            margin: 4px 0 0;
+            font-size: 29px;
+            line-height: 1.1;
+            font-weight: 850;
+            letter-spacing: -1px;
+        }
+
+        .header-action {
+            width: 46px;
+            height: 46px;
+            border: 0;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 8px 25px rgba(30, 41, 59, .08);
+            font-size: 20px;
+        }
+
+        /* BALANCE */
+
+        .balance-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 28px;
+            padding: 23px;
+            color: #fff;
+            background:
+                linear-gradient(135deg,
+                    #2563eb,
+                    #4f46e5 52%,
+                    #7c3aed);
+            box-shadow: 0 18px 45px rgba(79, 70, 229, .25);
+            margin-bottom: 15px;
+        }
+
+        .balance-label {
+            position: relative;
+            z-index: 2;
+            font-size: 13px;
+            opacity: .82;
+            font-weight: 600;
+        }
+
+        .balance-number {
+            position: relative;
+            z-index: 2;
+            margin: 5px 0 20px;
+            font-size: 35px;
+            line-height: 1;
+            font-weight: 850;
+        }
+
+        .balance-grid {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .balance-item {
+            padding: 12px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, .14);
+        }
+
+        .balance-item span {
+            display: block;
+            font-size: 11px;
+            opacity: .78;
+        }
+
+        .balance-item strong {
+            display: block;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        /* CARD */
+
+        .card {
+            background: #fff;
+            border-radius: 23px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 25px rgba(15, 23, 42, .055);
+        }
+
+        .card-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .card-title h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: 820;
+        }
+
+        .card-title small {
+            color: #8b91a1;
+        }
+
+        /* TYPE */
+
+        .type-switch {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            padding: 5px;
+            background: #f1f3f7;
+            border-radius: 17px;
+            margin-bottom: 13px;
+        }
+
+        .type-button {
+            border: 0;
+            border-radius: 13px;
+            padding: 12px 8px;
+            background: transparent;
+            color: #8a90a0;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .type-button.active-thu {
+            color: #07883d;
+            background: #e8fff1;
+        }
+
+        .type-button.active-chi {
+            color: #dc2626;
+            background: #fff0f0;
+        }
+
+        /* FORM */
+
+        .form-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .input-label {
+            display: block;
+            margin: 0 0 6px 2px;
+            color: #73798a;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        input,
+        select {
+            width: 100%;
+            border: 1px solid #e7e9ef;
+            border-radius: 14px;
+            padding: 13px 14px;
+            outline: none;
+            background: #f9fafc;
+            color: #171923;
+        }
+
+        input:focus,
+        select:focus {
+            background: #fff;
+            border-color: #7c8cff;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, .08);
+        }
+
+        .amount-input {
+            font-size: 25px;
+            font-weight: 800;
+            text-align: center;
+            padding: 16px;
+        }
+
+        /* SOURCE */
+
+        .source-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 7px;
+        }
+
+        .source-button {
+            border: 1px solid #e5e7eb;
+            border-radius: 13px;
+            padding: 11px 6px;
+            background: #f8fafc;
+            color: #73798a;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .source-button.active-shopee {
+            color: #ee4d2d;
+            background: #fff3ef;
+            border-color: #ffb39e;
+        }
+
+        .source-button.active-grab {
+            color: #00a85a;
+            background: #ecfff6;
+            border-color: #9ee5c3;
+        }
+
+        .source-button.active-out {
+            color: #2563eb;
+            background: #eef4ff;
+            border-color: #a9c6ff;
+        }
+
+        /* BUTTON */
+
+        .primary-button {
+            width: 100%;
+            border: 0;
+            border-radius: 15px;
+            padding: 14px;
+            color: #fff;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            font-size: 15px;
+            font-weight: 800;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, .20);
+        }
+
+        .data-button {
+            border: 0;
+            border-radius: 13px;
+            padding: 12px;
+            background: #f1f3f7;
+            color: #3f4452;
+            font-size: 12px;
+            font-weight: 750;
+        }
+
+        .data-button.danger {
+            color: #dc2626;
+            background: #fff0f0;
+        }
+
+        /* QUICK */
+
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .quick-card {
+            border-radius: 18px;
+            padding: 15px;
+            background: #f8fafc;
+        }
+
+        .quick-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .quick-icon.green {
+            background: #dcfce7;
+        }
+
+        .quick-icon.red {
+            background: #fee2e2;
+        }
+
+        .quick-label {
+            color: #8a90a0;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .quick-money {
+            margin-top: 4px;
+            font-size: 17px;
+            font-weight: 850;
+        }
+
+        .green {
+            color: #16a34a;
+        }
+
+        .red {
+            color: #dc2626;
+        }
+
+        /* STAT */
+
+        .stat-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            padding: 5px;
+            border-radius: 15px;
+            background: #f1f3f7;
+            margin-bottom: 17px;
+        }
+
+        .stat-tab {
+            border: 0;
+            padding: 10px 4px;
+            border-radius: 11px;
+            background: transparent;
+            color: #8b91a1;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .stat-tab.active {
+            color: #202433;
+            background: #fff;
+        }
+
+        .month-select {
+            width: auto;
+            min-width: 110px;
+            padding: 8px 10px;
+            border-radius: 11px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        /* CHART */
+
+        .chart-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .chart-title strong {
+            font-size: 14px;
+        }
+
+        .chart-title span {
+            color: #8b91a1;
+            font-size: 11px;
+        }
+
+        .pie-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px 0 17px;
+        }
+
+        .pie {
+            position: relative;
+            width: 230px;
+            height: 230px;
+            border-radius: 50%;
+            background: #e8ebf1;
+        }
+
+        .pie-center {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 112px;
+            height: 112px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .pie-center strong {
+            max-width: 95px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: 14px;
+        }
+
+        .pie-center span {
+            margin-top: 3px;
+            color: #8b91a1;
+            font-size: 10px;
+        }
+
+        .legend {
+            display: grid;
+            gap: 9px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 0;
+            border-bottom: 1px solid #f0f1f5;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 4px;
+        }
+
+        .legend-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .legend-name {
+            font-size: 13px;
+            font-weight: 750;
+        }
+
+        .legend-value {
+            margin-top: 2px;
+            color: #8b91a1;
+            font-size: 11px;
+        }
+
+        .legend-percent {
+            font-size: 13px;
+            font-weight: 850;
+        }
+
+        /* BAR */
+
+        .bar-chart {
+            height: 210px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 20px 4px 0;
+            border-bottom: 1px solid #e5e7eb;
+            overflow-x: auto;
+        }
+
+        .bar-column {
+            min-width: 34px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .bar-value {
+            font-size: 8px;
+            color: #8b91a1;
+            white-space: nowrap;
+        }
+
+        .bar {
+            width: 23px;
+            min-height: 3px;
+            border-radius: 8px 8px 3px 3px;
+            background: linear-gradient(180deg, #6366f1, #2563eb);
+        }
+
+        .bar-date {
+            color: #8b91a1;
+            font-size: 8px;
+        }
+
+        /* STAT ROW */
+
+        .stat-row {
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f1f5;
+        }
+
+        .stat-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .stat-name {
+            font-size: 13px;
+            font-weight: 750;
+        }
+
+        .stat-money {
+            font-size: 13px;
+            font-weight: 850;
+        }
+
+        .progress {
+            height: 7px;
+            margin-top: 7px;
+            border-radius: 20px;
+            background: #edf0f4;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 20px;
+        }
+
+        /* HISTORY */
+
+        .search {
+            margin-bottom: 10px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .transaction {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 0;
+            border-bottom: 1px solid #f0f1f5;
+        }
+
+        .tx-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 19px;
+            flex: none;
+        }
+
+        .tx-icon.thu {
+            background: #e8fff1;
+        }
+
+        .tx-icon.chi {
+            background: #fff0f0;
+        }
+
+        .tx-info {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .tx-name {
+            font-size: 14px;
+            font-weight: 800;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tx-category,
+        .tx-source {
+            margin-top: 3px;
+            font-size: 11px;
+        }
+
+        .tx-category {
+            color: #73798a;
+        }
+
+        .tx-source {
+            font-weight: 750;
+        }
+
+        .tx-date {
+            margin-top: 2px;
+            color: #a0a5b1;
+            font-size: 10px;
+        }
+
+        .tx-right {
+            text-align: right;
+        }
+
+        .tx-money {
+            white-space: nowrap;
+            font-size: 13px;
+            font-weight: 850;
+        }
+
+        .tx-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 4px;
+            margin-top: 5px;
+        }
+
+        .small-button {
+            width: 29px;
+            height: 29px;
+            border: 0;
+            border-radius: 8px;
+            background: #f2f4f7;
+            font-size: 12px;
+        }
+
+        /* MENU */
+
+        .menu-add-box {
+            padding: 14px;
+            border-radius: 18px;
+            background: #f8fafc;
+            margin-bottom: 12px;
+        }
+
+        .menu-add-title {
+            font-size: 13px;
+            font-weight: 850;
+            margin-bottom: 9px;
+        }
+
+        .menu-row {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 7px;
+            margin-bottom: 8px;
+        }
+
+        .menu-button {
+            border: 0;
+            border-radius: 12px;
+            padding: 11px 13px;
+            color: #fff;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .menu-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .menu-category {
+            overflow: hidden;
+            border: 1px solid #e8eaf0;
+            border-radius: 18px;
+            background: #fff;
+        }
+
+        .menu-category-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 13px;
+            background: #f8fafc;
+        }
+
+        .menu-category-name {
+            font-size: 14px;
+            font-weight: 850;
+        }
+
+        .menu-category-count {
+            color: #8b91a1;
+            font-size: 10px;
+        }
+
+        .menu-category-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        .menu-dishes {
+            padding: 3px 13px 8px;
+        }
+
+        .menu-dish {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f1f5;
+        }
+
+        .menu-dish:last-child {
+            border-bottom: 0;
+        }
+
+        .menu-dish-name {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .menu-dish-delete {
+            width: 28px;
+            height: 28px;
+            border: 0;
+            border-radius: 9px;
+            background: #fff0f0;
+            color: #dc2626;
+        }
+
+        /* =====================================================
+   COD PAGE
+===================================================== */
+
+        #codSection {
+            display: none;
+        }
+
+        /* COD HOME */
+
+        .cod-intro {
+            padding: 15px;
+            border-radius: 18px;
+            color: #fff;
+            background:
+                linear-gradient(135deg,
+                    #059669,
+                    #0d9488,
+                    #2563eb);
+            margin-bottom: 15px;
+        }
+
+        .cod-intro-title {
+            font-size: 20px;
+            font-weight: 850;
+        }
+
+        .cod-intro-text {
+            margin-top: 5px;
+            opacity: .85;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .cod-category-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .cod-category {
+            border: 1px solid #e8eaf0;
+            border-radius: 18px;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .cod-category-button {
+            width: 100%;
+            border: 0;
+            background: #f8fafc;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .cod-category-left {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .cod-folder {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            background: #e8fff1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 21px;
+        }
+
+        .cod-category-name {
+            font-size: 14px;
+            font-weight: 850;
+        }
+
+        .cod-category-count {
+            margin-top: 3px;
+            color: #8b91a1;
+            font-size: 10px;
+        }
+
+        .cod-arrow {
+            color: #8b91a1;
+            font-size: 18px;
+        }
+
+        /* COD DISH */
+
+        .cod-back {
+            border: 0;
+            border-radius: 12px;
+            padding: 9px 12px;
+            background: #eef3ff;
+            color: #315de8;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .cod-dish-list {
+            display: grid;
+            gap: 9px;
+        }
+
+        .cod-dish-card {
+            border: 1px solid #e8eaf0;
+            border-radius: 17px;
+            padding: 14px;
+            background: #fff;
+        }
+
+        .cod-dish-card-button {
+            width: 100%;
+            border: 0;
+            background: transparent;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+        }
+
+        .cod-dish-name {
+            font-size: 14px;
+            font-weight: 850;
+        }
+
+        .cod-dish-info {
+            margin-top: 4px;
+            color: #8b91a1;
+            font-size: 10px;
+        }
+
+        .cod-dish-cost {
+            color: #dc2626;
+            font-size: 13px;
+            font-weight: 850;
+        }
+
+        /* COD DETAIL */
+
+        .cod-detail-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .cod-detail-title {
+            font-size: 19px;
+            font-weight: 850;
+        }
+
+        .cod-detail-category {
+            margin-top: 4px;
+            color: #8b91a1;
+            font-size: 11px;
+        }
+
+        .cod-price-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+            margin-top: 15px;
+        }
+
+        .cod-price-box {
+            padding: 14px;
+            border-radius: 16px;
+            background: #f8fafc;
+        }
+
+        .cod-price-box span {
+            display: block;
+            color: #8b91a1;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .cod-price-box strong {
+            display: block;
+            margin-top: 5px;
+            font-size: 17px;
+            font-weight: 850;
+        }
+
+        .cod-price-box.cost strong {
+            color: #dc2626;
+        }
+
+        .cod-price-box.profit strong {
+            color: #16a34a;
+        }
+
+        .cod-detail-section {
+            margin-top: 17px;
+        }
+
+        .cod-detail-section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .cod-detail-section-title strong {
+            font-size: 14px;
+        }
+
+        .cod-part-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .cod-part {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 11px;
+            border-radius: 14px;
+            background: #f8fafc;
+        }
+
+        .cod-part-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 11px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cod-part-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cod-part-name {
+            font-size: 13px;
+            font-weight: 750;
+        }
+
+        .cod-part-note {
+            margin-top: 2px;
+            color: #8b91a1;
+            font-size: 10px;
+        }
+
+        .cod-part-money {
+            font-size: 13px;
+            font-weight: 850;
+            color: #dc2626;
+            white-space: nowrap;
+        }
+
+        .cod-part-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .cod-part-actions button {
+            width: 27px;
+            height: 27px;
+            border: 0;
+            border-radius: 8px;
+            background: #e9edf5;
+            font-size: 11px;
+        }
+
+        .cod-add-part {
+            margin-top: 10px;
+            padding: 13px;
+            border-radius: 16px;
+            background: #f8fafc;
+        }
+
+        .cod-add-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .cod-add-grid .full {
+            grid-column: 1/-1;
+        }
+
+        .cod-save {
+            width: 100%;
+            margin-top: 10px;
+            border: 0;
+            border-radius: 14px;
+            padding: 13px;
+            color: #fff;
+            background: linear-gradient(135deg, #059669, #0d9488);
+            font-weight: 850;
+        }
+
+        .cod-empty {
+            text-align: center;
+            padding: 25px 10px;
+            color: #9aa0ae;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        /* BOTTOM NAV */
+
+        .bottom-nav {
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+            background: rgba(255, 255, 255, .92);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid #e9ebf0;
+        }
+
+        .bottom-inner {
+            max-width: 700px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 3px;
+        }
+
+        .nav-button {
+            border: 0;
+            border-radius: 13px;
+            background: transparent;
+            color: #9298a6;
+            padding: 7px 2px;
+            font-size: 8px;
+            font-weight: 700;
+        }
+
+        .nav-icon {
+            display: block;
+            margin-bottom: 3px;
+            font-size: 18px;
+        }
+
+        .nav-button.active {
+            color: #315de8;
+            background: #eff3ff;
+        }
+
+        /* TOAST */
+
+        .toast {
+            position: fixed;
+            z-index: 200;
+            left: 50%;
+            bottom: 95px;
+            transform: translate(-50%, 20px);
+            opacity: 0;
+            pointer-events: none;
+            padding: 12px 17px;
+            border-radius: 14px;
+            background: #171923;
+            color: #fff;
+            font-size: 13px;
+            font-weight: 650;
+            transition: .25s;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+
+        /* EMPTY */
+
+        .empty {
+            text-align: center;
+            padding: 28px 10px;
+            color: #9aa0ae;
+            font-size: 13px;
+        }
+
+        /* DARK */
+
+        .dark {
+            background: #0d1117;
+            color: #f8fafc;
+        }
+
+        .dark .card,
+        .dark .header-action,
+        .dark .cod-category,
+        .dark .cod-dish-card {
+            background: #151b24;
+            color: #f8fafc;
+        }
+
+        .dark input,
+        .dark select {
+            background: #10151d;
+            border-color: #293241;
+            color: #f8fafc;
+        }
+
+        .dark .quick-card,
+        .dark .menu-add-box,
+        .dark .cod-add-part,
+        .dark .cod-part,
+        .dark .cod-price-box {
+            background: #111822;
+        }
+
+        .dark .menu-category {
+            background: #151b24;
+            border-color: #293241;
+        }
+
+        .dark .menu-category-head,
+        .dark .cod-category-button {
+            background: #111822;
+        }
+
+        .dark .menu-dish,
+        .dark .transaction,
+        .dark .legend-item,
+        .dark .stat-row {
+            border-color: #29303b;
+        }
+
+        .dark .pie-center {
+            background: #151b24;
+        }
+
+        .dark .bottom-nav {
+            background: rgba(13, 17, 23, .93);
+            border-color: #252c36;
+        }
+
+        .dark .nav-button.active {
+            background: #18233e;
+        }
+
+        .dark .data-button,
+        .dark .small-button {
+            background: #222b38;
+            color: #f8fafc;
+        }
+
+        .dark .cod-part-icon {
+            background: #151b24;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:390px) {
+
+            .app {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+
+            .balance-number {
+                font-size: 29px;
+            }
+
+            .balance-item {
+                padding: 10px 8px;
+            }
+
+            .balance-item strong {
+                font-size: 12px;
+            }
+
+            .pie {
+                width: 210px;
+                height: 210px;
+            }
+
+            .nav-button {
+                font-size: 7px;
+            }
+
+            .nav-icon {
+                font-size: 17px;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
-<div class="app">
+    <div class="app">
 
+        <header class="header">
 
-    <!-- HEADER -->
+            <div class="header-left">
 
-    <header class="header">
+                <small>QUẢN LÝ BÁN HÀNG</small>
 
-        <div class="header-left">
+                <h1 id="pageTitle">
+                    Thu Chi
+                </h1>
 
-            <div class="brand-subtitle">
-                QUẢN LÝ BÁN HÀNG
             </div>
 
-            <h1 id="pageTitle">
-                Bếp Nhà Duyên
-            </h1>
+            <button class="header-action" onclick="toggleDark()">
 
-        </div>
+                🌙
 
+            </button>
 
-        <button
-            type="button"
-            class="header-theme-button"
-            onclick="toggleDarkMode()"
-            aria-label="Đổi giao diện">
-
-            🌙
-
-        </button>
-
-    </header>
+        </header>
 
 
+        <!-- =====================================================
+     TRANG CHỦ
+===================================================== -->
 
-    <!-- HOME -->
+        <div id="homeSection">
 
-    <main id="homePage" class="page active-page">
+            <section class="balance-card">
+
+                <div class="balance-label">
+                    Lợi nhuận hiện tại
+                </div>
+
+                <div class="balance-number" id="profit">
+
+                    0 ₫
+
+                </div>
+
+                <div class="balance-grid">
+
+                    <div class="balance-item">
+                        <span>Doanh thu</span>
+                        <strong id="totalIncome">0 ₫</strong>
+                    </div>
+
+                    <div class="balance-item">
+                        <span>Chi phí</span>
+                        <strong id="totalExpense">0 ₫</strong>
+                    </div>
+
+                    <div class="balance-item">
+                        <span>Giao dịch</span>
+                        <strong id="totalTransactions">0</strong>
+                    </div>
+
+                </div>
+
+            </section>
 
 
-        <!-- LỢI NHUẬN -->
+            <!-- THÊM GIAO DỊCH -->
 
-        <section class="balance-card">
+            <section class="card" id="addSection">
 
-            <div class="balance-label">
-                LỢI NHUẬN THỰC
-            </div>
+                <div class="card-title">
+                    <h2 id="formTitle">Thêm giao dịch</h2>
+                    <small>Bán hàng</small>
+                </div>
 
-            <div id="homeProfit" class="balance-number">
-                0 ₫
-            </div>
+                <div class="type-switch">
+
+                    <button id="thuBtn" class="type-button active-thu" onclick="setType('thu')">
+
+                        💚 THU
+
+                    </button>
+
+                    <button id="chiBtn" class="type-button" onclick="setType('chi')">
+
+                        ❤️ CHI
+
+                    </button>
+
+                </div>
 
 
-            <div class="balance-grid">
+                <div class="form-grid">
 
-                <div class="balance-item">
+                    <div>
 
-                    <span>
-                        Doanh thu
-                    </span>
+                        <label class="input-label">
+                            TÊN MÓN / KHOẢN
+                        </label>
 
-                    <strong id="homeRevenue">
+                        <select id="name" onchange="syncCustomName()">
+
+                            <option value="">
+                                Chọn món
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="input-label">
+                            DANH MỤC
+                        </label>
+
+                        <select id="category" onchange="renderDishSelect()">
+
+                            <option value="">
+                                Chọn danh mục
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div id="customNameGroup" style="display:none">
+
+                        <label class="input-label">
+                            TÊN KHÁC
+                        </label>
+
+                        <input id="customName" type="text" placeholder="Nhập tên món / khoản">
+
+                    </div>
+
+
+                    <div id="sourceGroup">
+
+                        <label class="input-label">
+                            NGUỒN ĐƠN
+                        </label>
+
+                        <div class="source-grid">
+
+                            <button type="button" id="sourceShopee" class="source-button active-shopee"
+                                onclick="setSource('ShopeeFood')">
+
+                                🟠 ShopeeFood
+
+                            </button>
+
+                            <button type="button" id="sourceGrab" class="source-button" onclick="setSource('GrabFood')">
+
+                                🟢 GrabFood
+
+                            </button>
+
+                            <button type="button" id="sourceOut" class="source-button" onclick="setSource('Ngoài sàn')">
+
+                                🔵 Ngoài sàn
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="input-label">
+                            SỐ TIỀN
+                        </label>
+
+                        <input id="amount" class="amount-input" type="number" inputmode="decimal" placeholder="0">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="input-label">
+                            NGÀY
+                        </label>
+
+                        <input id="date" type="text" inputmode="numeric" maxlength="10" placeholder="20/08/2026"
+                            oninput="formatDateInput(this)">
+
+                    </div>
+
+
+                    <div>
+
+                        <label class="input-label">
+                            GHI CHÚ
+                        </label>
+
+                        <input id="note" type="text" placeholder="Không bắt buộc">
+
+                    </div>
+
+
+                    <button class="primary-button" onclick="saveTransaction()">
+
+                        💾 Lưu giao dịch
+
+                    </button>
+
+
+                    <button id="cancelButton" class="data-button" onclick="cancelEdit()" style="display:none">
+
+                        Hủy sửa
+
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- TỔNG QUAN -->
+
+            <section class="card">
+
+                <div class="card-title">
+                    <h2>Tổng quan</h2>
+                    <small>Tất cả</small>
+                </div>
+
+                <div class="quick-grid">
+
+                    <div class="quick-card">
+
+                        <div class="quick-icon green">↑</div>
+
+                        <div class="quick-label">
+                            TỔNG DOANH THU
+                        </div>
+
+                        <div class="quick-money green" id="quickIncome">
+
+                            0 ₫
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="quick-card">
+
+                        <div class="quick-icon red">↓</div>
+
+                        <div class="quick-label">
+                            TỔNG CHI PHÍ
+                        </div>
+
+                        <div class="quick-money red" id="quickExpense">
+
+                            0 ₫
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- THỐNG KÊ -->
+
+            <section class="card" id="statisticsSection">
+
+                <div class="card-title">
+
+                    <h2>Thống kê</h2>
+
+                    <select id="statMonth" class="month-select" onchange="renderStatistics()">
+
+                    </select>
+
+                </div>
+
+
+                <div class="stat-tabs">
+
+                    <button id="tabAll" class="stat-tab active" onclick="setStatisticType('all')">
+
+                        Tất cả
+
+                    </button>
+
+                    <button id="tabThu" class="stat-tab" onclick="setStatisticType('thu')">
+
+                        💚 Thu
+
+                    </button>
+
+                    <button id="tabChi" class="stat-tab" onclick="setStatisticType('chi')">
+
+                        ❤️ Chi
+
+                    </button>
+
+                </div>
+
+
+                <div class="chart-title">
+
+                    <strong id="chartMainTitle">
+                        Phân bổ thu chi
+                    </strong>
+
+                    <span id="chartTotal">
                         0 ₫
-                    </strong>
-
-                </div>
-
-
-                <div class="balance-item">
-
-                    <span>
-                        Chi phí
                     </span>
 
-                    <strong id="homeExpense">
-                        0 ₫
-                    </strong>
+                </div>
+
+
+                <div class="pie-wrap">
+
+                    <div class="pie" id="pie">
+
+                        <div class="pie-center">
+
+                            <strong id="pieTotal">
+                                0 ₫
+                            </strong>
+
+                            <span id="pieLabel">
+                                Tổng
+                            </span>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
 
-                <div class="balance-item">
+                <div class="legend" id="legend">
+                </div>
 
-                    <span>
-                        Đơn hàng
+
+                <br>
+
+
+                <div class="chart-title">
+
+                    <strong>
+                        Biểu đồ theo ngày
+                    </strong>
+
+                    <span id="dailyLabel">
+                        Tất cả
                     </span>
 
-                    <strong id="homeOrders">
-                        0
+                </div>
+
+
+                <div class="bar-chart" id="barChart">
+                </div>
+
+
+                <br>
+
+
+                <div class="chart-title">
+
+                    <strong>
+                        Chi tiết danh mục / nguồn đơn
                     </strong>
 
                 </div>
 
-            </div>
 
-        </section>
+                <div id="categoryStats">
+                </div>
+
+            </section>
 
 
+            <!-- LỊCH SỬ -->
 
-        <!-- THÊM GIAO DỊCH -->
+            <section class="card" id="historySection">
 
-        <section class="card transaction-card">
+                <div class="card-title">
 
-            <div class="section-heading">
+                    <h2>Lịch sử giao dịch</h2>
 
-                <div>
-
-                    <h2>
-                        Thêm giao dịch
-                    </h2>
-
-                    <small>
-                        Ghi nhận thu / chi
+                    <small id="historyCount">
+                        0 giao dịch
                     </small>
 
                 </div>
 
-            </div>
+
+                <input class="search" id="search" type="search" placeholder="🔎 Tìm tên, danh mục..."
+                    oninput="renderTransactions()">
 
 
+                <div class="filter-grid">
 
-            <!-- THU / CHI -->
+                    <select id="filterType" onchange="renderTransactions()">
 
-            <div class="transaction-type">
+                        <option value="all">Tất cả</option>
+                        <option value="thu">💚 Thu</option>
+                        <option value="chi">❤️ Chi</option>
 
-                <button
-                    type="button"
-                    id="incomeTypeButton"
-                    class="type-button active"
-                    onclick="setTransactionType('thu')">
-
-                    <span>💚</span>
-                    Thu
-
-                </button>
+                    </select>
 
 
-                <button
-                    type="button"
-                    id="expenseTypeButton"
-                    class="type-button"
-                    onclick="setTransactionType('chi')">
+                    <select id="filterMonth" onchange="renderTransactions()">
 
-                    <span>❤️</span>
-                    Chi
-
-                </button>
-
-            </div>
-
-
-
-            <!-- DANH MỤC -->
-
-            <label
-                class="field-label"
-                for="transactionCategory">
-
-                DANH MỤC
-
-            </label>
-
-
-            <select id="transactionCategory">
-
-                <option value="">
-                    Chọn danh mục
-                </option>
-
-            </select>
-
-
-
-            <!-- MÓN -->
-
-            <label
-                class="field-label"
-                for="transactionDish">
-
-                MÓN / KHOẢN
-
-            </label>
-
-
-            <select id="transactionDish">
-
-                <option value="">
-                    Chọn món
-                </option>
-
-            </select>
-
-
-
-            <!-- TÊN KHÁC -->
-
-            <label
-                class="field-label"
-                for="transactionName">
-
-                TÊN KHÁC
-
-            </label>
-
-
-            <input
-                id="transactionName"
-                type="text"
-                autocomplete="off"
-                placeholder="Tên món / khoản chi">
-
-
-
-            <!-- NGUỒN ĐƠN -->
-
-            <div id="orderSourceBox">
-
-                <label class="field-label">
-                    NGUỒN ĐƠN
-                </label>
-
-
-                <div class="source-grid">
-
-                    <button
-                        type="button"
-                        id="sourceShopee"
-                        class="source-button active"
-                        onclick="setOrderSource('ShopeeFood')">
-
-                        🟠 ShopeeFood
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        id="sourceGrab"
-                        class="source-button"
-                        onclick="setOrderSource('GrabFood')">
-
-                        🟢 GrabFood
-
-                    </button>
-
-
-                    <button
-                        type="button"
-                        id="sourceOutside"
-                        class="source-button"
-                        onclick="setOrderSource('Ngoài sàn')">
-
-                        🔵 Ngoài sàn
-
-                    </button>
+                    </select>
 
                 </div>
 
-            </div>
+
+                <div id="transactions"></div>
+
+            </section>
 
 
+            <!-- QUẢN LÝ QUÁN -->
 
-            <!-- PHÍ APP -->
+            <section class="card" id="restaurantSection">
 
-            <div id="appFeeBox">
+                <div class="card-title">
 
-                <label
-                    class="field-label"
-                    for="appFee">
+                    <h2>🍜 Quản lý Quán</h2>
 
-                    KHẤU TRỪ APP
+                    <small>Thực đơn</small>
 
-                </label>
-
-
-                <input
-                    id="appFee"
-                    type="number"
-                    inputmode="decimal"
-                    min="0"
-                    placeholder="Tiền app khấu trừ">
+                </div>
 
 
-                <small class="field-help">
+                <div class="menu-hint" style="
+padding:10px;
+border-radius:13px;
+background:#eef4ff;
+color:#4563a9;
+font-size:11px;
+line-height:1.5">
 
-                    Nhập số tiền thực tế bị app khấu trừ.
+                    💡 Tạo <b>Danh mục</b> trước,
+                    sau đó thêm <b>món ăn</b>.
+                    Giá vốn của món được quản lý
+                    ở mục <b>💰 COD</b>.
 
-                </small>
+                </div>
 
-            </div>
-
-
-
-            <!-- SỐ TIỀN -->
-
-            <label
-                class="field-label"
-                for="transactionAmount">
-
-                SỐ TIỀN
-
-            </label>
+                <br>
 
 
-            <input
-                id="transactionAmount"
-                class="amount-input"
-                type="number"
-                inputmode="decimal"
-                min="0"
-                placeholder="0">
+                <div class="menu-add-box">
+
+                    <div class="menu-add-title">
+                        📁 Thêm danh mục món
+                    </div>
+
+                    <div class="menu-row">
+
+                        <input id="newCategory" type="text" placeholder="Ví dụ: Mì Trộn, Cơm, Đồ Chiên">
+
+                        <button class="menu-button" onclick="addCategory()">
+
+                            + Thêm
+
+                        </button>
+
+                    </div>
+
+                </div>
 
 
+                <div class="menu-add-box">
 
-            <!-- NGÀY -->
+                    <div class="menu-add-title">
+                        🍜 Thêm món vào danh mục
+                    </div>
 
-            <label
-                class="field-label"
-                for="transactionDate">
+                    <div class="form-grid">
 
-                NGÀY
+                        <select id="menuDishCategory">
 
-            </label>
+                            <option value="">
+                                Chọn danh mục
+                            </option>
 
+                        </select>
 
-            <input
-                id="transactionDate"
-                type="date">
+                        <div class="menu-row">
 
+                            <input id="newDish" type="text" placeholder="Ví dụ: Mì Trộn Thập Cẩm">
 
+                            <button class="menu-button" onclick="addDish()">
 
-            <!-- GHI CHÚ -->
+                                + Thêm
 
-            <label
-                class="field-label"
-                for="transactionNote">
+                            </button>
 
-                GHI CHÚ
+                        </div>
 
-            </label>
+                    </div>
 
-
-            <input
-                id="transactionNote"
-                type="text"
-                autocomplete="off"
-                placeholder="Không bắt buộc">
+                </div>
 
 
+                <div class="card-title">
 
-            <!-- LƯU -->
-
-            <button
-                type="button"
-                class="primary-button"
-                onclick="saveTransaction()">
-
-                💾 Lưu giao dịch
-
-            </button>
-
-
-            <!-- HỦY SỬA -->
-
-            <button
-                type="button"
-                id="cancelEditButton"
-                class="secondary-button"
-                onclick="cancelEdit()"
-                style="display:none">
-
-                Hủy sửa
-
-            </button>
-
-        </section>
-
-
-
-        <!-- HÔM NAY -->
-
-        <section class="card">
-
-            <div class="section-heading">
-
-                <div>
-
-                    <h2>
-                        Hôm nay
+                    <h2 style="font-size:15px">
+                        Thực đơn của quán
                     </h2>
 
-                    <small id="todayLabel"></small>
+                    <small id="menuCount">
+                        0 danh mục
+                    </small>
 
+                </div>
+
+
+                <div class="menu-list" id="menuList">
+                </div>
+
+            </section>
+
+
+            <!-- DỮ LIỆU -->
+
+            <section class="card">
+
+                <div class="card-title">
+
+                    <h2>Dữ liệu</h2>
+
+                </div>
+
+
+                <div style="
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:8px">
+
+                    <button class="data-button" onclick="backup()">
+
+                        📤 Sao lưu
+
+                    </button>
+
+                    <button class="data-button" onclick="document.getElementById('file').click()">
+
+                        📥 Khôi phục
+
+                    </button>
+
+                    <button class="data-button" onclick="exportCSV()">
+
+                        📊 Xuất CSV
+
+                    </button>
+
+                    <button class="data-button danger" onclick="deleteAll()">
+
+                        🗑️ Xóa dữ liệu
+
+                    </button>
+
+                </div>
+
+
+                <input type="file" id="file" accept=".json" style="display:none" onchange="restore(event)">
+
+            </section>
+
+        </div>
+
+
+        <!-- =====================================================
+     COD
+===================================================== -->
+
+        <section id="codSection">
+
+            <div class="cod-intro">
+
+                <div class="cod-intro-title">
+                    💰 COD - Giá vốn món
+                </div>
+
+                <div class="cod-intro-text">
+                    Quản lý giá tiền gốc và từng thành phần
+                    của mỗi món trong quán.
                 </div>
 
             </div>
 
 
-            <div class="quick-grid">
+            <!-- COD CATEGORY -->
+
+            <div id="codCategoryPage" class="card">
+
+                <div class="card-title">
+
+                    <h2>
+                        📁 Danh mục
+                    </h2>
+
+                    <small>
+                        Chọn danh mục
+                    </small>
+
+                </div>
+
+                <div id="codCategoryList" class="cod-category-list">
+                </div>
+
+            </div>
 
 
-                <div class="quick-card green-card">
+            <!-- COD DISH -->
 
-                    <span>
-                        DOANH THU
-                    </span>
+            <div id="codDishPage" class="card" style="display:none">
 
-                    <strong
-                        id="todayRevenue"
-                        class="green-text">
+                <button class="cod-back" onclick="showCODCategories()">
 
-                        0 ₫
+                    ← Quay lại danh mục
 
-                    </strong>
+                </button>
+
+                <div class="card-title">
+
+                    <h2 id="codDishCategoryTitle">
+                        Danh sách món
+                    </h2>
+
+                </div>
+
+                <div id="codDishList" class="cod-dish-list">
+                </div>
+
+            </div>
+
+
+            <!-- COD DETAIL -->
+
+            <div id="codDetailPage" class="card" style="display:none">
+
+                <button class="cod-back" onclick="showCODDishes()">
+
+                    ← Quay lại món
+
+                </button>
+
+                <div class="cod-detail-head">
+
+                    <div>
+
+                        <div class="cod-detail-title" id="codDetailName">
+
+                            Món
+
+                        </div>
+
+                        <div class="cod-detail-category" id="codDetailCategory">
+
+                            Danh mục
+
+                        </div>
+
+                    </div>
 
                 </div>
 
 
-                <div class="quick-card red-card">
+                <!-- GIÁ BÁN -->
 
-                    <span>
-                        CHI PHÍ
-                    </span>
+                <div style="margin-top:15px">
 
-                    <strong
-                        id="todayExpense"
-                        class="red-text">
+                    <label class="input-label">
+                        GIÁ BÁN MÓN
+                    </label>
 
-                        0 ₫
-
-                    </strong>
+                    <input id="codSellingPrice" type="number" inputmode="decimal" placeholder="Ví dụ: 35000"
+                        oninput="renderCODDetailSummary()">
 
                 </div>
 
 
-                <div class="quick-card orange-card">
+                <div class="cod-price-grid">
 
-                    <span>
-                        PHÍ APP
-                    </span>
+                    <div class="cod-price-box cost">
 
-                    <strong
-                        id="todayAppFee"
-                        class="orange-text">
+                        <span>
+                            TỔNG GIÁ VỐN
+                        </span>
 
-                        0 ₫
+                        <strong id="codTotalCost">
+                            0 ₫
+                        </strong>
 
-                    </strong>
+                    </div>
+
+
+                    <div class="cod-price-box profit">
+
+                        <span>
+                            LỢI NHUẬN
+                        </span>
+
+                        <strong id="codProfit">
+                            0 ₫
+                        </strong>
+
+                    </div>
 
                 </div>
 
 
-                <div class="quick-card blue-card">
+                <div class="cod-detail-section">
 
-                    <span>
-                        GIÁ VỐN
-                    </span>
+                    <div class="cod-detail-section-title">
 
-                    <strong
-                        id="todayCost"
-                        class="blue-text">
+                        <strong>
+                            📦 Chi tiết từng phần
+                        </strong>
 
-                        0 ₫
+                        <span id="codPartCount" style="
+color:#8b91a1;
+font-size:10px">
 
-                    </strong>
+                            0 phần
+
+                        </span>
+
+                    </div>
+
+
+                    <div id="codPartList" class="cod-part-list">
+                    </div>
+
+
+                    <!-- THÊM PHẦN -->
+
+                    <div class="cod-add-part">
+
+                        <div style="
+font-size:12px;
+font-weight:850;
+margin-bottom:8px">
+
+                            ➕ Thêm thành phần / chi phí
+
+                        </div>
+
+
+                        <div class="cod-add-grid">
+
+                            <div>
+
+                                <label class="input-label">
+                                    TÊN PHẦN
+                                </label>
+
+                                <input id="codPartName" type="text" placeholder="Ví dụ: Thịt">
+
+                            </div>
+
+
+                            <div>
+
+                                <label class="input-label">
+                                    GIÁ TIỀN
+                                </label>
+
+                                <input id="codPartAmount" type="number" inputmode="decimal" placeholder="8000">
+
+                            </div>
+
+
+                            <div class="full">
+
+                                <label class="input-label">
+                                    GHI CHÚ
+                                </label>
+
+                                <input id="codPartNote" type="text" placeholder="Ví dụ: 100g thịt">
+
+                            </div>
+
+                        </div>
+
+
+                        <button class="cod-save" onclick="addCODPart()">
+
+                            ➕ Thêm phần giá vốn
+
+                        </button>
+
+                    </div>
+
+
+                    <button class="cod-save" onclick="saveCODDish()">
+
+                        💾 Lưu giá vốn món
+
+                    </button>
 
                 </div>
 
@@ -500,92 +2093,3027 @@
 
         </section>
 
-    </main>
-
+    </div>
 
 
     <!-- BOTTOM NAV -->
 
     <nav class="bottom-nav">
 
-        <button
-            type="button"
-            id="navHome"
-            class="nav-button active"
-            onclick="navigateTo('home')">
+        <div class="bottom-inner">
 
-            <span>🏠</span>
-            <small>Trang chủ</small>
+            <button id="navHome" class="nav-button active" onclick="goHome()">
 
-        </button>
+                <span class="nav-icon">🏠</span>
+                Trang chủ
+
+            </button>
 
 
-        <button
-            type="button"
-            id="navStatistics"
-            class="nav-button"
-            onclick="navigateTo('statistics')">
+            <button id="navAdd" class="nav-button" onclick="goAdd()">
 
-            <span>📊</span>
-            <small>Thống kê</small>
+                <span class="nav-icon">➕</span>
+                Thêm
 
-        </button>
+            </button>
 
 
-        <button
-            type="button"
-            id="navHistory"
-            class="nav-button"
-            onclick="navigateTo('history')">
+            <button id="navStatistics" class="nav-button" onclick="goStatistics()">
 
-            <span>📋</span>
-            <small>Lịch sử</small>
+                <span class="nav-icon">📊</span>
+                Thống kê
 
-        </button>
+            </button>
 
 
-        <button
-            type="button"
-            id="navRestaurant"
-            class="nav-button"
-            onclick="navigateTo('restaurant')">
+            <button id="navHistory" class="nav-button" onclick="goHistory()">
 
-            <span>🍜</span>
-            <small>Quán</small>
+                <span class="nav-icon">📋</span>
+                Lịch sử
 
-        </button>
+            </button>
 
 
-        <button
-            type="button"
-            id="navCOD"
-            class="nav-button"
-            onclick="navigateTo('cod')">
+            <button id="navRestaurant" class="nav-button" onclick="goRestaurant()">
 
-            <span>💰</span>
-            <small>COD</small>
+                <span class="nav-icon">🍜</span>
+                Quán
 
-        </button>
+            </button>
+
+
+            <button id="navCOD" class="nav-button" onclick="goCOD()">
+
+                <span class="nav-icon">💰</span>
+                COD
+
+            </button>
+
+        </div>
 
     </nav>
+
+
+    <div class="toast" id="toast">
+    </div>
+
+
+    <script>
+
+        /* =====================================================
+           DATA
+        ===================================================== */
+
+        let data =
+            JSON.parse(
+                localStorage.getItem("thuChiBanHangV5")
+            ) || [];
+
+
+        let menuData =
+            JSON.parse(
+                localStorage.getItem("thuChiMenuV1")
+            ) || [];
+
+
+        /*
+        COD DATA
+        
+        {
+          "categoryId-dishId":{
+              sellingPrice:35000,
+              parts:[
+                  {
+                     id:123,
+                     name:"Mì",
+                     amount:5000,
+                     note:"..."
+                  }
+              ]
+          }
+        }
+        */
+
+        let codData =
+            JSON.parse(
+                localStorage.getItem("thuChiCODV1")
+            ) || {};
+
+
+        let currentType = "thu";
+        let currentSource = "ShopeeFood";
+        let editId = null;
+        let statisticType = "all";
+
+        let currentCODCategoryId = null;
+        let currentCODDishId = null;
+
+        const colors = [
+            "#ee4d2d",
+            "#00a85a",
+            "#2563eb",
+            "#7c3aed",
+            "#ec4899",
+            "#f97316",
+            "#eab308",
+            "#16a34a",
+            "#0891b2",
+            "#ef4444",
+            "#14b8a6",
+            "#8b5cf6"
+        ];
+
+        const sourceColors = {
+            "ShopeeFood": "#ee4d2d",
+            "GrabFood": "#00a85a",
+            "Ngoài sàn": "#2563eb"
+        };
+
+
+        /* =====================================================
+           BASIC
+        ===================================================== */
+
+        function money(number) {
+
+            return new Intl.NumberFormat(
+                "vi-VN",
+                {
+                    style: "currency",
+                    currency: "VND",
+                    maximumFractionDigits: 0
+                }
+            ).format(Number(number) || 0);
+
+        }
+
+
+        function escapeHTML(value) {
+
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        function todayVN() {
+
+            const d = new Date();
+
+            return String(d.getDate()).padStart(2, "0")
+                + "/" +
+                String(d.getMonth() + 1).padStart(2, "0")
+                + "/" +
+                d.getFullYear();
+
+        }
+
+
+        function formatDateInput(input) {
+
+            let value = input.value
+                .replace(/\D/g, "")
+                .slice(0, 8);
+
+            if (value.length >= 5) {
+
+                value =
+                    value.slice(0, 2) + "/" +
+                    value.slice(2, 4) + "/" +
+                    value.slice(4);
+
+            }
+
+            else if (value.length >= 3) {
+
+                value =
+                    value.slice(0, 2) + "/" +
+                    value.slice(2);
+
+            }
+
+            input.value = value;
+
+        }
+
+
+        function dateToISO(date) {
+
+            const p = date.split("/");
+
+            if (p.length !== 3)
+                return "";
+
+            const day = Number(p[0]);
+            const month = Number(p[1]);
+            const year = Number(p[2]);
+
+            const test = new Date(
+                year,
+                month - 1,
+                day
+            );
+
+            if (
+                year < 2000 ||
+                month < 1 ||
+                month > 12 ||
+                day < 1 ||
+                day > 31 ||
+                test.getDate() !== day ||
+                test.getMonth() !== month - 1
+            )
+                return "";
+
+            return year +
+                "-" +
+                String(month).padStart(2, "0") +
+                "-" +
+                String(day).padStart(2, "0");
+
+        }
+
+
+        function isoToVN(date) {
+
+            if (!date)
+                return "";
+
+            const p = date.split("-");
+
+            if (p.length !== 3)
+                return date;
+
+            return p[2] + "/" + p[1] + "/" + p[0];
+
+        }
+
+
+        function saveData() {
+
+            localStorage.setItem(
+                "thuChiBanHangV5",
+                JSON.stringify(data)
+            );
+
+        }
+
+
+        function saveMenuData() {
+
+            localStorage.setItem(
+                "thuChiMenuV1",
+                JSON.stringify(menuData)
+            );
+
+        }
+
+
+        function saveCODData() {
+
+            localStorage.setItem(
+                "thuChiCODV1",
+                JSON.stringify(codData)
+            );
+
+        }
+
+
+        function toast(message) {
+
+            const el =
+                document.getElementById("toast");
+
+            el.innerText = message;
+
+            el.classList.add("show");
+
+            setTimeout(
+                () => {
+                    el.classList.remove("show");
+                },
+                2200
+            );
+
+        }
+
+
+        /* =====================================================
+           TYPE
+        ===================================================== */
+
+        function setType(type) {
+
+            currentType = type;
+
+            document.getElementById("thuBtn")
+                .className = "type-button";
+
+            document.getElementById("chiBtn")
+                .className = "type-button";
+
+            if (type === "thu") {
+
+                document.getElementById("thuBtn")
+                    .classList.add("active-thu");
+
+                document.getElementById("sourceGroup")
+                    .style.display = "block";
+
+            } else {
+
+                document.getElementById("chiBtn")
+                    .classList.add("active-chi");
+
+                document.getElementById("sourceGroup")
+                    .style.display = "none";
+
+            }
+
+            renderCategorySelect();
+
+        }
+
+
+        function setSource(source) {
+
+            currentSource = source;
+
+            document
+                .querySelectorAll(".source-button")
+                .forEach(
+                    x => x.className = "source-button"
+                );
+
+            if (source === "ShopeeFood")
+                document.getElementById("sourceShopee")
+                    .classList.add("active-shopee");
+
+            if (source === "GrabFood")
+                document.getElementById("sourceGrab")
+                    .classList.add("active-grab");
+
+            if (source === "Ngoài sàn")
+                document.getElementById("sourceOut")
+                    .classList.add("active-out");
+
+        }
+
+
+        /* =====================================================
+           MENU
+        ===================================================== */
+
+        function addCategory() {
+
+            const input =
+                document.getElementById("newCategory");
+
+            const name = input.value.trim();
+
+            if (!name) {
+
+                toast("⚠️ Nhập tên danh mục");
+
+                return;
+
+            }
+
+            if (
+                menuData.some(
+                    x => x.name.toLowerCase() === name.toLowerCase()
+                )
+            ) {
+
+                toast("⚠️ Danh mục đã tồn tại");
+
+                return;
+
+            }
+
+            menuData.push({
+
+                id: Date.now(),
+                name: name,
+                dishes: []
+
+            });
+
+            saveMenuData();
+
+            input.value = "";
+
+            renderMenuAll();
+
+            toast("✅ Đã thêm danh mục");
+
+        }
+
+
+        function addDish() {
+
+            const categoryId =
+                Number(
+                    document.getElementById("menuDishCategory").value
+                );
+
+            const input =
+                document.getElementById("newDish");
+
+            const name = input.value.trim();
+
+            if (!categoryId) {
+
+                toast("⚠️ Hãy chọn danh mục");
+
+                return;
+
+            }
+
+            if (!name) {
+
+                toast("⚠️ Nhập tên món");
+
+                return;
+
+            }
+
+            const category =
+                menuData.find(
+                    x => x.id === categoryId
+                );
+
+            if (!category)
+                return;
+
+            if (
+                category.dishes.some(
+                    x => x.name.toLowerCase() === name.toLowerCase()
+                )
+            ) {
+
+                toast("⚠️ Món này đã có");
+
+                return;
+
+            }
+
+            category.dishes.push({
+
+                id: Date.now(),
+                name: name
+
+            });
+
+            saveMenuData();
+
+            input.value = "";
+
+            renderMenuAll();
+
+            toast("🍜 Đã thêm món");
+
+        }
+
+
+        function deleteCategory(id) {
+
+            const category =
+                menuData.find(
+                    x => x.id === id
+                );
+
+            if (!category)
+                return;
+
+            if (
+                !confirm(
+                    "Xóa danh mục \"" +
+                    category.name +
+                    "\" và toàn bộ món?"
+                )
+            )
+                return;
+
+            menuData =
+                menuData.filter(
+                    x => x.id !== id
+                );
+
+            saveMenuData();
+
+            renderMenuAll();
+
+            toast("🗑️ Đã xóa danh mục");
+
+        }
+
+
+        function deleteDish(categoryId, dishId) {
+
+            const category =
+                menuData.find(
+                    x => x.id === categoryId
+                );
+
+            if (!category)
+                return;
+
+            const dish =
+                category.dishes.find(
+                    x => x.id === dishId
+                );
+
+            if (!dish)
+                return;
+
+            if (
+                !confirm(
+                    "Xóa món \"" +
+                    dish.name +
+                    "\"?"
+                )
+            )
+                return;
+
+            category.dishes =
+                category.dishes.filter(
+                    x => x.id !== dishId
+                );
+
+            saveMenuData();
+
+            renderMenuAll();
+
+            toast("🗑️ Đã xóa món");
+
+        }
+
+
+        /* =====================================================
+           MENU SELECT
+        ===================================================== */
+
+        function renderCategorySelect() {
+
+            const select =
+                document.getElementById("category");
+
+            const old = select.value;
+
+            select.innerHTML =
+                `
+<option value="">
+Chọn danh mục
+</option>
+`;
+
+            menuData.forEach(
+                category => {
+
+                    select.innerHTML +=
+                        `
+<option value="${category.id}">
+${escapeHTML(category.name)}
+</option>
+`;
+
+                }
+            );
+
+            if (
+                [...select.options]
+                    .some(x => x.value === old)
+            ) {
+
+                select.value = old;
+
+            }
+
+            renderDishSelect();
+
+        }
+
+
+        function renderDishSelect() {
+
+            const categoryId =
+                Number(
+                    document.getElementById("category").value
+                );
+
+            const select =
+                document.getElementById("name");
+
+            const old = select.value;
+
+            select.innerHTML =
+                `
+<option value="">
+Chọn món
+</option>
+`;
+
+            if (!categoryId) {
+
+                select.innerHTML +=
+                    `
+<option value="__other__">
+✍️ Nhập tên khác
+</option>
+`;
+
+                syncCustomName();
+
+                return;
+
+            }
+
+            const category =
+                menuData.find(
+                    x => x.id === categoryId
+                );
+
+            if (!category)
+                return;
+
+            category.dishes.forEach(
+                dish => {
+
+                    select.innerHTML +=
+                        `
+<option value="${escapeHTML(dish.name)}">
+${escapeHTML(dish.name)}
+</option>
+`;
+
+                }
+            );
+
+            select.innerHTML +=
+                `
+<option value="__other__">
+✍️ Nhập tên khác
+</option>
+`;
+
+            if (
+                [...select.options]
+                    .some(x => x.value === old)
+            ) {
+
+                select.value = old;
+
+            }
+
+            syncCustomName();
+
+        }
+
+
+        function syncCustomName() {
+
+            const select =
+                document.getElementById("name");
+
+            document.getElementById("customNameGroup")
+                .style.display =
+                select.value === "__other__"
+                    ? "block"
+                    : "none";
+
+        }
+
+
+        function renderMenuCategorySelect() {
+
+            const select =
+                document.getElementById("menuDishCategory");
+
+            const old = select.value;
+
+            select.innerHTML =
+                `
+<option value="">
+Chọn danh mục
+</option>
+`;
+
+            menuData.forEach(
+                category => {
+
+                    select.innerHTML +=
+                        `
+<option value="${category.id}">
+${escapeHTML(category.name)}
+</option>
+`;
+
+                }
+            );
+
+            if (
+                [...select.options]
+                    .some(x => x.value === old)
+            ) {
+
+                select.value = old;
+
+            }
+
+        }
+
+
+        function renderMenuList() {
+
+            const box =
+                document.getElementById("menuList");
+
+            document.getElementById("menuCount")
+                .innerText =
+                menuData.length +
+                " danh mục";
+
+            if (!menuData.length) {
+
+                box.innerHTML =
+                    `
+<div class="empty">
+Chưa có danh mục nào.
+</div>
+`;
+
+                return;
+
+            }
+
+            box.innerHTML =
+                menuData.map(
+                    category => `
+
+<div class="menu-category">
+
+<div class="menu-category-head">
+
+<div>
+
+<div class="menu-category-name">
+
+📁
+${escapeHTML(category.name)}
+
+</div>
+
+<div class="menu-category-count">
+
+${category.dishes.length} món
+
+</div>
+
+</div>
+
+<div class="menu-category-actions">
+
+<button
+class="small-button"
+onclick="focusAddDish(${category.id})">
+
+➕🍜
+
+</button>
+
+<button
+class="small-button"
+onclick="deleteCategory(${category.id})">
+
+🗑️
+
+</button>
+
+</div>
 
 </div>
 
 
+<div class="menu-dishes">
 
-<!-- TOAST -->
+${category.dishes.length
 
-<div id="toast" class="toast"></div>
+                            ?
+
+                            category.dishes.map(
+                                dish => `
+
+<div class="menu-dish">
+
+<div class="menu-dish-name">
+
+🍜
+${escapeHTML(dish.name)}
+
+</div>
+
+<button
+class="menu-dish-delete"
+onclick="
+deleteDish(
+${category.id},
+${dish.id}
+)">
+
+🗑️
+
+</button>
+
+</div>
+
+`
+                            ).join("")
+
+                            :
+
+                            `
+<div
+style="
+padding:12px 0;
+color:#9aa0ae;
+font-size:11px">
+
+Chưa có món.
+
+</div>
+`
+                        }
+
+</div>
+
+</div>
+
+`
+                ).join("");
+
+        }
 
 
+        function renderMenuAll() {
 
-<!-- SUPABASE -->
+            renderMenuCategorySelect();
+            renderCategorySelect();
+            renderMenuList();
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+        }
 
-<script src="./js/supabase.js"></script>
-<script src="./js/app.js"></script>
-<script src="./js/home.js"></script>
+
+        function focusAddDish(id) {
+
+            document.getElementById(
+                "menuDishCategory"
+            ).value = id;
+
+            document.getElementById(
+                "newDish"
+            ).focus();
+
+        }
+
+
+        /* =====================================================
+           TRANSACTIONS
+        ===================================================== */
+
+        function saveTransaction() {
+
+            let name = "";
+
+            const select =
+                document.getElementById("name");
+
+            if (select.value === "__other__") {
+
+                name =
+                    document.getElementById(
+                        "customName"
+                    ).value.trim();
+
+            } else {
+
+                name = select.value.trim();
+
+            }
+
+            const categoryId =
+                Number(
+                    document.getElementById("category").value
+                );
+
+            const category =
+                menuData.find(
+                    x => x.id === categoryId
+                );
+
+            if (!category) {
+
+                toast("⚠️ Vui lòng chọn danh mục");
+
+                return;
+
+            }
+
+            if (!name) {
+
+                toast("⚠️ Vui lòng chọn tên món");
+
+                return;
+
+            }
+
+            const amount =
+                Number(
+                    document.getElementById("amount").value
+                );
+
+            if (amount <= 0) {
+
+                toast("⚠️ Nhập số tiền");
+
+                return;
+
+            }
+
+            const dateVN =
+                document.getElementById("date").value.trim();
+
+            const date =
+                dateToISO(dateVN);
+
+            if (!date) {
+
+                toast("⚠️ Ngày không hợp lệ");
+
+                return;
+
+            }
+
+            const item = {
+
+                id: editId || Date.now(),
+
+                type: currentType,
+
+                name: name,
+
+                category: category.name,
+
+                categoryId: categoryId,
+
+                amount: amount,
+
+                date: date,
+
+                note:
+                    document.getElementById("note").value.trim(),
+
+                source:
+                    currentType === "thu"
+                        ? currentSource
+                        : ""
+
+            };
+
+            if (editId) {
+
+                const index =
+                    data.findIndex(
+                        x => x.id === editId
+                    );
+
+                if (index !== -1)
+                    data[index] = item;
+
+                toast("✅ Đã cập nhật");
+
+            } else {
+
+                data.push(item);
+
+                toast(
+                    currentType === "thu"
+                        ? "💚 Đã thêm khoản thu"
+                        : "❤️ Đã thêm khoản chi"
+                );
+
+            }
+
+            saveData();
+
+            cancelEdit();
+
+            renderAll();
+
+        }
+
+
+        function editTransaction(id) {
+
+            const item =
+                data.find(
+                    x => x.id === id
+                );
+
+            if (!item)
+                return;
+
+            editId = id;
+
+            setType(item.type);
+
+            const category =
+                menuData.find(
+                    x => x.id === Number(item.categoryId)
+                ) ||
+                menuData.find(
+                    x => x.name === item.category
+                );
+
+            if (category) {
+
+                document.getElementById(
+                    "category"
+                ).value = category.id;
+
+                renderDishSelect();
+
+            }
+
+            const nameSelect =
+                document.getElementById("name");
+
+            if (
+                [...nameSelect.options]
+                    .some(x => x.value === item.name)
+            ) {
+
+                nameSelect.value = item.name;
+
+            } else {
+
+                nameSelect.value = "__other__";
+
+                document.getElementById(
+                    "customName"
+                ).value = item.name;
+
+            }
+
+            syncCustomName();
+
+            document.getElementById(
+                "amount"
+            ).value = item.amount;
+
+            document.getElementById(
+                "date"
+            ).value = isoToVN(item.date);
+
+            document.getElementById(
+                "note"
+            ).value = item.note || "";
+
+            if (item.source)
+                setSource(item.source);
+
+            document.getElementById(
+                "formTitle"
+            ).innerText = "Sửa giao dịch";
+
+            document.getElementById(
+                "cancelButton"
+            ).style.display = "block";
+
+            goAdd();
+
+        }
+
+
+        function cancelEdit() {
+
+            editId = null;
+
+            document.getElementById(
+                "formTitle"
+            ).innerText = "Thêm giao dịch";
+
+            document.getElementById(
+                "cancelButton"
+            ).style.display = "none";
+
+            document.getElementById("name").value = "";
+            document.getElementById("customName").value = "";
+            document.getElementById("amount").value = "";
+            document.getElementById("date").value = todayVN();
+            document.getElementById("note").value = "";
+
+            setType("thu");
+
+        }
+
+
+        function deleteTransaction(id) {
+
+            if (
+                !confirm("Xóa giao dịch này?")
+            )
+                return;
+
+            data =
+                data.filter(
+                    x => x.id !== id
+                );
+
+            saveData();
+
+            renderAll();
+
+            toast("🗑️ Đã xóa giao dịch");
+
+        }
+
+
+        /* =====================================================
+           DASHBOARD
+        ===================================================== */
+
+        function renderDashboard() {
+
+            let income = 0;
+            let expense = 0;
+
+            data.forEach(
+                item => {
+
+                    if (item.type === "thu")
+                        income += Number(item.amount);
+
+                    else
+                        expense += Number(item.amount);
+
+                }
+            );
+
+            const profit = income - expense;
+
+            document.getElementById(
+                "profit"
+            ).innerText = money(profit);
+
+            document.getElementById(
+                "totalIncome"
+            ).innerText = money(income);
+
+            document.getElementById(
+                "totalExpense"
+            ).innerText = money(expense);
+
+            document.getElementById(
+                "totalTransactions"
+            ).innerText = data.length;
+
+            document.getElementById(
+                "quickIncome"
+            ).innerText = money(income);
+
+            document.getElementById(
+                "quickExpense"
+            ).innerText = money(expense);
+
+        }
+
+
+        /* =====================================================
+           HISTORY
+        ===================================================== */
+
+        function renderTransactions() {
+
+            const search =
+                document.getElementById("search")
+                    .value.toLowerCase();
+
+            const type =
+                document.getElementById("filterType")
+                    .value;
+
+            const month =
+                document.getElementById("filterMonth")
+                    .value;
+
+            let list = data.filter(
+                item => {
+
+                    const text =
+                        (
+                            item.name +
+                            " " +
+                            item.category +
+                            " " +
+                            (item.note || "")
+                        ).toLowerCase();
+
+                    if (
+                        search &&
+                        !text.includes(search)
+                    )
+                        return false;
+
+                    if (
+                        type !== "all" &&
+                        item.type !== type
+                    )
+                        return false;
+
+                    if (
+                        month !== "all" &&
+                        !item.date.startsWith(month)
+                    )
+                        return false;
+
+                    return true;
+
+                }
+            );
+
+            list.sort(
+                (a, b) => b.date.localeCompare(a.date)
+            );
+
+            document.getElementById(
+                "historyCount"
+            ).innerText =
+                list.length +
+                " giao dịch";
+
+            const box =
+                document.getElementById("transactions");
+
+            if (!list.length) {
+
+                box.innerHTML =
+                    `
+<div class="empty">
+Không có giao dịch.
+</div>
+`;
+
+                return;
+
+            }
+
+            box.innerHTML =
+                list.map(
+                    item => `
+
+<div class="transaction">
+
+<div class="tx-icon ${item.type}">
+
+${item.type === "thu" ? "↑" : "↓"}
+
+</div>
+
+
+<div class="tx-info">
+
+<div class="tx-name">
+
+${escapeHTML(item.name)}
+
+</div>
+
+<div class="tx-category">
+
+📁 ${escapeHTML(item.category)}
+
+</div>
+
+${item.source
+                            ?
+                            `
+<div
+class="tx-source"
+style="
+color:${sourceColors[item.source] || "#2563eb"}">
+
+${escapeHTML(item.source)}
+
+</div>
+`
+                            : ""
+                        }
+
+<div class="tx-date">
+
+${isoToVN(item.date)}
+
+</div>
+
+</div>
+
+
+<div class="tx-right">
+
+<div
+class="tx-money ${item.type === "thu" ? "green" : "red"}">
+
+${item.type === "thu" ? "+" : "-"}
+${money(item.amount)}
+
+</div>
+
+
+<div class="tx-actions">
+
+<button
+class="small-button"
+onclick="editTransaction(${item.id})">
+
+✏️
+
+</button>
+
+<button
+class="small-button"
+onclick="deleteTransaction(${item.id})">
+
+🗑️
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+`
+                ).join("");
+
+        }
+
+
+        /* =====================================================
+           MONTH FILTER
+        ===================================================== */
+
+        function renderMonthSelects() {
+
+            const months = new Set();
+
+            data.forEach(
+                item => {
+                    if (item.date)
+                        months.add(item.date.slice(0, 7));
+                }
+            );
+
+            const list =
+                [...months].sort().reverse();
+
+            const stat =
+                document.getElementById("statMonth");
+
+            const filter =
+                document.getElementById("filterMonth");
+
+            const oldStat = stat.value;
+            const oldFilter = filter.value;
+
+            stat.innerHTML =
+                `
+<option value="all">
+Tất cả
+</option>
+`;
+
+            filter.innerHTML =
+                `
+<option value="all">
+Tất cả tháng
+</option>
+`;
+
+            list.forEach(
+                month => {
+
+                    const [year, m] = month.split("-");
+
+                    const text =
+                        `Tháng ${Number(m)}/${year}`;
+
+                    stat.innerHTML +=
+                        `
+<option value="${month}">
+${text}
+</option>
+`;
+
+                    filter.innerHTML +=
+                        `
+<option value="${month}">
+${text}
+</option>
+`;
+
+                }
+            );
+
+            if (
+                [...stat.options]
+                    .some(x => x.value === oldStat)
+            )
+                stat.value = oldStat;
+
+            if (
+                [...filter.options]
+                    .some(x => x.value === oldFilter)
+            )
+                filter.value = oldFilter;
+
+        }
+
+
+        /* =====================================================
+           STATISTICS
+        ===================================================== */
+
+        function setStatisticType(type) {
+
+            statisticType = type;
+
+            document
+                .querySelectorAll(".stat-tab")
+                .forEach(
+                    x => x.classList.remove("active")
+                );
+
+            document.getElementById(
+                type === "all"
+                    ? "tabAll"
+                    : type === "thu"
+                        ? "tabThu"
+                        : "tabChi"
+            ).classList.add("active");
+
+            renderStatistics();
+
+        }
+
+
+        function renderStatistics() {
+
+            const month =
+                document.getElementById("statMonth").value;
+
+            let list = data.filter(
+                item => {
+
+                    if (
+                        statisticType !== "all" &&
+                        item.type !== statisticType
+                    )
+                        return false;
+
+                    if (
+                        month !== "all" &&
+                        !item.date.startsWith(month)
+                    )
+                        return false;
+
+                    return true;
+
+                }
+            );
+
+            const total =
+                list.reduce(
+                    (sum, x) => sum + Number(x.amount),
+                    0
+                );
+
+            document.getElementById(
+                "chartTotal"
+            ).innerText = money(total);
+
+            document.getElementById(
+                "pieTotal"
+            ).innerText = money(total);
+
+            document.getElementById(
+                "pieLabel"
+            ).innerText =
+                statisticType === "all"
+                    ? "Tổng"
+                    : statisticType === "thu"
+                        ? "Thu"
+                        : "Chi";
+
+
+            /* CATEGORY */
+
+            const map = {};
+
+            list.forEach(
+                item => {
+
+                    const key =
+                        item.category || "Khác";
+
+                    map[key] =
+                        (map[key] || 0) + Number(item.amount);
+
+                }
+            );
+
+            const entries =
+                Object.entries(map)
+                    .sort((a, b) => b[1] - a[1]);
+
+            const legend =
+                document.getElementById("legend");
+
+            if (!entries.length) {
+
+                legend.innerHTML =
+                    `
+<div class="empty">
+Chưa có dữ liệu.
+</div>
+`;
+
+                document.getElementById("pie")
+                    .style.background = "#e8ebf1";
+
+            } else {
+
+                let start = 0;
+
+                const gradients = [];
+
+                entries.forEach(
+                    ([name, value], index) => {
+
+                        const percent =
+                            value / total * 100;
+
+                        const end =
+                            start + percent;
+
+                        gradients.push(
+                            `${colors[index % colors.length]} ${start}% ${end}%`
+                        );
+
+                        start = end;
+
+                    }
+                );
+
+                document.getElementById(
+                    "pie"
+                ).style.background =
+                    `conic-gradient(${gradients.join(",")})`;
+
+
+                legend.innerHTML =
+                    entries.map(
+                        ([name, value], index) => {
+
+                            const percent =
+                                total
+                                    ?
+                                    value / total * 100
+                                    : 0;
+
+                            return `
+
+<div class="legend-item">
+
+<div
+class="legend-dot"
+style="
+background:${colors[index % colors.length]}">
+</div>
+
+<div class="legend-content">
+
+<div class="legend-name">
+${escapeHTML(name)}
+</div>
+
+<div class="legend-value">
+${money(value)}
+</div>
+
+</div>
+
+<div class="legend-percent">
+${percent.toFixed(1)}%
+</div>
+
+</div>
+
+`;
+
+                        }
+                    ).join("");
+
+            }
+
+
+            /* DAILY */
+
+            const daily = {};
+
+            list.forEach(
+                item => {
+
+                    daily[item.date] =
+                        (daily[item.date] || 0)
+                        +
+                        Number(item.amount);
+
+                }
+            );
+
+            const dates =
+                Object.keys(daily).sort();
+
+            const max =
+                Math.max(
+                    ...dates.map(x => daily[x]),
+                    1
+                );
+
+            document.getElementById(
+                "barChart"
+            ).innerHTML =
+                dates.length
+                    ?
+                    dates.map(
+                        date => {
+
+                            const height =
+                                Math.max(
+                                    3,
+                                    daily[date] / max * 160
+                                );
+
+                            return `
+
+<div class="bar-column">
+
+<div class="bar-value">
+${money(daily[date])}
+</div>
+
+<div
+class="bar"
+style="
+height:${height}px">
+</div>
+
+<div class="bar-date">
+${isoToVN(date).slice(0, 5)}
+</div>
+
+</div>
+
+`;
+
+                        }
+                    ).join("")
+                    :
+                    `
+<div class="empty">
+Chưa có dữ liệu.
+</div>
+`;
+
+
+            /* CATEGORY DETAIL */
+
+            const catBox =
+                document.getElementById("categoryStats");
+
+            catBox.innerHTML =
+                entries.map(
+                    ([name, value], index) => {
+
+                        const percent =
+                            total
+                                ?
+                                value / total * 100
+                                : 0;
+
+                        return `
+
+<div class="stat-row">
+
+<div class="stat-top">
+
+<div class="stat-name">
+${escapeHTML(name)}
+</div>
+
+<div class="stat-money">
+${money(value)}
+</div>
+
+</div>
+
+<div class="progress">
+
+<div
+class="progress-bar"
+style="
+width:${percent}%;
+background:${colors[index % colors.length]}">
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+                    }
+                ).join("");
+
+        }
+
+
+        /* =====================================================
+           COD - HELPERS
+        ===================================================== */
+
+        function getCODKey(categoryId, dishId) {
+
+            return String(categoryId) + "-" + String(dishId);
+
+        }
+
+
+        function getCODDish(categoryId, dishId) {
+
+            const key =
+                getCODKey(
+                    categoryId,
+                    dishId
+                );
+
+            if (!codData[key]) {
+
+                codData[key] = {
+
+                    sellingPrice: 0,
+                    parts: []
+
+                };
+
+            }
+
+            if (!Array.isArray(codData[key].parts))
+                codData[key].parts = [];
+
+            return codData[key];
+
+        }
+
+
+        function getCODTotal(categoryId, dishId) {
+
+            const item =
+                getCODDish(
+                    categoryId,
+                    dishId
+                );
+
+            return item.parts.reduce(
+                (sum, x) =>
+                    sum + Number(x.amount || 0),
+                0
+            );
+
+        }
+
+
+        /* =====================================================
+           COD PAGE
+        ===================================================== */
+
+        function goCOD() {
+
+            hideAllMain();
+
+            document.getElementById(
+                "codSection"
+            ).style.display = "block";
+
+            setActiveNav("navCOD");
+
+            document.getElementById(
+                "pageTitle"
+            ).innerText = "COD";
+
+            showCODCategories();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+        function showCODCategories() {
+
+            currentCODCategoryId = null;
+            currentCODDishId = null;
+
+            document.getElementById(
+                "codCategoryPage"
+            ).style.display = "block";
+
+            document.getElementById(
+                "codDishPage"
+            ).style.display = "none";
+
+            document.getElementById(
+                "codDetailPage"
+            ).style.display = "none";
+
+            renderCODCategories();
+
+        }
+
+
+        function renderCODCategories() {
+
+            const box =
+                document.getElementById(
+                    "codCategoryList"
+                );
+
+            if (!menuData.length) {
+
+                box.innerHTML =
+                    `
+<div class="cod-empty">
+
+Chưa có danh mục nào.
+
+<br>
+
+Hãy vào <b>🍜 Quán</b>
+để tạo danh mục và món trước.
+
+</div>
+`;
+
+                return;
+
+            }
+
+            box.innerHTML =
+                menuData.map(
+                    category => `
+
+<div class="cod-category">
+
+<button
+class="cod-category-button"
+onclick="
+openCODCategory(
+${category.id}
+)">
+
+<div class="cod-category-left">
+
+<div class="cod-folder">
+📁
+</div>
+
+<div>
+
+<div class="cod-category-name">
+
+${escapeHTML(category.name)}
+
+</div>
+
+<div class="cod-category-count">
+
+${category.dishes.length}
+món
+
+</div>
+
+</div>
+
+</div>
+
+<div class="cod-arrow">
+›
+</div>
+
+</button>
+
+</div>
+
+`
+                ).join("");
+
+        }
+
+
+        function openCODCategory(categoryId) {
+
+            const category =
+                menuData.find(
+                    x => x.id === categoryId
+                );
+
+            if (!category)
+                return;
+
+            currentCODCategoryId = categoryId;
+
+            document.getElementById(
+                "codCategoryPage"
+            ).style.display = "none";
+
+            document.getElementById(
+                "codDishPage"
+            ).style.display = "block";
+
+            document.getElementById(
+                "codDetailPage"
+            ).style.display = "none";
+
+            document.getElementById(
+                "codDishCategoryTitle"
+            ).innerText =
+                "🍜 " + category.name;
+
+            renderCODDishes();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+        function renderCODDishes() {
+
+            const category =
+                menuData.find(
+                    x => x.id === currentCODCategoryId
+                );
+
+            const box =
+                document.getElementById(
+                    "codDishList"
+                );
+
+            if (!category) {
+
+                box.innerHTML =
+                    `
+<div class="cod-empty">
+Không tìm thấy danh mục.
+</div>
+`;
+
+                return;
+
+            }
+
+            if (!category.dishes.length) {
+
+                box.innerHTML =
+                    `
+<div class="cod-empty">
+
+Danh mục này chưa có món.
+
+<br>
+
+Hãy vào <b>🍜 Quán</b>
+để thêm món.
+
+</div>
+`;
+
+                return;
+
+            }
+
+            box.innerHTML =
+                category.dishes.map(
+                    dish => {
+
+                        const total =
+                            getCODTotal(
+                                category.id,
+                                dish.id
+                            );
+
+                        const cod =
+                            getCODDish(
+                                category.id,
+                                dish.id
+                            );
+
+                        return `
+
+<div class="cod-dish-card">
+
+<button
+class="cod-dish-card-button"
+onclick="
+openCODDish(
+${category.id},
+${dish.id}
+)">
+
+<div>
+
+<div class="cod-dish-name">
+
+🍜
+${escapeHTML(dish.name)}
+
+</div>
+
+<div class="cod-dish-info">
+
+${cod.parts.length}
+thành phần giá vốn
+
+</div>
+
+</div>
+
+<div>
+
+<div class="cod-dish-cost">
+
+${money(total)}
+
+</div>
+
+<div
+style="
+color:#8b91a1;
+font-size:9px;
+text-align:right">
+
+giá vốn
+
+</div>
+
+</div>
+
+</button>
+
+</div>
+
+`;
+
+                    }
+                ).join("");
+
+        }
+
+
+        function showCODDishes() {
+
+            if (currentCODCategoryId !== null)
+                openCODCategory(
+                    currentCODCategoryId
+                );
+
+        }
+
+
+        function openCODDish(categoryId, dishId) {
+
+            const category =
+                menuData.find(
+                    x => x.id === categoryId
+                );
+
+            if (!category)
+                return;
+
+            const dish =
+                category.dishes.find(
+                    x => x.id === dishId
+                );
+
+            if (!dish)
+                return;
+
+            currentCODCategoryId = categoryId;
+            currentCODDishId = dishId;
+
+            document.getElementById(
+                "codCategoryPage"
+            ).style.display = "none";
+
+            document.getElementById(
+                "codDishPage"
+            ).style.display = "none";
+
+            document.getElementById(
+                "codDetailPage"
+            ).style.display = "block";
+
+            document.getElementById(
+                "codDetailName"
+            ).innerText =
+                "🍜 " + dish.name;
+
+            document.getElementById(
+                "codDetailCategory"
+            ).innerText =
+                "📁 " + category.name;
+
+            const cod =
+                getCODDish(
+                    categoryId,
+                    dishId
+                );
+
+            document.getElementById(
+                "codSellingPrice"
+            ).value =
+                cod.sellingPrice || "";
+
+            renderCODDetail();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+        function renderCODDetail() {
+
+            if (
+                currentCODCategoryId === null ||
+                currentCODDishId === null
+            )
+                return;
+
+            const cod =
+                getCODDish(
+                    currentCODCategoryId,
+                    currentCODDishId
+                );
+
+            document.getElementById(
+                "codSellingPrice"
+            ).value =
+                cod.sellingPrice || "";
+
+            renderCODParts();
+
+            renderCODDetailSummary();
+
+        }
+
+
+        /* =====================================================
+           COD PARTS
+        ===================================================== */
+
+        function renderCODParts() {
+
+            const cod =
+                getCODDish(
+                    currentCODCategoryId,
+                    currentCODDishId
+                );
+
+            const box =
+                document.getElementById(
+                    "codPartList"
+                );
+
+            document.getElementById(
+                "codPartCount"
+            ).innerText =
+                cod.parts.length + " phần";
+
+            if (!cod.parts.length) {
+
+                box.innerHTML =
+                    `
+<div class="cod-empty">
+
+Chưa có thành phần giá vốn.
+
+<br>
+
+Ví dụ: Mì, thịt,
+rau, hộp, sốt...
+
+</div>
+`;
+
+                return;
+
+            }
+
+            box.innerHTML =
+                cod.parts.map(
+                    part => `
+
+<div class="cod-part">
+
+<div class="cod-part-icon">
+📦
+</div>
+
+<div class="cod-part-info">
+
+<div class="cod-part-name">
+
+${escapeHTML(part.name)}
+
+</div>
+
+${part.note
+                            ?
+                            `
+<div class="cod-part-note">
+${escapeHTML(part.note)}
+</div>
+`
+                            : ""
+                        }
+
+</div>
+
+<div class="cod-part-money">
+
+${money(part.amount)}
+
+</div>
+
+<div class="cod-part-actions">
+
+<button
+onclick="
+editCODPart(
+${part.id}
+)">
+
+✏️
+
+</button>
+
+<button
+onclick="
+deleteCODPart(
+${part.id}
+)">
+
+🗑️
+
+</button>
+
+</div>
+
+</div>
+
+`
+                ).join("");
+
+        }
+
+
+        function addCODPart() {
+
+            const name =
+                document.getElementById(
+                    "codPartName"
+                ).value.trim();
+
+            const amount =
+                Number(
+                    document.getElementById(
+                        "codPartAmount"
+                    ).value
+                );
+
+            const note =
+                document.getElementById(
+                    "codPartNote"
+                ).value.trim();
+
+            if (!name) {
+
+                toast("⚠️ Nhập tên thành phần");
+
+                return;
+
+            }
+
+            if (amount <= 0) {
+
+                toast("⚠️ Nhập giá tiền");
+
+                return;
+
+            }
+
+            const cod =
+                getCODDish(
+                    currentCODCategoryId,
+                    currentCODDishId
+                );
+
+            cod.parts.push({
+
+                id: Date.now(),
+
+                name: name,
+
+                amount: amount,
+
+                note: note
+
+            });
+
+            saveCODData();
+
+            document.getElementById(
+                "codPartName"
+            ).value = "";
+
+            document.getElementById(
+                "codPartAmount"
+            ).value = "";
+
+            document.getElementById(
+                "codPartNote"
+            ).value = "";
+
+            renderCODDetail();
+
+            toast("✅ Đã thêm thành phần");
+
+        }
+
+
+        function editCODPart(id) {
+
+            const cod =
+                getCODDish(
+                    currentCODCategoryId,
+                    currentCODDishId
+                );
+
+            const part =
+                cod.parts.find(
+                    x => x.id === id
+                );
+
+            if (!part)
+                return;
+
+            const name =
+                prompt(
+                    "Tên thành phần:",
+                    part.name
+                );
+
+            if (name === null)
+                return;
+
+            const amount =
+                prompt(
+                    "Giá tiền:",
+                    part.amount
+                );
+
+            if (amount === null)
+                return;
+
+            const note =
+                prompt(
+                    "Ghi chú:",
+                    part.note || ""
+                );
+
+            part.name = name.trim();
+
+            part.amount =
+                Number(amount) || 0;
+
+            part.note =
+                note === null
+                    ?
+                    part.note
+                    :
+                    note.trim();
+
+            if (!part.name) {
+
+                toast("⚠️ Tên không được để trống");
+
+                return;
+
+            }
+
+            if (part.amount <= 0) {
+
+                toast("⚠️ Giá tiền không hợp lệ");
+
+                return;
+
+            }
+
+            saveCODData();
+
+            renderCODDetail();
+
+            toast("✏️ Đã sửa thành phần");
+
+        }
+
+
+        function deleteCODPart(id) {
+
+            const cod =
+                getCODDish(
+                    currentCODCategoryId,
+                    currentCODDishId
+                );
+
+            const part =
+                cod.parts.find(
+                    x => x.id === id
+                );
+
+            if (!part)
+                return;
+
+            if (
+                !confirm(
+                    "Xóa thành phần \"" +
+                    part.name +
+                    "\"?"
+                )
+            )
+                return;
+
+            cod.parts =
+                cod.parts.filter(
+                    x => x.id !== id
+                );
+
+            saveCODData();
+
+            renderCODDetail();
+
+            toast("🗑️ Đã xóa thành phần");
+
+        }
+
+
+        /* =====================================================
+           COD SAVE
+        ===================================================== */
+
+        function saveCODDish() {
+
+            const cod =
+                getCODDish(
+                    currentCODCategoryId,
+                    currentCODDishId
+                );
+
+            const sellingPrice =
+                Number(
+                    document.getElementById(
+                        "codSellingPrice"
+                    ).value
+                );
+
+            cod.sellingPrice =
+                sellingPrice || 0;
+
+            saveCODData();
+
+            renderCODDetail();
+
+            toast("💾 Đã lưu giá vốn món");
+
+        }
+
+
+        function renderCODDetailSummary() {
+
+            if (
+                currentCODCategoryId === null ||
+                currentCODDishId === null
+            )
+                return;
+
+            const cod =
+                getCODDish(
+                    currentCODCategoryId,
+                    currentCODDishId
+                );
+
+            const total =
+                cod.parts.reduce(
+                    (sum, x) =>
+                        sum + Number(x.amount || 0),
+                    0
+                );
+
+            const selling =
+                Number(
+                    document.getElementById(
+                        "codSellingPrice"
+                    ).value
+                ) || 0;
+
+            const profit =
+                selling - total;
+
+            document.getElementById(
+                "codTotalCost"
+            ).innerText =
+                money(total);
+
+            document.getElementById(
+                "codProfit"
+            ).innerText =
+                money(profit);
+
+        }
+
+
+        /* =====================================================
+           NAVIGATION
+        ===================================================== */
+
+        function hideAllMain() {
+
+            document.getElementById(
+                "homeSection"
+            ).style.display = "none";
+
+            document.getElementById(
+                "codSection"
+            ).style.display = "none";
+
+        }
+
+
+        function setActiveNav(id) {
+
+            document
+                .querySelectorAll(".nav-button")
+                .forEach(
+                    x => x.classList.remove("active")
+                );
+
+            document.getElementById(id)
+                .classList.add("active");
+
+        }
+
+
+        function goHome() {
+
+            hideAllMain();
+
+            document.getElementById(
+                "homeSection"
+            ).style.display = "block";
+
+            document.getElementById(
+                "pageTitle"
+            ).innerText = "Thu Chi";
+
+            setActiveNav("navHome");
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+        }
+
+
+        function goAdd() {
+
+            goHome();
+
+            setTimeout(
+                () => {
+
+                    document.getElementById(
+                        "addSection"
+                    ).scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                },
+                50
+            );
+
+            setActiveNav("navAdd");
+
+        }
+
+
+        function goStatistics() {
+
+            goHome();
+
+            setTimeout(
+                () => {
+
+                    document.getElementById(
+                        "statisticsSection"
+                    ).scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                },
+                50
+            );
+
+            setActiveNav("navStatistics");
+
+        }
+
+
+        function goHistory() {
+
+            goHome();
+
+            setTimeout(
+                () => {
+
+                    document.getElementById(
+                        "historySection"
+                    ).scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                },
+                50
+            );
+
+            setActiveNav("navHistory");
+
+        }
+
+
+        function goRestaurant() {
+
+            goHome();
+
+            setTimeout(
+                () => {
+
+                    document.getElementById(
+                        "restaurantSection"
+                    ).scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                },
+                50
+            );
+
+            setActiveNav("navRestaurant");
+
+        }
+
+
+        /* =====================================================
+           DARK MODE
+        ===================================================== */
+
+        function toggleDark() {
+
+            document.body.classList.toggle("dark");
+
+            localStorage.setItem(
+                "thuChiDark",
+                document.body.classList.contains("dark")
+                    ? "1"
+                    : "0"
+            );
+
+        }
+
+
+        /* =====================================================
+           BACKUP
+        ===================================================== */
+
+        function backup() {
+
+            const backupData = {
+
+                version: 2,
+
+                transactions: data,
+
+                menu: menuData,
+
+                cod: codData
+
+            };
+
+            const blob =
+                new Blob(
+                    [
+                        JSON.stringify(
+                            backupData,
+                            null,
+                            2
+                        )
+                    ],
+                    {
+                        type: "application/json"
+                    }
+                );
+
+            const url =
+                URL.createObjectURL(blob);
+
+            const a =
+                document.createElement("a");
+
+            a.href = url;
+
+            a.download =
+                "thu-chi-quan-backup.json";
+
+            a.click();
+
+            URL.revokeObjectURL(url);
+
+            toast("📤 Đã sao lưu");
+
+        }
+
+
+        function restore(event) {
+
+            const file =
+                event.target.files[0];
+
+            if (!file)
+                return;
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                function (e) {
+
+                    try {
+
+                        const obj =
+                            JSON.parse(e.target.result);
+
+                        if (
+                            Array.isArray(obj)
+                        ) {
+
+                            data = obj;
+
+                        } else {
+
+                            data =
+                                obj.transactions || [];
+
+                            menuData =
+                                obj.menu || [];
+
+                            codData =
+                                obj.cod || {};
+
+                        }
+
+                        saveData();
+
+                        saveMenuData();
+
+                        saveCODData();
+
+                        renderAll();
+
+                        toast("📥 Đã khôi phục");
+
+                    } catch (err) {
+
+                        toast("❌ File không hợp lệ");
+
+                    }
+
+                };
+
+            reader.readAsText(file);
+
+            event.target.value = "";
+
+        }
+
+
+        /* =====================================================
+           CSV
+        ===================================================== */
+
+        function exportCSV() {
+
+            if (!data.length) {
+
+                toast("Không có dữ liệu");
+
+                return;
+
+            }
+
+            const rows = [
+
+                [
+                    "Ngày",
+                    "Loại",
+                    "Tên",
+                    "Danh mục",
+                    "Nguồn",
+                    "Số tiền",
+                    "Ghi chú"
+                ]
+
+            ];
+
+            data.forEach(
+                item => {
+
+                    rows.push([
+                        isoToVN(item.date),
+                        item.type === "thu" ? "Thu" : "Chi",
+                        item.name,
+                        item.category,
+                        item.source || "",
+                        item.amount,
+                        item.note || ""
+                    ]);
+
+                }
+            );
+
+            const csv =
+                "\uFEFF" +
+                rows.map(
+                    row =>
+                        row.map(
+                            cell =>
+                                `"${String(cell)
+                                    .replace(/"/g, '""')}"`
+                        ).join(",")
+                ).join("\n");
+
+            const blob =
+                new Blob(
+                    [csv],
+                    {
+                        type: "text/csv;charset=utf-8;"
+                    }
+                );
+
+            const url =
+                URL.createObjectURL(blob);
+
+            const a =
+                document.createElement("a");
+
+            a.href = url;
+
+            a.download =
+                "thu-chi.csv";
+
+            a.click();
+
+            URL.revokeObjectURL(url);
+
+            toast("📊 Đã xuất CSV");
+
+        }
+
+
+        /* =====================================================
+           DELETE ALL
+        ===================================================== */
+
+        function deleteAll() {
+
+            if (
+                !confirm(
+                    "Xóa toàn bộ giao dịch?"
+                )
+            )
+                return;
+
+            data = [];
+
+            saveData();
+
+            renderAll();
+
+            toast("🗑️ Đã xóa toàn bộ giao dịch");
+
+        }
+
+
+        /* =====================================================
+           RENDER ALL
+        ===================================================== */
+
+        function renderAll() {
+
+            renderDashboard();
+
+            renderMonthSelects();
+
+            renderTransactions();
+
+            renderStatistics();
+
+            renderMenuAll();
+
+            renderCODCategories();
+
+        }
+
+
+        /* =====================================================
+           INIT
+        ===================================================== */
+
+        function init() {
+
+            if (
+                localStorage.getItem("thuChiDark") === "1"
+            ) {
+
+                document.body.classList.add("dark");
+
+            }
+
+            document.getElementById(
+                "date"
+            ).value = todayVN();
+
+            renderAll();
+
+            setType("thu");
+
+        }
+
+
+        /* =====================================================
+           START
+        ===================================================== */
+
+        init();
+
+    </script>
 
 </body>
 
