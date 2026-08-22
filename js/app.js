@@ -1,15 +1,17 @@
 /* =========================================================
    APP.JS
    BẾP NHÀ DUYÊN
-   FULL SPA CONTROLLER
-   FIX:
-   - Chuyển trang không bị trắng
-   - Tách giao diện từng page an toàn
-   - Active navigation chính xác
-   - Không render nhầm page
-   - Không lỗi khi element không tồn tại
-   - Giữ trạng thái page
-   - Hỗ trợ dark mode
+   FULL APP CONTROLLER
+   FIX FULL:
+   - setText is not defined
+   - setHTML is not defined
+   - setValue is not defined
+   - page trắng khi chuyển trang
+   - render một trang lỗi làm chết trang khác
+   - navigation SPA
+   - dark mode
+   - database loading
+   - statistics navigation
 ========================================================= */
 
 
@@ -34,7 +36,9 @@ const AppState = {
 
     statisticsPeriod: "day",
 
-    statisticsDate: new Date()
+    statisticsDate: new Date(),
+
+    initialized: false
 
 };
 
@@ -46,60 +50,478 @@ const AppState = {
 const PAGE_CONFIG = {
 
     home: {
-
         pageId: "homePage",
-
         navId: "navHome",
-
         render: "renderHome"
-
     },
 
     statistics: {
-
         pageId: "statisticsPage",
-
         navId: "navStatistics",
-
         render: "renderStatistics"
-
     },
 
     history: {
-
         pageId: "historyPage",
-
         navId: "navHistory",
-
         render: "renderHistory"
-
     },
 
     restaurant: {
-
         pageId: "restaurantPage",
-
         navId: "navRestaurant",
-
         render: "renderRestaurant"
-
     },
 
     cod: {
-
         pageId: "codPage",
-
         navId: "navCOD",
-
         render: "renderCOD"
-
     }
 
 };
 
 
 /* =========================================================
-   DOM READY
+   DOM HELPERS
+   DÙNG CHUNG CHO TẤT CẢ FILE JS
+========================================================= */
+
+
+/*
+ * Query một element
+ */
+
+function $(selector) {
+
+    if (
+        selector instanceof
+        Element
+    ) {
+        return selector;
+    }
+
+    return document.querySelector(
+        selector
+    );
+
+}
+
+
+/*
+ * Query nhiều element
+ */
+
+function $$(selector) {
+
+    return [
+        ...document.querySelectorAll(
+            selector
+        )
+    ];
+
+}
+
+
+/*
+ * setText
+ */
+
+function setText(
+    selector,
+    value
+) {
+
+    const element =
+        $(selector);
+
+    if (!element) {
+
+        console.warn(
+            "setText: element không tồn tại:",
+            selector
+        );
+
+        return;
+
+    }
+
+    element.textContent =
+        value === null ||
+        value === undefined
+            ? ""
+            : String(value);
+
+}
+
+
+/*
+ * setHTML
+ */
+
+function setHTML(
+    selector,
+    value
+) {
+
+    const element =
+        $(selector);
+
+    if (!element) {
+
+        console.warn(
+            "setHTML: element không tồn tại:",
+            selector
+        );
+
+        return;
+
+    }
+
+    element.innerHTML =
+        value === null ||
+        value === undefined
+            ? ""
+            : String(value);
+
+}
+
+
+/*
+ * setValue
+ */
+
+function setValue(
+    selector,
+    value
+) {
+
+    const element =
+        $(selector);
+
+    if (!element) {
+
+        console.warn(
+            "setValue: element không tồn tại:",
+            selector
+        );
+
+        return;
+
+    }
+
+    element.value =
+        value === null ||
+        value === undefined
+            ? ""
+            : value;
+
+}
+
+
+/*
+ * getValue
+ */
+
+function getValue(
+    selector
+) {
+
+    const element =
+        $(selector);
+
+    if (!element) {
+
+        return "";
+
+    }
+
+    return element.value ?? "";
+
+}
+
+
+/*
+ * show element
+ */
+
+function showElement(
+    selector
+) {
+
+    const element =
+        $(selector);
+
+    if (!element) return;
+
+    element.hidden = false;
+
+    element.style.removeProperty(
+        "display"
+    );
+
+}
+
+
+/*
+ * hide element
+ */
+
+function hideElement(
+    selector
+) {
+
+    const element =
+        $(selector);
+
+    if (!element) return;
+
+    element.hidden = true;
+
+}
+
+
+/*
+ * set visible
+ */
+
+function setVisible(
+    selector,
+    visible
+) {
+
+    if (visible) {
+
+        showElement(
+            selector
+        );
+
+    } else {
+
+        hideElement(
+            selector
+        );
+
+    }
+
+}
+
+
+/*
+ * class add
+ */
+
+function addClass(
+    selector,
+    className
+) {
+
+    const element =
+        $(selector);
+
+    if (!element) return;
+
+    element.classList.add(
+        className
+    );
+
+}
+
+
+/*
+ * class remove
+ */
+
+function removeClass(
+    selector,
+    className
+) {
+
+    const element =
+        $(selector);
+
+    if (!element) return;
+
+    element.classList.remove(
+        className
+    );
+
+}
+
+
+/*
+ * class toggle
+ */
+
+function toggleClass(
+    selector,
+    className,
+    force
+) {
+
+    const element =
+        $(selector);
+
+    if (!element) return;
+
+    element.classList.toggle(
+        className,
+        force
+    );
+
+}
+
+
+/* =========================================================
+   FORMAT
+========================================================= */
+
+function formatMoney(
+    value
+) {
+
+    const number =
+        Number(value) || 0;
+
+    return number.toLocaleString(
+        "vi-VN"
+    ) + " ₫";
+
+}
+
+
+function formatNumber(
+    value
+) {
+
+    const number =
+        Number(value) || 0;
+
+    return number.toLocaleString(
+        "vi-VN"
+    );
+
+}
+
+
+function formatDateInput(
+    date
+) {
+
+    if (
+        !date ||
+        !(date instanceof Date)
+    ) {
+
+        date =
+            new Date(
+                date || Date.now()
+            );
+
+    }
+
+
+    const year =
+        date.getFullYear();
+
+
+    const month =
+        String(
+            date.getMonth() + 1
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    const day =
+        String(
+            date.getDate()
+        ).padStart(
+            2,
+            "0"
+        );
+
+
+    return `${year}-${month}-${day}`;
+
+}
+
+
+function formatDateVN(
+    value
+) {
+
+    if (!value) return "";
+
+    const date =
+        value instanceof Date
+            ? value
+            : new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return String(value);
+
+    }
+
+
+    return date.toLocaleDateString(
+        "vi-VN"
+    );
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   INIT
 ========================================================= */
 
 document.addEventListener(
@@ -112,34 +534,60 @@ async function initApp() {
 
     try {
 
-        /*
-         * Thiết lập ngày trước
-         */
-        setToday();
+        console.log(
+            "Bếp Nhà Duyên đang khởi tạo..."
+        );
 
 
         /*
-         * Load theme
+         * Theme
          */
+
         loadTheme();
 
 
         /*
-         * Đảm bảo page được chuẩn hóa
+         * Date
          */
+
+        setToday();
+
+
+        /*
+         * Page system
+         */
+
         preparePages();
 
 
         /*
          * Load database
          */
+
         await loadInitialData();
 
 
         /*
-         * Mặc định vào Home
+         * Render trang hiện tại
          */
-        navigateTo("home", false);
+
+        const initialPage =
+            getPageFromURL();
+
+
+        navigateTo(
+            initialPage,
+            false
+        );
+
+
+        AppState.initialized =
+            true;
+
+
+        console.log(
+            "Bếp Nhà Duyên đã sẵn sàng."
+        );
 
 
     } catch (error) {
@@ -149,8 +597,13 @@ async function initApp() {
             error
         );
 
-        showToast(
-            "Không thể khởi tạo ứng dụng"
+        /*
+         * Không để app trắng
+         */
+
+        navigateTo(
+            "home",
+            false
         );
 
     }
@@ -164,189 +617,76 @@ async function initApp() {
 
 function preparePages() {
 
-    const pages =
-        document.querySelectorAll(
-            ".page"
-        );
-
-
-    pages.forEach(page => {
-
-        /*
-         * Xóa trạng thái active cũ
-         */
-        page.classList.remove(
-            "active-page"
-        );
-
-
-        /*
-         * Không dùng display inline
-         * để tránh CSS xung đột.
-         */
-        page.removeAttribute(
-            "style"
-        );
-
-    });
-
-
     /*
-     * Nếu HTML dùng page riêng nhưng
-     * chưa có class .page, tự nhận diện
-     * theo ID.
+     * Các page phải có class page
      */
 
-    Object.values(PAGE_CONFIG)
-        .forEach(config => {
+    Object.values(
+        PAGE_CONFIG
+    ).forEach(
+        config => {
 
             const element =
                 document.getElementById(
                     config.pageId
                 );
 
-            if (!element) return;
+
+            if (!element) {
+
+                console.warn(
+                    `Thiếu #${config.pageId}`
+                );
+
+                return;
+
+            }
+
 
             element.classList.add(
                 "page"
             );
 
-        });
 
-}
-
-
-/* =========================================================
-   INITIAL DATA
-========================================================= */
-
-async function loadInitialData() {
-
-    try {
-
-        /*
-         * Categories
-         */
-
-        AppState.categories =
-            await safeDbGet(
-                "categories",
-                {
-                    order: {
-                        column: "created_at",
-                        ascending: true
-                    }
-                }
+            element.setAttribute(
+                "aria-hidden",
+                "true"
             );
-
-
-        /*
-         * Dishes
-         */
-
-        AppState.dishes =
-            await safeDbGet(
-                "dishes",
-                {
-                    order: {
-                        column: "created_at",
-                        ascending: true
-                    }
-                }
-            );
-
-
-        /*
-         * Transactions
-         */
-
-        AppState.transactions =
-            await safeDbGet(
-                "transactions",
-                {
-                    order: {
-                        column: "date",
-                        ascending: false
-                    }
-                }
-            );
-
-
-        /*
-         * COD
-         */
-
-        try {
-
-            AppState.codParts =
-                await safeDbGet(
-                    "cod_parts",
-                    {
-                        order: {
-                            column: "created_at",
-                            ascending: false
-                        }
-                    }
-                );
-
-        } catch (error) {
-
-            /*
-             * Nếu bảng COD chưa tồn tại
-             * thì không làm app chết.
-             */
-
-            console.warn(
-                "COD data unavailable:",
-                error
-            );
-
-            AppState.codParts = [];
 
         }
+    );
 
 
-    } catch (error) {
+    /*
+     * Nav
+     */
 
-        console.error(
-            "LOAD DATA ERROR:",
-            error
-        );
+    Object.values(
+        PAGE_CONFIG
+    ).forEach(
+        config => {
 
-        /*
-         * Không để undefined
-         */
-
-        AppState.categories =
-            Array.isArray(
-                AppState.categories
-            )
-                ? AppState.categories
-                : [];
+            const nav =
+                document.getElementById(
+                    config.navId
+                );
 
 
-        AppState.dishes =
-            Array.isArray(
-                AppState.dishes
-            )
-                ? AppState.dishes
-                : [];
+            if (!nav) return;
 
 
-        AppState.transactions =
-            Array.isArray(
-                AppState.transactions
-            )
-                ? AppState.transactions
-                : [];
+            nav.classList.add(
+                "nav-button"
+            );
 
-    }
+        }
+    );
 
 }
 
 
 /* =========================================================
-   SAFE DATABASE GET
+   DATABASE
 ========================================================= */
 
 async function safeDbGet(
@@ -360,7 +700,7 @@ async function safeDbGet(
     ) {
 
         console.warn(
-            "dbGet() chưa được load:",
+            "dbGet chưa tồn tại:",
             table
         );
 
@@ -378,21 +718,100 @@ async function safeDbGet(
             );
 
 
-        return Array.isArray(result)
+        return Array.isArray(
+            result
+        )
             ? result
             : [];
-
 
     } catch (error) {
 
         console.error(
-            `DB GET ERROR: ${table}`,
+            `DB ERROR [${table}]`,
             error
         );
 
         return [];
 
     }
+
+}
+
+
+async function loadInitialData() {
+
+    /*
+     * Categories
+     */
+
+    AppState.categories =
+        await safeDbGet(
+            "categories",
+            {
+                order: {
+                    column: "created_at",
+                    ascending: true
+                }
+            }
+        );
+
+
+    /*
+     * Dishes
+     */
+
+    AppState.dishes =
+        await safeDbGet(
+            "dishes",
+            {
+                order: {
+                    column: "created_at",
+                    ascending: true
+                }
+            }
+        );
+
+
+    /*
+     * Transactions
+     */
+
+    AppState.transactions =
+        await safeDbGet(
+            "transactions",
+            {
+                order: {
+                    column: "date",
+                    ascending: false
+                }
+            }
+        );
+
+
+    /*
+     * COD
+     *
+     * Không để thiếu bảng COD
+     * làm chết toàn app.
+     */
+
+    AppState.codParts =
+        await safeDbGet(
+            "cod_parts",
+            {
+                order: {
+                    column: "created_at",
+                    ascending: false
+                }
+            }
+        );
+
+
+    /*
+     * Render tất cả
+     */
+
+    renderAll();
 
 }
 
@@ -407,7 +826,7 @@ function navigateTo(
 ) {
 
     /*
-     * Page không tồn tại
+     * Kiểm tra page
      */
 
     if (
@@ -434,11 +853,6 @@ function navigateTo(
         );
 
 
-    /*
-     * Nếu pageElement không tồn tại
-     * thì không tiếp tục.
-     */
-
     if (!pageElement) {
 
         console.error(
@@ -451,7 +865,7 @@ function navigateTo(
 
 
     /*
-     * Lưu state
+     * State
      */
 
     AppState.currentPage =
@@ -459,33 +873,28 @@ function navigateTo(
 
 
     /*
-     * =========================
-     * HIDE ALL PAGES
-     * =========================
+     * HIDE ALL PAGE
      */
 
-    document
-        .querySelectorAll(
-            ".page"
-        )
-        .forEach(element => {
+    $$(".page")
+        .forEach(
+            element => {
 
-            element.classList.remove(
-                "active-page"
-            );
+                element.classList.remove(
+                    "active-page"
+                );
 
-            element.setAttribute(
-                "aria-hidden",
-                "true"
-            );
+                element.setAttribute(
+                    "aria-hidden",
+                    "true"
+                );
 
-        });
+            }
+        );
 
 
     /*
-     * =========================
      * SHOW CURRENT PAGE
-     * =========================
      */
 
     pageElement.classList.add(
@@ -499,26 +908,23 @@ function navigateTo(
 
 
     /*
-     * =========================
-     * NAVIGATION ACTIVE
-     * =========================
+     * Navigation
      */
 
-    document
-        .querySelectorAll(
-            ".nav-button"
-        )
-        .forEach(button => {
+    $$(".nav-button")
+        .forEach(
+            button => {
 
-            button.classList.remove(
-                "active"
-            );
+                button.classList.remove(
+                    "active"
+                );
 
-            button.removeAttribute(
-                "aria-current"
-            );
+                button.removeAttribute(
+                    "aria-current"
+                );
 
-        });
+            }
+        );
 
 
     const navButton =
@@ -542,9 +948,7 @@ function navigateTo(
 
 
     /*
-     * =========================
-     * RENDER PAGE
-     * =========================
+     * Render riêng page
      */
 
     renderCurrentPage(
@@ -553,9 +957,7 @@ function navigateTo(
 
 
     /*
-     * =========================
-     * SCROLL TOP
-     * =========================
+     * Scroll top
      */
 
     window.scrollTo({
@@ -588,12 +990,10 @@ function renderCurrentPage(
 
 
     const renderFunction =
-        window[config.render];
+        window[
+            config.render
+        ];
 
-
-    /*
-     * Render function không tồn tại
-     */
 
     if (
         typeof renderFunction !==
@@ -601,7 +1001,7 @@ function renderCurrentPage(
     ) {
 
         console.warn(
-            `Không tìm thấy ${config.render}()`
+            `${config.render} chưa được load`
         );
 
         return;
@@ -616,12 +1016,18 @@ function renderCurrentPage(
     } catch (error) {
 
         console.error(
-            `RENDER ERROR: ${page}`,
+            `RENDER ERROR [${page}]`,
             error
         );
 
+
+        /*
+         * Chỉ page hiện tại lỗi.
+         * Không làm chết các page khác.
+         */
+
         showToast(
-            "Không thể hiển thị trang"
+            `Lỗi hiển thị ${page}`
         );
 
     }
@@ -635,12 +1041,7 @@ function renderCurrentPage(
 
 function renderAll() {
 
-    /*
-     * Chỉ render các function tồn tại.
-     * Không để một page lỗi làm hỏng toàn app.
-     */
-
-    const renderFunctions = [
+    const renderers = [
 
         "renderHome",
 
@@ -655,11 +1056,13 @@ function renderAll() {
     ];
 
 
-    renderFunctions.forEach(
+    renderers.forEach(
         functionName => {
 
             const fn =
-                window[functionName];
+                window[
+                    functionName
+                ];
 
 
             if (
@@ -668,7 +1071,7 @@ function renderAll() {
             ) {
 
                 console.warn(
-                    `${functionName}() không tồn tại`
+                    `${functionName} chưa được load`
                 );
 
                 return;
@@ -683,7 +1086,7 @@ function renderAll() {
             } catch (error) {
 
                 console.error(
-                    `Render error: ${functionName}`,
+                    `RENDER ERROR: ${functionName}`,
                     error
                 );
 
@@ -696,7 +1099,7 @@ function renderAll() {
 
 
 /* =========================================================
-   REFRESH CURRENT PAGE
+   REFRESH
 ========================================================= */
 
 function refreshCurrentPage() {
@@ -728,7 +1131,7 @@ function showToast(
     if (!toast) {
 
         console.log(
-            "TOAST:",
+            "Toast:",
             message
         );
 
@@ -767,12 +1170,12 @@ function showToast(
 
 
 /* =========================================================
-   DARK MODE
+   THEME
 ========================================================= */
 
 function toggleDarkMode() {
 
-    const isDark =
+    const dark =
         document.body.classList.toggle(
             "dark"
         );
@@ -780,90 +1183,72 @@ function toggleDarkMode() {
 
     localStorage.setItem(
         "bep_nha_duyen_dark",
-        isDark
+        dark
             ? "true"
             : "false"
     );
 
 
-    /*
-     * Update button icon nếu có
-     */
-
     updateThemeButton(
-        isDark
+        dark
     );
 
 }
 
-
-/* =========================================================
-   LOAD THEME
-========================================================= */
 
 function loadTheme() {
 
     const dark =
         localStorage.getItem(
             "bep_nha_duyen_dark"
-        );
-
-
-    const isDark =
-        dark === "true";
+        ) === "true";
 
 
     document.body.classList.toggle(
         "dark",
-        isDark
+        dark
     );
 
 
     updateThemeButton(
-        isDark
+        dark
     );
 
 }
 
 
-/* =========================================================
-   THEME BUTTON
-========================================================= */
-
 function updateThemeButton(
-    isDark
+    dark
 ) {
 
-    const buttons =
-        document.querySelectorAll(
-            "[data-theme-toggle]"
-        );
+    $$(
+        "[data-theme-toggle]"
+    ).forEach(
+        button => {
 
-
-    buttons.forEach(button => {
-
-        button.setAttribute(
-            "aria-pressed",
-            String(isDark)
-        );
-
-
-        const icon =
-            button.querySelector(
-                ".theme-icon"
+            button.setAttribute(
+                "aria-pressed",
+                String(dark)
             );
 
 
-        if (icon) {
+            const icon =
+                button.querySelector(
+                    ".theme-icon"
+                );
 
-            icon.textContent =
-                isDark
-                    ? "☀️"
-                    : "🌙";
+
+            if (icon) {
+
+                icon.textContent =
+                    dark
+                        ? "☀️"
+                        : "🌙";
+
+            }
 
         }
-
-    });
+    );
 
 }
 
@@ -923,343 +1308,25 @@ function setToday() {
      */
 
     AppState.statisticsDate =
-        new Date(
-            now
-        );
+        new Date(now);
 
 }
 
 
 /* =========================================================
-   DATE FORMAT YYYY-MM-DD
-========================================================= */
-
-function formatDateInput(
-    date
-) {
-
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    return `${year}-${month}-${day}`;
-
-}
-
-
-/* =========================================================
-   FORMAT MONEY
-========================================================= */
-
-function formatMoney(
-    value
-) {
-
-    const number =
-        Number(value) || 0;
-
-
-    return number.toLocaleString(
-        "vi-VN"
-    ) + " ₫";
-
-}
-
-
-/* =========================================================
-   FORMAT NUMBER
-========================================================= */
-
-function formatNumber(
-    value
-) {
-
-    const number =
-        Number(value) || 0;
-
-
-    return number.toLocaleString(
-        "vi-VN"
-    );
-
-}
-
-
-/* =========================================================
-   FORMAT DATE
-========================================================= */
-
-function formatDateVN(
-    value
-) {
-
-    if (!value) return "";
-
-
-    const date =
-        value instanceof Date
-            ? value
-            : new Date(value);
-
-
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
-
-        return String(value);
-
-    }
-
-
-    return date.toLocaleDateString(
-        "vi-VN"
-    );
-
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHTML(
-    value
-) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-
-    }
-
-
-    return String(value)
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-/* =========================================================
-   PAGE CLICK EVENTS
-========================================================= */
-
-document.addEventListener(
-    "click",
-    event => {
-
-        /*
-         * Navigation button
-         */
-
-        const nav =
-            event.target.closest(
-                "[data-page]"
-            );
-
-
-        if (nav) {
-
-            const page =
-                nav.dataset.page;
-
-
-            if (page) {
-
-                event.preventDefault();
-
-                navigateTo(
-                    page
-                );
-
-                return;
-
-            }
-
-        }
-
-
-        /*
-         * Theme toggle
-         */
-
-        const themeButton =
-            event.target.closest(
-                "[data-theme-toggle]"
-            );
-
-
-        if (themeButton) {
-
-            event.preventDefault();
-
-            toggleDarkMode();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   BROWSER BACK / FORWARD
-========================================================= */
-
-window.addEventListener(
-    "popstate",
-    () => {
-
-        const page =
-            getPageFromURL();
-
-
-        navigateTo(
-            page,
-            false
-        );
-
-    }
-);
-
-
-/* =========================================================
-   URL PAGE
-========================================================= */
-
-function getPageFromURL() {
-
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-
-    const page =
-        params.get(
-            "page"
-        );
-
-
-    if (
-        page &&
-        PAGE_CONFIG[page]
-    ) {
-
-        return page;
-
-    }
-
-
-    return "home";
-
-}
-
-
-/* =========================================================
-   OPTIONAL URL NAVIGATION
-========================================================= */
-
-function navigateToURL(
-    page
-) {
-
-    if (
-        !PAGE_CONFIG[page]
-    ) {
-
-        page = "home";
-
-    }
-
-
-    const url =
-        new URL(
-            window.location.href
-        );
-
-
-    url.searchParams.set(
-        "page",
-        page
-    );
-
-
-    history.pushState(
-        {
-            page
-        },
-        "",
-        url
-    );
-
-
-    navigateTo(
-        page
-    );
-
-}
-
-
-/* =========================================================
-   STATISTICS PERIOD
+   STATISTICS
 ========================================================= */
 
 function setStatisticsPeriod(
     period
 ) {
 
-    const allowed = [
-        "day",
-        "month",
-        "year"
-    ];
-
-
     if (
-        !allowed.includes(
-            period
-        )
+        ![
+            "day",
+            "month",
+            "year"
+        ].includes(period)
     ) {
 
         period = "day";
@@ -1275,10 +1342,6 @@ function setStatisticsPeriod(
 
 }
 
-
-/* =========================================================
-   STATISTICS DATE
-========================================================= */
 
 function changeStatisticsDate(
     amount
@@ -1297,7 +1360,8 @@ function changeStatisticsDate(
         case "day":
 
             date.setDate(
-                date.getDate() + amount
+                date.getDate() +
+                Number(amount)
             );
 
             break;
@@ -1306,7 +1370,8 @@ function changeStatisticsDate(
         case "month":
 
             date.setMonth(
-                date.getMonth() + amount
+                date.getMonth() +
+                Number(amount)
             );
 
             break;
@@ -1315,7 +1380,8 @@ function changeStatisticsDate(
         case "year":
 
             date.setFullYear(
-                date.getFullYear() + amount
+                date.getFullYear() +
+                Number(amount)
             );
 
             break;
@@ -1331,10 +1397,6 @@ function changeStatisticsDate(
 
 }
 
-
-/* =========================================================
-   STATISTICS DATE LABEL
-========================================================= */
 
 function getStatisticsDateLabel() {
 
@@ -1387,115 +1449,154 @@ function getStatisticsDateLabel() {
 
 
 /* =========================================================
-   UPDATE STATISTICS DATE LABEL
+   URL
 ========================================================= */
 
-function updateStatisticsDateLabel() {
+function getPageFromURL() {
 
-    const element =
-        document.getElementById(
-            "statisticsDateLabel"
+    const params =
+        new URLSearchParams(
+            window.location.search
         );
 
 
-    if (!element) return;
+    const page =
+        params.get(
+            "page"
+        );
 
 
-    element.textContent =
-        getStatisticsDateLabel();
+    if (
+        page &&
+        PAGE_CONFIG[page]
+    ) {
+
+        return page;
+
+    }
+
+
+    return "home";
 
 }
 
 
-/* =========================================================
-   SAFE ELEMENT
-========================================================= */
+function navigateToURL(
+    page
+) {
 
-function $(selector) {
+    if (
+        !PAGE_CONFIG[page]
+    ) {
 
-    return document.querySelector(
-        selector
+        page = "home";
+
+    }
+
+
+    const url =
+        new URL(
+            window.location.href
+        );
+
+
+    url.searchParams.set(
+        "page",
+        page
+    );
+
+
+    history.pushState(
+        {
+            page
+        },
+        "",
+        url
+    );
+
+
+    navigateTo(
+        page
     );
 
 }
 
 
-function $$(selector) {
-
-    return [
-        ...document.querySelectorAll(
-            selector
-        )
-    ];
-
-}
-
-
 /* =========================================================
-   PAGE DEBUG
+   NAVIGATION CLICK
 ========================================================= */
 
-function debugPages() {
+document.addEventListener(
+    "click",
+    event => {
 
-    console.group(
-        "STATISTICS APP PAGES"
-    );
+        /*
+         * data-page
+         */
 
-
-    Object.entries(
-        PAGE_CONFIG
-    ).forEach(
-        ([name, config]) => {
-
-            const page =
-                document.getElementById(
-                    config.pageId
-                );
-
-
-            const nav =
-                document.getElementById(
-                    config.navId
-                );
-
-
-            console.log(
-                name,
-                {
-                    page:
-                        !!page,
-
-                    nav:
-                        !!nav,
-
-                    render:
-                        typeof window[
-                            config.render
-                        ] === "function"
-                }
+        const navigation =
+            event.target.closest(
+                "[data-page]"
             );
 
+
+        if (navigation) {
+
+            const page =
+                navigation.dataset.page;
+
+
+            if (
+                page &&
+                PAGE_CONFIG[page]
+            ) {
+
+                event.preventDefault();
+
+                navigateTo(
+                    page
+                );
+
+                return;
+
+            }
+
         }
-    );
 
 
-    console.groupEnd();
+        /*
+         * Theme
+         */
 
-}
+        const theme =
+            event.target.closest(
+                "[data-theme-toggle]"
+            );
+
+
+        if (theme) {
+
+            event.preventDefault();
+
+            toggleDarkMode();
+
+        }
+
+    }
+);
 
 
 /* =========================================================
-   GLOBAL ERROR HANDLER
+   BROWSER BACK/FORWARD
 ========================================================= */
 
 window.addEventListener(
-    "error",
-    event => {
+    "popstate",
+    () => {
 
-        console.error(
-            "GLOBAL ERROR:",
-            event.error ||
-            event.message
+        navigateTo(
+            getPageFromURL(),
+            false
         );
 
     }
@@ -1503,8 +1604,22 @@ window.addEventListener(
 
 
 /* =========================================================
-   PROMISE ERROR
+   GLOBAL ERROR
 ========================================================= */
+
+window.addEventListener(
+    "error",
+    event => {
+
+        console.error(
+            "GLOBAL JS ERROR:",
+            event.error ||
+            event.message
+        );
+
+    }
+);
+
 
 window.addEventListener(
     "unhandledrejection",
@@ -1520,7 +1635,8 @@ window.addEventListener(
 
 
 /* =========================================================
-   EXPOSE APP
+   EXPOSE GLOBAL FUNCTIONS
+   QUAN TRỌNG KHI TÁCH FILE
 ========================================================= */
 
 window.AppState =
@@ -1528,6 +1644,72 @@ window.AppState =
 
 window.PAGE_CONFIG =
     PAGE_CONFIG;
+
+
+/*
+ * DOM
+ */
+
+window.$ =
+    $;
+
+window.$$ =
+    $$;
+
+window.setText =
+    setText;
+
+window.setHTML =
+    setHTML;
+
+window.setValue =
+    setValue;
+
+window.getValue =
+    getValue;
+
+window.showElement =
+    showElement;
+
+window.hideElement =
+    hideElement;
+
+window.setVisible =
+    setVisible;
+
+window.addClass =
+    addClass;
+
+window.removeClass =
+    removeClass;
+
+window.toggleClass =
+    toggleClass;
+
+
+/*
+ * Format
+ */
+
+window.formatMoney =
+    formatMoney;
+
+window.formatNumber =
+    formatNumber;
+
+window.formatDateInput =
+    formatDateInput;
+
+window.formatDateVN =
+    formatDateVN;
+
+window.escapeHTML =
+    escapeHTML;
+
+
+/*
+ * App
+ */
 
 window.navigateTo =
     navigateTo;
@@ -1541,8 +1723,21 @@ window.renderAll =
 window.refreshCurrentPage =
     refreshCurrentPage;
 
+window.showToast =
+    showToast;
+
+
+/*
+ * Theme
+ */
+
 window.toggleDarkMode =
     toggleDarkMode;
+
+
+/*
+ * Statistics
+ */
 
 window.setStatisticsPeriod =
     setStatisticsPeriod;
@@ -1553,19 +1748,7 @@ window.changeStatisticsDate =
 window.getStatisticsDateLabel =
     getStatisticsDateLabel;
 
-window.formatMoney =
-    formatMoney;
-
-window.formatNumber =
-    formatNumber;
-
-window.formatDateVN =
-    formatDateVN;
-
-window.escapeHTML =
-    escapeHTML;
-
 
 /* =========================================================
-   END
+   END APP.JS
 ========================================================= */
